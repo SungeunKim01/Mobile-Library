@@ -34,8 +34,38 @@ import androidx.compose.ui.text.font.FontWeight
 @Composable
 fun ReadingScreen (chapters: List<Pair<String, String>>,
                    chapterIndexSelected: Int,
-                   onSearch: () -> Unit) {
-    var currentChapterIndex by remember { mutableStateOf(chapterIndexSelected) }
+                   onSearch: () -> Unit){
+    var currentChapterIndex by remember {mutableStateOf(chapterIndexSelected)}
+    ReadingPageContent(
+        chapters = chapters,
+        chapterIndexSelected = chapterIndexSelected,
+        onSearch = onSearch
+    )
+
+}
+
+
+//https://developer.android.com/develop/ui/compose/lists
+@Composable
+fun ReadingPageContent(
+    chapters: List<Pair<String, String>>,
+    chapterIndexSelected: Int,
+    onSearch: () -> Unit
+) {
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(chapterIndexSelected) {
+        listState.scrollToItem(chapterIndexSelected)
+    }
+
+    LazyRow(
+        state = listState,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        itemsIndexed(chapters) { index, (title, text) ->
+            //helper method to display chapter(title, text, onSearch)
+        }
+    }
 }
 
 // Flowers for Algernon (Progress Reports 1–7)
