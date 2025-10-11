@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Mobile-Dev-Project</string>
+
+
+    <string name="search_btn">search</string>
+    <string name="back_btn">←</string>
 </resources>

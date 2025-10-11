@@ -40,6 +40,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.example.mobile_dev_project.data.Chapter
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 
 //pairs: https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-pair/
 @Composable
@@ -119,7 +120,7 @@ fun ChapterPage(
         Column(
             modifier = Modifier.fillMaxHeight().fillMaxWidth().padding(16.dp).verticalScroll(rememberScrollState())
         ) {
-            Button(onClick = onSearch) { Text("Search")}
+            Button(onClick = onSearch) { Text(text = stringResource(R.string.search_btn))}
             Spacer(Modifier.height(16.dp))
             Text(text = title, fontSize = 30.sp, fontWeight = FontWeight.Bold, lineHeight = 34.sp, modifier = Modifier.padding(bottom = 12.dp))
             Spacer(Modifier.height(12.dp))
@@ -132,7 +133,7 @@ fun ChapterPage(
                 .padding(24.dp),
             elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 6.dp)
         ) {
-            Text("←")
+            Text(text =stringResource(R.string.back_btn))
         }
     }
 }
