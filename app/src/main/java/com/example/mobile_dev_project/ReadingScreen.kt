@@ -63,8 +63,28 @@ fun ReadingPageContent(
         modifier = Modifier.fillMaxSize()
     ) {
         itemsIndexed(chapters) { index, (title, text) ->
-            //helper method to display chapter(title, text, onSearch)
+            ChapterPage(title, text, onSearch)
         }
+    }
+}
+
+@Composable
+fun ChapterPage(
+    title: String,
+    content: String,
+    onSearch: () -> Unit
+) {
+    Button(onClick = onSearch) { Text("Search") }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
+        Spacer(Modifier.height(16.dp))
+        Text(text = title, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+        Spacer(Modifier.height(12.dp))
+        Text(text = content, fontSize = 18.sp)
     }
 }
 
