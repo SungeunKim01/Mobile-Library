@@ -1,6 +1,7 @@
 package com.example.mobile_dev_project
 
 import android.app.Activity
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,7 +18,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -29,10 +32,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.example.mobile_dev_project.data.Chapter
-
+import androidx.compose.ui.platform.LocalView
 
 //pairs: https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-pair/
 @Composable
@@ -41,13 +48,35 @@ fun ReadingScreen (chapters: List<Chapter>,
                    onSearch: () -> Unit,
                    onBack: () -> Unit){
     var currentChapterIndex by remember {mutableStateOf(chapterIndexSelected + 1)}
+    var isVisible by remember { mutableStateOf(true) }
+    val localView = LocalView.current
+    val window = (localView.context as? Activity)?.window
+    //tap is deprecated so............ !
+    val windowInsetsController = remember {
+        window?.let { w ->
+            WindowCompat.getInsetsController(w, w.decorView).apply {
+                systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            }
+        }
+    }
     ReadingPageContent(
         chapters = chapters,
-        chapterIndexSelected = chapterIndexSelected,
+        chapterIndexSelected = currentChapterIndex,
         onSearch = onSearch,
-        onBack = onBack
+        onBack = onBack,
+        modifier = Modifier.pointerInput(Unit) {
+            detectTapGestures {
+                windowInsetsController?.let { controller ->
+                    if (isVisible) {
+                        controller.hide(WindowInsetsCompat.Type.systemBars())
+                    } else {
+                        controller.show(WindowInsetsCompat.Type.systemBars())
+                    }
+                    isVisible = !isVisible
+                }
+            }
+        }
     )
-
 }
 
 
@@ -57,7 +86,8 @@ fun ReadingPageContent(
     chapters: List<Chapter>,
     chapterIndexSelected: Int,
     onSearch: () -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    modifier : Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
 
@@ -67,7 +97,8 @@ fun ReadingPageContent(
 
     LazyRow(
         state = listState,
-        modifier = Modifier.fillMaxSize()
+        //modifier = Modifier.fillMaxSize(),
+        horizontalArrangement = Arrangement.Center
     ) {
         itemsIndexed(chapters) { index, (title, text) ->
             ChapterPage(title, text, onSearch, onBack)
@@ -86,13 +117,14 @@ fun ChapterPage(
 ) {
     Box(modifier = Modifier.fillMaxSize()){
         Column(
-            modifier = Modifier.fillMaxSize().padding(16.dp).verticalScroll(rememberScrollState())
+            modifier = Modifier.fillMaxHeight().fillMaxWidth().padding(16.dp).verticalScroll(rememberScrollState())
         ) {
             Button(onClick = onSearch) { Text("Search")}
             Spacer(Modifier.height(16.dp))
             Text(text = title, fontSize = 30.sp, fontWeight = FontWeight.Bold, lineHeight = 34.sp, modifier = Modifier.padding(bottom = 12.dp))
             Spacer(Modifier.height(12.dp))
-            Text(text = content, fontSize = 18.sp)
+            //val cleanContent = content.replace(Regex("\\s+"), " ").trim()
+            Text(text = content.trimIndent(), fontSize = 18.sp, modifier = Modifier.fillMaxWidth(), lineHeight = 26.sp)
         }
         FloatingActionButton(onClick = onBack,
             modifier = Modifier
@@ -104,4 +136,3 @@ fun ChapterPage(
         }
     }
 }
-
