@@ -53,7 +53,6 @@ fun TableOfContentsScreen(
         ) {
             Text(
                 text = stringResource(R.string.table_of_contents),
-                style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(bottom = 12.dp)
             )
 
@@ -71,7 +70,14 @@ fun TableOfContentsScreen(
             }
         }
 
-
+        if (isImmersive) {
+            Text(
+                text = stringResource(R.string.tap_anywhere_to_exit_fullscreen),
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(8.dp)
+            )
+        }
     }
 
 }
