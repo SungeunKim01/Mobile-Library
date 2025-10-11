@@ -74,7 +74,7 @@ fun ChapterPage(
     content: String,
     onSearch: () -> Unit
 ) {
-    Button(onClick = onSearch) { Text("Search") }
+    Button(onClick = onSearch) { Text("Search")}
     Column(
         modifier = Modifier
             .fillMaxSize()
