@@ -10,10 +10,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.example.mobile_dev_project.R
 
 @Composable
 fun TableOfContentsScreen(
@@ -38,21 +40,35 @@ fun TableOfContentsScreen(
             windowInsetsController.show(WindowInsetsCompat.Type.systemBars())
         }
     }
-    LazyColumn(
+    Box(
         modifier = Modifier
             .fillMaxSize()
+            .clickable { toggleImmersiveMode() }
             .padding(16.dp)
-    ){
-        items(chapters.size) { chapter ->
-            Row(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Column(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .fillMaxWidth()
+        ) {
+            Text(
+                text = stringResource(R.string.table_of_contents),
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.padding(bottom = 12.dp)
+            )
+
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Button(onClick = {}) {
-                    Text(text = chapters.first())
+                items(chapters) { chapter ->
+                    Button(
+                        onClick = { onChapterSelected(chapter) },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(text = chapter)
+                    }
                 }
             }
-            Spacer(Modifier.height(8.dp))
         }
 
 
