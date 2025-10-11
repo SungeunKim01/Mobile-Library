@@ -21,11 +21,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import com.example.mobile_dev_project.data.Chapter
@@ -35,12 +38,14 @@ import com.example.mobile_dev_project.data.Chapter
 @Composable
 fun ReadingScreen (chapters: List<Chapter>,
                    chapterIndexSelected: Int,
-                   onSearch: () -> Unit){
+                   onSearch: () -> Unit,
+                   onBack: () -> Unit){
     var currentChapterIndex by remember {mutableStateOf(chapterIndexSelected + 1)}
     ReadingPageContent(
         chapters = chapters,
         chapterIndexSelected = chapterIndexSelected,
-        onSearch = onSearch
+        onSearch = onSearch,
+        onBack = onBack
     )
 
 }
@@ -51,7 +56,8 @@ fun ReadingScreen (chapters: List<Chapter>,
 fun ReadingPageContent(
     chapters: List<Chapter>,
     chapterIndexSelected: Int,
-    onSearch: () -> Unit
+    onSearch: () -> Unit,
+    onBack: () -> Unit
 ) {
     val listState = rememberLazyListState()
 
@@ -64,28 +70,39 @@ fun ReadingPageContent(
         modifier = Modifier.fillMaxSize()
     ) {
         itemsIndexed(chapters) { index, (title, text) ->
-            ChapterPage(title, text, onSearch)
+            ChapterPage(title, text, onSearch, onBack)
         }
     }
 }
 
+//for the floating action btn
+//https://developer.android.com/develop/ui/compose/components/fab
 @Composable
 fun ChapterPage(
     title: String,
     content: String,
-    onSearch: () -> Unit
+    onSearch: () -> Unit,
+    onBack: () -> Unit
 ) {
     Button(onClick = onSearch) { Text("Search")}
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .verticalScroll(rememberScrollState())
+        modifier = Modifier.fillMaxSize().padding(16.dp).verticalScroll(rememberScrollState())
     ) {
         Spacer(Modifier.height(16.dp))
-        Text(text = title, fontSize = 24.sp, fontWeight = FontWeight.Bold)
+        Text(text = title, fontSize = 30.sp, fontWeight = FontWeight.Bold, lineHeight = 34.sp, modifier = Modifier.padding(bottom = 12.dp))
         Spacer(Modifier.height(12.dp))
         Text(text = content, fontSize = 18.sp)
+        Box(modifier = Modifier.fillMaxSize().padding(horizontal = 24.dp, vertical = 16.dp)
+        ) {
+            FloatingActionButton(onClick = onBack,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(24.dp),
+                elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 6.dp)
+            ) {
+                Text("←")
+            }
+        }
     }
 }
 
