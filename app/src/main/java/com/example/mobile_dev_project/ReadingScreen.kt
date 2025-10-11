@@ -84,24 +84,23 @@ fun ChapterPage(
     onSearch: () -> Unit,
     onBack: () -> Unit
 ) {
-    Button(onClick = onSearch) { Text("Search")}
-    Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp).verticalScroll(rememberScrollState())
-    ) {
-        Spacer(Modifier.height(16.dp))
-        Text(text = title, fontSize = 30.sp, fontWeight = FontWeight.Bold, lineHeight = 34.sp, modifier = Modifier.padding(bottom = 12.dp))
-        Spacer(Modifier.height(12.dp))
-        Text(text = content, fontSize = 18.sp)
-        Box(modifier = Modifier.fillMaxSize().padding(horizontal = 24.dp, vertical = 16.dp)
+    Box(modifier = Modifier.fillMaxSize()){
+        Column(
+            modifier = Modifier.fillMaxSize().padding(16.dp).verticalScroll(rememberScrollState())
         ) {
-            FloatingActionButton(onClick = onBack,
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(24.dp),
-                elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 6.dp)
-            ) {
-                Text("←")
-            }
+            Button(onClick = onSearch) { Text("Search")}
+            Spacer(Modifier.height(16.dp))
+            Text(text = title, fontSize = 30.sp, fontWeight = FontWeight.Bold, lineHeight = 34.sp, modifier = Modifier.padding(bottom = 12.dp))
+            Spacer(Modifier.height(12.dp))
+            Text(text = content, fontSize = 18.sp)
+        }
+        FloatingActionButton(onClick = onBack,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(24.dp),
+            elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 6.dp)
+        ) {
+            Text("←")
         }
     }
 }
