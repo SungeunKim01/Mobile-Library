@@ -28,14 +28,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import com.example.mobile_dev_project.data.Chapter
 
 
 //pairs: https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-pair/
 @Composable
-fun ReadingScreen (chapters: List<Pair<String, String>>,
+fun ReadingScreen (chapters: List<Chapter>,
                    chapterIndexSelected: Int,
                    onSearch: () -> Unit){
-    var currentChapterIndex by remember {mutableStateOf(chapterIndexSelected)}
+    var currentChapterIndex by remember {mutableStateOf(chapterIndexSelected + 1)}
     ReadingPageContent(
         chapters = chapters,
         chapterIndexSelected = chapterIndexSelected,
@@ -48,7 +49,7 @@ fun ReadingScreen (chapters: List<Pair<String, String>>,
 //https://developer.android.com/develop/ui/compose/lists
 @Composable
 fun ReadingPageContent(
-    chapters: List<Pair<String, String>>,
+    chapters: List<Chapter>,
     chapterIndexSelected: Int,
     onSearch: () -> Unit
 ) {
