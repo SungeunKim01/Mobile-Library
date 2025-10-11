@@ -21,6 +21,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -120,12 +121,27 @@ fun ChapterPage(
         Column(
             modifier = Modifier.fillMaxHeight().fillMaxWidth().padding(16.dp).verticalScroll(rememberScrollState())
         ) {
-            Button(onClick = onSearch) { Text(text = stringResource(R.string.search_btn))}
-            Spacer(Modifier.height(16.dp))
-            Text(text = title, fontSize = 30.sp, fontWeight = FontWeight.Bold, lineHeight = 34.sp, modifier = Modifier.padding(bottom = 12.dp))
-            Spacer(Modifier.height(12.dp))
-            //val cleanContent = content.replace(Regex("\\s+"), " ").trim()
-            Text(text = content.trimIndent(), fontSize = 18.sp, modifier = Modifier.fillMaxWidth(), lineHeight = 26.sp)
+            Column(
+                modifier = Modifier.widthIn(max = 400.dp)
+            ) {
+                Button(onClick = onSearch) { Text(text = stringResource(R.string.search_btn)) }
+                Spacer(Modifier.height(16.dp))
+                Text(
+                    text = title,
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.Bold,
+                    lineHeight = 34.sp,
+                    modifier = Modifier.padding(bottom = 12.dp)
+                )
+                Spacer(Modifier.height(12.dp))
+                //val cleanContent = content.replace(Regex("\\s+"), " ").trim()
+                Text(
+                    text = content.trimIndent(),
+                    fontSize = 18.sp,
+                    modifier = Modifier.fillMaxWidth(),
+                    lineHeight = 26.sp
+                )
+            }
         }
         FloatingActionButton(onClick = onBack,
             modifier = Modifier
