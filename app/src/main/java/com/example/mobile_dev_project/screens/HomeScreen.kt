@@ -22,6 +22,15 @@ import androidx.compose.ui.unit.dp
 import com.example.mobile_dev_project.R
 import com.example.mobile_dev_project.ui.theme.MobileDevProjectTheme
 
+//Temporary until we actually add books and dataclass
+data class Book(val title: String, val coverId: Int, val lastAccess: String)
+//List of books examples
+val exampleBooks = listOf(
+    Book("1", 1, "Oct 14, 2025"),
+    Book("2", 2, "Oct 13, 2023"),
+    Book("3", 3, "Oct 12, 2024"),
+    Book("4", 4, "Oct 11, 2022")
+)
 @Composable
 fun HomeScreen() {
     Column(
