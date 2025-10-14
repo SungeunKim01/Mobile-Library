@@ -49,7 +49,7 @@ dependencies {
     implementation("androidx.compose.foundation:foundation")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.3")
     implementation("org.jsoup:jsoup:1.21.2")
-
+    implementation("androidx.compose.ui:ui-text-google-fonts:1.6.8")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
