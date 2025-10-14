@@ -109,6 +109,13 @@ fun Book(book: Book){
         Text(text = "Last Used: ${book.lastAccess}")
     }
 }
+//Waiting till we start implementing eveything together
+//@Composable
+//fun DownloadBookButton(){
+//    Button(onClick ={}) {
+//        Text("Add New Book")
+//    }
+//}
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
