@@ -11,8 +11,11 @@
     <string name="search_text">Search within the current book</string>
     <string name="no_results">No matches</string>
     <string name="results_fmt">%1$d results</string>
-    
+
     <string name="cancel">Cancel</string>
 
->>>>>>> app/src/main/res/values/strings.xml
+
+    <string name="search_btn">search</string>
+    <string name="back_btn">←</string>
+
 </resources>
