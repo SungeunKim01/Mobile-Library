@@ -16,3 +16,26 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import com.example.mobile_dev_project.R
+
+@Composable
+private fun highlight(text: String, query: String): AnnotatedString {
+    if (query.isBlank()) return AnnotatedString(text)
+    val lower = text.lowercase()
+    val q = query.lowercase()
+    var start = 0
+
+    return buildAnnotatedString {
+        while (true) {
+            val i = lower.indexOf(q, start)
+            if (i < 0) {
+                append(text.substring(start))
+                break
+            }
+            append(text.substring(start, i))
+            withStyle(SpanStyle(color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)) {
+                append(text.substring(i, i + q.length))
+            }
+            start = i + q.length
+        }
+    }
+}
