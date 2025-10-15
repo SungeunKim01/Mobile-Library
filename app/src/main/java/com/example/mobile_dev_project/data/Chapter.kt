@@ -13,6 +13,11 @@ val mockChapters = listOf(
 martch 5 1965
 
 Dr. Strauss says I should write down what I think and remember. He says it’s like keeping a diary. I hope they use me for the experiment. Miss Kinnian says maybe they can make me smart. I want to be smart. My name is Charlie Gordon. I am 37 years old and 2 weeks ago was my brithday. I have nuthing more to rite now so I will close for today
+
+Dr. Strauss says I should write down what I think and remember. He says it’s like keeping a diary. I hope they use me for the experiment. Miss Kinnian says maybe they can make me smart. I want to be smart. My name is Charlie Gordon. I am 37 years old and 2 weeks ago was my brithday. I have nuthing more to rite now so I will close for today
+
+Dr. Strauss says I should write down what I think and remember. He says it’s like keeping a diary. I hope they use me for the experiment. Miss Kinnian says maybe they can make me smart. I want to be smart. My name is Charlie Gordon. I am 37 years old and 2 weeks ago was my brithday. I have nuthing more to rite now so I will close for today
+
 """.trimIndent()
     ),
     Chapter(
