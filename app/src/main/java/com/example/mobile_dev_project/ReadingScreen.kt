@@ -3,7 +3,6 @@ package com.example.mobile_dev_project
 import android.app.Activity
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,14 +13,14 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.material3.Button
 import androidx.compose.runtime.Composable
+import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -34,7 +33,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -42,6 +40,9 @@ import androidx.core.view.WindowInsetsControllerCompat
 import com.example.mobile_dev_project.data.Chapter
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.text.style.TextAlign
 
 //pairs: https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-pair/
 @Composable
@@ -92,18 +93,27 @@ fun ReadingPageContent(
     modifier : Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
-
     LaunchedEffect(chapterIndexSelected) {
         listState.scrollToItem(chapterIndexSelected)
     }
-
-    LazyRow(
-        state = listState,
-        //modifier = Modifier.fillMaxSize(),
-        horizontalArrangement = Arrangement.Center
+    Surface(
+        color = MaterialTheme.colorScheme.surface,
+        tonalElevation = 2.dp,
+        modifier = Modifier.fillMaxSize()
     ) {
-        itemsIndexed(chapters) { index, (title, text) ->
-            ChapterPage(title, text, onSearch, onBack)
+        LazyRow(
+            state = listState,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            itemsIndexed(chapters) { index, (title, text) ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                ) {
+                    ChapterPage(title, text, onSearch, onBack)
+                }
+            }
         }
     }
 }
@@ -117,39 +127,57 @@ fun ChapterPage(
     onSearch: () -> Unit,
     onBack: () -> Unit
 ) {
-    Box(modifier = Modifier.fillMaxSize()){
+    Box(modifier = Modifier.fillMaxSize()) {
         Column(
-            modifier = Modifier.fillMaxHeight().fillMaxWidth().padding(16.dp).verticalScroll(rememberScrollState())
+            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 60.dp).verticalScroll(rememberScrollState())
         ) {
-            Column(
-                modifier = Modifier.widthIn(max = 400.dp)
-            ) {
-                Button(onClick = onSearch) { Text(text = stringResource(R.string.search_btn)) }
-                Spacer(Modifier.height(16.dp))
-                Text(
-                    text = title,
-                    fontSize = 30.sp,
-                    fontWeight = FontWeight.Bold,
-                    lineHeight = 34.sp,
-                    modifier = Modifier.padding(bottom = 12.dp)
-                )
-                Spacer(Modifier.height(12.dp))
-                //val cleanContent = content.replace(Regex("\\s+"), " ").trim()
-                Text(
-                    text = content.trimIndent(),
-                    fontSize = 18.sp,
-                    modifier = Modifier.fillMaxWidth(),
-                    lineHeight = 26.sp
-                )
-            }
+            SearchButton(onSearch)
+            Spacer(Modifier.height(16.dp))
+            Text(text = title,
+                fontSize = 45.sp,
+                fontWeight = FontWeight.Bold,
+                lineHeight = 34.sp,
+                modifier = Modifier.padding(bottom = 16.dp),
+                textAlign = TextAlign.Center
+            )
+            ChapterContent(content)
         }
         FloatingActionButton(onClick = onBack,
             modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(24.dp),
+                .padding(24.dp).align(Alignment.BottomEnd),
             elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 6.dp)
         ) {
-            Text(text =stringResource(R.string.back_btn))
+            Text(text = stringResource(R.string.back_btn), fontSize = 20.sp)
         }
     }
+}
+
+@Composable
+fun ChapterContent(content : String){
+    Column(modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp - 20.dp)){
+        Text(text = content,
+            fontSize = 18.sp,
+            modifier = Modifier.fillMaxWidth(),
+            lineHeight = 26.sp
+        )
+    }
+}
+
+
+@Composable
+fun SearchButton(onSearch: () -> Unit, modifier: Modifier = Modifier){
+    Box(modifier = Modifier.fillMaxSize()) {
+        Surface(
+            tonalElevation = 8.dp,
+            shape = MaterialTheme.shapes.medium
+        ) {
+            Button(
+                onClick = onSearch,
+                modifier = modifier
+            ) {
+                Text(text = stringResource(R.string.search_btn))
+            }
+        }
+    }
+
 }
