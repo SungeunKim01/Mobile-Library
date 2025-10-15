@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Mobile-Dev-Project</string>
+    <string name="tap_anywhere_to_exit_fullscreen">Tap anywhere to exit fullscreen</string>
+    <string name="table_of_contents">Table of Contents</string>
 
     <string name="download_title">Download Book</string>
     <string name="download_url">Enter book URL</string>
@@ -12,4 +14,5 @@
     
     <string name="cancel">Cancel</string>
 
+>>>>>>> app/src/main/res/values/strings.xml
 </resources>
