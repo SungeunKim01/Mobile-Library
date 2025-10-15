@@ -139,6 +139,9 @@ private fun highlight(text: String, query: String): AnnotatedString {
     val q = query.lowercase()
     var start = 0
 
+    val bg = MaterialTheme.colorScheme.onSurfaceVariant
+    val pColour = MaterialTheme.colorScheme.onPrimary
+
     return buildAnnotatedString {
         while (true) {
             val i = lower.indexOf(q, start)
@@ -147,7 +150,13 @@ private fun highlight(text: String, query: String): AnnotatedString {
                 break
             }
             append(text.substring(start, i))
-            withStyle(SpanStyle(color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)) {
+            withStyle(
+                SpanStyle(
+                    background = bg,
+                    fontWeight = FontWeight.Bold,
+                    color = pColour
+                )
+            ) {
                 append(text.substring(i, i + q.length))
             }
             start = i + q.length
