@@ -72,8 +72,40 @@ fun SearchScreen(
                 }
             )
         }
-    ) {
+    ) {inner ->
+        Column(
+            modifier = modifier
+                .padding(inner)
+                .padding(horizontal = pad, vertical = pad)
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(pad)
+        ) {
+            OutlinedTextField(
+                value = query,
+                onValueChange = { query = it },
+                shape = MaterialTheme.shapes.medium,
+                singleLine = true,
+                label = { Text(stringResource(R.string.search_title)) },
+                placeholder = { Text(stringResource(R.string.search_text)) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = dimensionResource(R.dimen.field_height))
+            )
 
+            val countText =
+                if (matches.isEmpty() && query.isNotBlank()) {
+                    stringResource(R.string.no_results)
+                }
+            else {
+                    stringResource(R.string.results_fmt, matches.size)
+                }
+
+            Text(
+                text = countText,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
     }
 }
 
