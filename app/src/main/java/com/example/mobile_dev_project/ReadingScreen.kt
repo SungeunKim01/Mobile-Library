@@ -144,7 +144,7 @@ fun ChapterPage(
         }
         FloatingActionButton(onClick = onBack,
             modifier = Modifier
-                .padding(24.dp).align(Alignment.BottomEnd),
+                .padding(bottom= 64.dp, end=24.dp).align(Alignment.BottomEnd),
             elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 6.dp)
         ) {
             Text(text = stringResource(R.string.back_btn), fontSize = 20.sp)
