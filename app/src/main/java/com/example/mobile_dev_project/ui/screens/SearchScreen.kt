@@ -72,7 +72,7 @@ fun SearchScreen(
                 }
             )
         }
-    ) {inner ->
+    ) { inner ->
         Column(
             modifier = modifier
                 .padding(inner)
@@ -92,19 +92,42 @@ fun SearchScreen(
                     .heightIn(min = dimensionResource(R.dimen.field_height))
             )
 
-            val countText =
-                if (matches.isEmpty() && query.isNotBlank()) {
-                    stringResource(R.string.no_results)
-                }
-            else {
-                    stringResource(R.string.results_fmt, matches.size)
-                }
+            val countText = if (matches.isEmpty() && query.isNotBlank())
+                stringResource(R.string.no_results)
+            else
+                stringResource(R.string.results_fmt, matches.size)
 
             Text(
                 text = countText,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+
+            // Build highlighted text inside composable items
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.space_sm)),
+                modifier = Modifier.weight(1f)
+            ) {
+                itemsIndexed(matches, key = { idx, _ -> idx }) { idx, (_, paragraph) ->
+                    // composable call here
+                    val annotated: AnnotatedString = highlight(paragraph, query)
+                    ElevatedCard(
+                        elevation = CardDefaults.elevatedCardElevation(
+                            defaultElevation = dimensionResource(R.dimen.card_elevation)
+                        )
+                    ) {
+                        Column(Modifier.padding(pad)) {
+                            Text(
+                                text = "Match ${idx + 1}",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(Modifier.height(dimensionResource(R.dimen.space_xs)))
+                            Text(text = annotated, style = MaterialTheme.typography.bodyLarge)
+                        }
+                    }
+                }
+            }
         }
     }
 }
