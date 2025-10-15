@@ -24,7 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mobile_dev_project.R
-import com.example.mobile_dev_project.ui.theme.MobileDevProjectTheme
+import com.example.mobile_dev_project.ui.theme.AppTheme
 
 
 
@@ -112,7 +112,7 @@ fun Book(book: Book){
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
-    MobileDevProjectTheme {
+    AppTheme {
         HomeScreen()
     }
 }
