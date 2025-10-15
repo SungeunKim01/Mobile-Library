@@ -2,6 +2,7 @@ package com.example.mobile_dev_project.ui.screens
 
 import androidx.compose.material3.Button
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mobile_dev_project.R
 import com.example.mobile_dev_project.ui.theme.MobileDevProjectTheme
+import androidx.compose.material3.ButtonDefaults
 
 
 
@@ -36,6 +38,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel = viewModel(),
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.secondary)
             .padding(16.dp)
     ) {
         Row(
@@ -110,7 +113,10 @@ fun Book(book: Book){
 fun DownloadBookButton(onNavigateToDownload: () -> Unit){
     Button(onClick = onNavigateToDownload,
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxWidth(),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.primary
+        )
             ) {
         Text("Add New Book")
     }
