@@ -21,7 +21,7 @@ fun AppScaffold(
     ) { innerPadding ->
         AppNavHost(
             nav = nav,
-            // here, Route.Search.route or Route.Home.route or more
+            // here, change Route.Search.route or Route.Home.route or Route.Download.route more
             startDestination = Route.Search.route,
             modifier = Modifier.padding(innerPadding)
         )

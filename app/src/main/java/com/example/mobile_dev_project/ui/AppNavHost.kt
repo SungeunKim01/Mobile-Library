@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.mobile_dev_project.nav.Route
+import com.example.mobile_dev_project.ui.screens.DownloadBookScreen
 import com.example.mobile_dev_project.ui.screens.SearchScreen
 
 /**
@@ -23,13 +24,12 @@ fun AppNavHost(
         startDestination = startDestination,
         modifier = modifier
     ) {
-        /* Download Book Screen - UI only for now for m1
+        // Download Book Screen - UI only for now for m1
         composable(Route.Download.route) {
             DownloadBookScreen(
                 onBack = { nav.popBackStack() }
             )
         }
-        */
 
         // Search Screen -UI only for now for m1
         composable(Route.Search.route) {
