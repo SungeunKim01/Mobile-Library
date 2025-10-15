@@ -2,8 +2,8 @@
     <string name="app_name">Mobile-Dev-Project</string>
 
     <string name="download_title">Download Book</string>
-    <string name="download_hint">Enter book URL</string>
-    <string name="download_action">Add to Library</string>
+    <string name="download_url">Enter book URL</string>
+    <string name="download_action">Download &amp; Add to Library</string>
     <string name="cancel">Cancel</string>
 
 </resources>
