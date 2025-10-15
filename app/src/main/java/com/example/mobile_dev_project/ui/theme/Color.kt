@@ -1,6 +1,8 @@
 package com.example.mobile_dev_project.ui.theme
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.lightColorScheme
 
 val primaryLight = Color(0xFF8F4C38)
 val onPrimaryLight = Color(0xFFFFFFFF)
