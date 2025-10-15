@@ -1,4 +1,4 @@
-package com.example.mobile_dev_project.screens
+package com.example.mobile_dev_project.ui.screens
 
 import android.app.Activity
 import androidx.compose.foundation.gestures.detectTapGestures

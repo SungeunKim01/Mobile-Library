@@ -1,4 +1,4 @@
-package com.example.mobile_dev_project.screens
+package com.example.mobile_dev_project.ui.screens
 
 import androidx.lifecycle.ViewModel
 import androidx.compose.runtime.mutableStateListOf

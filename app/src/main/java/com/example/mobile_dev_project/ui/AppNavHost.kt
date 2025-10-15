@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import com.example.mobile_dev_project.nav.Route
 import com.example.mobile_dev_project.ui.screens.DownloadBookScreen
 import com.example.mobile_dev_project.ui.screens.SearchScreen
+import com.example.mobile_dev_project.ui.screens.HomeScreen
 
 /**
  * this is centralized NavHost for the app
@@ -39,5 +40,10 @@ fun AppNavHost(
         }
 
         // Add other screens like Home, we will merge this file after we finish all the screens
+        composable(Route.Home.route) {
+            HomeScreen(
+                onNavigateToDownload = { nav.popBackStack() }
+            )
+        }
     }
 }
