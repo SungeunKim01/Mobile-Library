@@ -1,4 +1,4 @@
-package com.example.mobile_dev_project
+package com.example.mobile_dev_project.screens
 
 import android.app.Activity
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -43,6 +43,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
+import com.example.mobile_dev_project.R
 
 //pairs: https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-pair/
 @Composable
