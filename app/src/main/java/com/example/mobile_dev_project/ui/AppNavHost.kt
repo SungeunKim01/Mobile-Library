@@ -7,7 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.mobile_dev_project.nav.Route
 import com.example.mobile_dev_project.ui.screens.DownloadBookScreen
-//import com.example.mobile_dev_project.ui.screens.SearchScreen
+import com.example.mobile_dev_project.ui.screens.SearchScreen
 
 /**
  * this is centralized NavHost for the app
@@ -31,13 +31,12 @@ fun AppNavHost(
             )
         }
 
-        /* Search Screen -UI only for now for m1
+        // Search Screen -UI only for now for m1
         composable(Route.Search.route) {
             SearchScreen(
                 onBack = { nav.popBackStack() }
             )
         }
-        */
 
         // Add other screens like Home, we will merge this file after we finish all the screens
     }
