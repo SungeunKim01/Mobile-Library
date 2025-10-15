@@ -51,7 +51,7 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended")
     implementation("org.jsoup:jsoup:1.21.2")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.9.3")
-
+    implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -60,7 +60,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation ("androidx.compose.ui:ui-text-google-fonts:1.9.3") // Or the latest version
+    implementation("androidx.compose.ui:ui-text-google-fonts:1.6.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

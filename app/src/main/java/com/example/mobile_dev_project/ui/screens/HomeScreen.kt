@@ -1,6 +1,8 @@
-package com.example.mobile_dev_project.screens
+package com.example.mobile_dev_project.ui.screens
 
+import androidx.compose.material3.Button
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,14 +27,18 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mobile_dev_project.R
 import com.example.mobile_dev_project.ui.theme.MobileDevProjectTheme
+import androidx.compose.material3.ButtonDefaults
 
 
 
 @Composable
-fun HomeScreen(viewModel: HomeScreenViewModel = viewModel()) {
+fun HomeScreen(viewModel: HomeScreenViewModel = viewModel(),
+               onNavigateToDownload: () -> Unit = {}
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.secondary)
             .padding(16.dp)
     ) {
         Row(
@@ -48,6 +54,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel = viewModel()) {
 
 
         }
+        DownloadBookButton(onNavigateToDownload = onNavigateToDownload)
         Bookself(viewModel.exampleBooks)
     }
 }
@@ -102,13 +109,18 @@ fun Book(book: Book){
         Text(text = "Last Used: ${book.lastAccess}")
     }
 }
-//Waiting till we start implementing eveything together
-//@Composable
-//fun DownloadBookButton(){
-//    Button(onClick ={}) {
-//        Text("Add New Book")
-//    }
-//}
+@Composable
+fun DownloadBookButton(onNavigateToDownload: () -> Unit){
+    Button(onClick = onNavigateToDownload,
+        modifier = Modifier
+            .fillMaxWidth(),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.primary
+        )
+            ) {
+        Text("Add New Book")
+    }
+}
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {

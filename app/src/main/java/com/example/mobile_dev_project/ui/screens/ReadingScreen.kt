@@ -1,6 +1,7 @@
-package com.example.mobile_dev_project.screens
+package com.example.mobile_dev_project.ui.screens
 
 import android.app.Activity
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -45,13 +46,15 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import com.example.mobile_dev_project.R
 
-//pairs: https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-pair/
+/**
+ * Sets up the immersive mode and handles displaying the entire screen
+ */
 @Composable
 fun ReadingScreen (chapters: List<Chapter>,
                    chapterIndexSelected: Int,
                    onSearch: () -> Unit,
                    onBack: () -> Unit){
-    var currentChapterIndex by remember {mutableStateOf(chapterIndexSelected + 1)}
+    var currentChapterIndex by remember {mutableStateOf(chapterIndexSelected)}
     var isVisible by remember { mutableStateOf(true) }
     val localView = LocalView.current
     val window = (localView.context as? Activity)?.window
@@ -68,8 +71,8 @@ fun ReadingScreen (chapters: List<Chapter>,
         chapterIndexSelected = currentChapterIndex,
         onSearch = onSearch,
         onBack = onBack,
-        modifier = Modifier.pointerInput(Unit) {
-            detectTapGestures {
+        modifier = Modifier.clickable(
+            onClick = {
                 windowInsetsController?.let { controller ->
                     if (isVisible) {
                         controller.hide(WindowInsetsCompat.Type.systemBars())
@@ -79,11 +82,13 @@ fun ReadingScreen (chapters: List<Chapter>,
                     isVisible = !isVisible
                 }
             }
-        }
+        )
     )
 }
 
-
+/**
+ * Displays content of the book and handles horizontal/vertical scrolling.
+ */
 //https://developer.android.com/develop/ui/compose/lists
 @Composable
 fun ReadingPageContent(
@@ -119,6 +124,12 @@ fun ReadingPageContent(
     }
 }
 
+
+/**
+ * Displays a single chapter of the book.
+ * Display search and back button.
+ */
+
 //for the floating action btn
 //https://developer.android.com/develop/ui/compose/components/fab
 @Composable
@@ -135,7 +146,7 @@ fun ChapterPage(
             SearchButton(onSearch)
             Spacer(Modifier.height(16.dp))
             Text(text = title,
-                fontSize = 45.sp,
+                style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 lineHeight = 34.sp,
                 modifier = Modifier.padding(bottom = 16.dp),
@@ -153,6 +164,9 @@ fun ChapterPage(
     }
 }
 
+/**
+ * Displays the content of a chapter.
+ */
 @Composable
 fun ChapterContent(content : String){
     Column(modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp - 20.dp)){
@@ -164,7 +178,9 @@ fun ChapterContent(content : String){
     }
 }
 
-
+/**
+ * Displays the search button.
+ */
 @Composable
 fun SearchButton(onSearch: () -> Unit, modifier: Modifier = Modifier){
     Box(modifier = Modifier.fillMaxSize()) {

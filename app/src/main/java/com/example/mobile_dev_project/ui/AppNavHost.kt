@@ -8,6 +8,10 @@ import androidx.navigation.compose.composable
 import com.example.mobile_dev_project.nav.Route
 import com.example.mobile_dev_project.ui.screens.DownloadBookScreen
 import com.example.mobile_dev_project.ui.screens.SearchScreen
+import com.example.mobile_dev_project.ui.screens.HomeScreen
+import com.example.mobile_dev_project.ui.screens.TableOfContentsScreen
+import com.example.mobile_dev_project.ui.screens.ReadingScreen
+import com.example.mobile_dev_project.data.mockChapters
 
 /**
  * this is centralized NavHost for the app
@@ -39,5 +43,25 @@ fun AppNavHost(
         }
 
         // Add other screens like Home, we will merge this file after we finish all the screens
+        composable(Route.Home.route) {
+            HomeScreen(
+                onNavigateToDownload = { nav.popBackStack() }
+            )
+        }
+
+        composable(Route.Content.route){
+            TableOfContentsScreen(
+                onBack = { nav.popBackStack() }
+            )
+        }
+        composable(Route.Reading.route) {
+            ReadingScreen(
+                chapters = mockChapters,
+                //later, this will change depending on which chapter user clicks.
+                chapterIndexSelected = 0,
+                onSearch = { nav.navigate(Route.Search.route) },
+                onBack = { nav.popBackStack() }
+            )
+        }
     }
 }
