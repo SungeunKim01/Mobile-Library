@@ -22,21 +22,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mobile_dev_project.R
 import com.example.mobile_dev_project.ui.theme.MobileDevProjectTheme
 
-//Temporary until we actually add books and dataclass
-data class Book(val title: String, val coverId: Int, val lastAccess: String)
-//List of books examples
-val exampleBooks = listOf(
-    Book("Book 1", 1, "Oct 14, 2025"),
-    Book("Book 2", 2, "Oct 13, 2023"),
-    Book("Book 3", 3, "Oct 12, 2024"),
-    Book("Book 4", 4, "Oct 11, 2022")
-)
+
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(viewModel: HomeScreenViewModel = viewModel()) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -55,7 +48,7 @@ fun HomeScreen() {
 
 
         }
-        Bookself(exampleBooks)
+        Bookself(viewModel.exampleBooks)
     }
 }
     @Composable
