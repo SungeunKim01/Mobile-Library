@@ -1,6 +1,7 @@
 package com.example.mobile_dev_project.ui.screens
 
 import android.app.Activity
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,7 +21,8 @@ import com.example.mobile_dev_project.R
 @Composable
 fun TableOfContentsScreen(
     chapters: List<String> = listOf("Chapter 1: The Beginning", "Chapter 2: The Journey", "Chapter 3: The End"),
-    onChapterSelected: (String) -> Unit = {}
+    onChapterSelected: (String) -> Unit = {},
+    onBack: () -> Unit
 ){
     val context = LocalContext.current
     val view = LocalView.current
@@ -45,6 +47,7 @@ fun TableOfContentsScreen(
             .fillMaxSize()
             .clickable { toggleImmersiveMode() }
             .padding(16.dp)
+            .background(MaterialTheme.colorScheme.secondary)
     ) {
         Column(
             modifier = Modifier

@@ -9,6 +9,7 @@ import com.example.mobile_dev_project.nav.Route
 import com.example.mobile_dev_project.ui.screens.DownloadBookScreen
 import com.example.mobile_dev_project.ui.screens.SearchScreen
 import com.example.mobile_dev_project.ui.screens.HomeScreen
+import com.example.mobile_dev_project.ui.screens.TableOfContentsScreen
 
 /**
  * this is centralized NavHost for the app
@@ -43,6 +44,12 @@ fun AppNavHost(
         composable(Route.Home.route) {
             HomeScreen(
                 onNavigateToDownload = { nav.popBackStack() }
+            )
+        }
+
+        composable(Route.Content.route){
+            TableOfContentsScreen(
+                onBack = { nav.popBackStack() }
             )
         }
     }
