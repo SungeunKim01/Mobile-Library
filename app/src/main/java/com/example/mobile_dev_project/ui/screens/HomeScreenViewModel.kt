@@ -7,7 +7,8 @@ import androidx.compose.runtime.mutableStateListOf
 data class Book(val title: String, val coverId: Int, val lastAccess: String)
 class HomeScreenViewModel : ViewModel() {
 
-    //List of books examples
+    //Christian
+    //List of books examples This is just examples, I know that the text should be in string.xml but its not a composable, I will fix this next milestone
     val exampleBooks = mutableStateListOf(
         Book("Book 1", 1, "Oct 14, 2025"),
         Book("Book 2", 2, "Oct 13, 2023"),

@@ -2,13 +2,16 @@ package com.example.mobile_dev_project.ui
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import com.example.mobile_dev_project.R
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -36,18 +39,20 @@ fun AppScaffold(
         )
     }
 }
-
+//This code is taken from my previous lab BarCodeExample, I just tweaked it so its able to not take in icons but instead title and Route
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {
 
-    NavigationBar {
+    NavigationBar(
+        containerColor = MaterialTheme.colorScheme.tertiary
+    ) {
         val backStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = backStackEntry?.destination?.route
 
         val items = listOf(
-            NavScreen("H", null, Route.Home.route),
-            NavScreen("T", null, Route.Content.route),
-            NavScreen("S", null, Route.Search.route)
+            NavScreen(stringResource(R.string.home), null, Route.Home.route),
+            NavScreen(stringResource(R.string.table), null, Route.Content.route),
+            NavScreen(stringResource(R.string.search), null, Route.Search.route)
         )
 
         items.forEach { navItem ->

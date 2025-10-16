@@ -22,7 +22,6 @@ import com.example.mobile_dev_project.R
 import com.example.mobile_dev_project.data.mockChapters
 import com.example.mobile_dev_project.data.Chapter
 
-
 @Composable
 fun TableOfContentsScreen(
     chapters: List<Chapter> = mockChapters,
