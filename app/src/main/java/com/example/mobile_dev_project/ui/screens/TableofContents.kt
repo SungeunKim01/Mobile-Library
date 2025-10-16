@@ -24,8 +24,11 @@ import com.example.mobile_dev_project.data.Chapter
 
 @Composable
 fun TableOfContentsScreen(
+    //mock chapters for display
     chapters: List<Chapter> = mockChapters,
+    //Callback that is activated when a button is pressed
     onChapterSelected: (Chapter) -> Unit = {},
+    //Callback that is used to go back to the previous page
     onBack: () -> Unit
 )
 {
