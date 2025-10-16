@@ -16,6 +16,8 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import com.example.mobile_dev_project.R
+import androidx.compose.ui.platform.testTag
+
 
 /**
  * TextField to search within the current book
@@ -43,27 +45,19 @@ fun SearchScreen(
 
     val pad = dimensionResource(id = R.dimen.space_md)
 
-    // here, only compute raw matches in remember
-    //  so return (index, paragraph) and build the highlighted text later inside composables
-    val matches = remember(query) {
-        if (query.isBlank()) {
-            emptyList()
-        }
-        else paragraphs.mapIndexedNotNull { idx, p ->
-            if (p.contains(query, ignoreCase = true)) {
-                idx to p
-            } else {
-                null
-            }
-        }
-    }
+    // here, only compute raw matches in remember, calling findMatches pure function here.
+    val matches = remember(query) { findMatches(paragraphs, query) }
+
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(text = stringResource(R.string.search_title)) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(
+                        onClick = onBack,
+                        modifier = Modifier.testTag("BackButton")
+                    ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.cancel)
@@ -90,6 +84,8 @@ fun SearchScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .heightIn(min = dimensionResource(R.dimen.field_height))
+                    // this is for ui test
+                    .testTag("QueryField")
             )
 
             val countText = if (matches.isEmpty() && query.isNotBlank())
@@ -100,7 +96,9 @@ fun SearchScreen(
             Text(
                 text = countText,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                // this is for ui test
+                modifier = Modifier.testTag("ResultsCount")
             )
 
             // Build highlighted text inside composable items
@@ -114,7 +112,9 @@ fun SearchScreen(
                     ElevatedCard(
                         elevation = CardDefaults.elevatedCardElevation(
                             defaultElevation = dimensionResource(R.dimen.card_elevation)
-                        )
+                        ),
+                        // this is for ui test
+                        modifier = Modifier.testTag("ResultCard_$idx")
                     ) {
                         Column(Modifier.padding(pad)) {
                             Text(
@@ -161,5 +161,18 @@ private fun highlight(text: String, query: String): AnnotatedString {
             }
             start = i + q.length
         }
+    }
+}
+
+// function - no Compose/Android types, so for JVM unit tests
+//Returns (position, paragraph) pairs where the paragraph contains [query], case insensitive
+internal fun findMatches(
+    paragraphs: List<String>,
+    query: String
+): List<Pair<Int, String>> {
+    if (query.isBlank()) return emptyList()
+    val q = query.lowercase()
+    return paragraphs.mapIndexedNotNull { idx, p ->
+        if (p.lowercase().contains(q)) idx to p else null
     }
 }
