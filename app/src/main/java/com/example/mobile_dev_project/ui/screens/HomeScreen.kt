@@ -1,6 +1,8 @@
-package com.example.mobile_dev_project.screens
+package com.example.mobile_dev_project.ui.screens
 
+import androidx.compose.material3.Button
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,34 +27,41 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mobile_dev_project.R
 import com.example.mobile_dev_project.ui.theme.MobileDevProjectTheme
-
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.ui.platform.testTag
 
 
 @Composable
-fun HomeScreen(viewModel: HomeScreenViewModel = viewModel()) {
+fun HomeScreen(viewModel: HomeScreenViewModel = viewModel(),
+               onNavigateToDownload: () -> Unit = {}
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.secondary)
             .padding(16.dp)
+            .testTag("home_screen")
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            RestaurantLogo()
+            RestaurantLogo(modifier = Modifier.testTag("restaurant_logo"))
 
             Text(
                 text = "Welcome to Mobile Library",
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.testTag("title")
             )
 
 
         }
+        DownloadBookButton(onNavigateToDownload = onNavigateToDownload)
         Bookself(viewModel.exampleBooks)
     }
 }
     @Composable
-    fun RestaurantLogo(modifier: Modifier = Modifier.Companion) {
+    fun RestaurantLogo(modifier: Modifier = Modifier) {
         val image = painterResource(R.drawable.mobile_library)
         Column {
             Image(
@@ -63,7 +72,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel = viewModel()) {
                     .clip(RoundedCornerShape(16.dp))
                     .aspectRatio(1f),
 
-                contentScale = ContentScale.Companion.Crop
+                contentScale = ContentScale.Crop
             )
         }
     }
@@ -71,7 +80,8 @@ fun HomeScreen(viewModel: HomeScreenViewModel = viewModel()) {
 @Composable
 fun Bookself(books: List<Book>){
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth()
+            .testTag("bookself"),
         verticalArrangement = Arrangement.SpaceEvenly
     ){
         books.forEach {
@@ -85,7 +95,7 @@ fun Bookself(books: List<Book>){
 fun Book(book: Book){
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth().testTag("book")
     ) {
         Image(
             //This is wrong I know, but i dont have images yet for the books
@@ -96,19 +106,25 @@ fun Book(book: Book){
                 .clip(RoundedCornerShape(16.dp))
                 .aspectRatio(1f),
 
-            contentScale = ContentScale.Companion.Crop
+            contentScale = ContentScale.Crop
         )
         Spacer(modifier = Modifier.width(16.dp))
         Text(text = "Last Used: ${book.lastAccess}")
     }
 }
-//Waiting till we start implementing eveything together
-//@Composable
-//fun DownloadBookButton(){
-//    Button(onClick ={}) {
-//        Text("Add New Book")
-//    }
-//}
+@Composable
+fun DownloadBookButton(onNavigateToDownload: () -> Unit){
+    Button(onClick = onNavigateToDownload,
+        modifier = Modifier
+            .fillMaxWidth()
+            .testTag("download_button"),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.primary
+        )
+            ) {
+        Text("Add New Book")
+    }
+}
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
