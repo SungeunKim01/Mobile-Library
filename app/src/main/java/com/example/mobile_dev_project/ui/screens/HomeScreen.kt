@@ -29,8 +29,9 @@ import com.example.mobile_dev_project.R
 import com.example.mobile_dev_project.ui.theme.MobileDevProjectTheme
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 
-
+//This will add everything together and add the title of the bookApp with the Logo on the top, in typography title size
 @Composable
 fun HomeScreen(viewModel: HomeScreenViewModel = viewModel(),
                onNavigateToDownload: () -> Unit = {}
@@ -49,7 +50,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel = viewModel(),
             RestaurantLogo(modifier = Modifier.testTag("restaurant_logo"))
 
             Text(
-                text = "Welcome to Mobile Library",
+                text = stringResource(R.string.title),
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.testTag("title")
             )
@@ -60,6 +61,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel = viewModel(),
         Bookself(viewModel.exampleBooks)
     }
 }
+//This will display the Restaurant Logo on the top
     @Composable
     fun RestaurantLogo(modifier: Modifier = Modifier) {
         val image = painterResource(R.drawable.mobile_library)
@@ -76,7 +78,8 @@ fun HomeScreen(viewModel: HomeScreenViewModel = viewModel(),
             )
         }
     }
-
+//This Composable will display the books in Columns 1 by one once it is callled into Book Composable to get what each
+// book will be formated adn say and then will be added to the column
 @Composable
 fun Bookself(books: List<Book>){
     Column(
@@ -90,7 +93,8 @@ fun Bookself(books: List<Book>){
         }
     }
 }
-
+//This Composable is how each Book will be visuallized so in a row, on the left will be the book image, not finished until we add each book,
+//On the Right is the last used text
 @Composable
 fun Book(book: Book){
     Row(
@@ -109,9 +113,10 @@ fun Book(book: Book){
             contentScale = ContentScale.Crop
         )
         Spacer(modifier = Modifier.width(16.dp))
-        Text(text = "Last Used: ${book.lastAccess}")
+        Text(text = stringResource(R.string.last_use_text) + " ${book.lastAccess}")
     }
 }
+//This will be a button that will navigate to Download screen so that they can add a book
 @Composable
 fun DownloadBookButton(onNavigateToDownload: () -> Unit){
     Button(onClick = onNavigateToDownload,
@@ -122,9 +127,10 @@ fun DownloadBookButton(onNavigateToDownload: () -> Unit){
             containerColor = MaterialTheme.colorScheme.primary
         )
             ) {
-        Text("Add New Book")
+        Text(stringResource(R.string.add_book))
     }
 }
+//Just added this so that i can preeview my code without doing so by starting the app.
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {

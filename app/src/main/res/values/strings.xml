@@ -18,4 +18,10 @@
     <string name="search_btn">search</string>
     <string name="back_btn">←</string>
 
+    <string name ="home">H</string>string>
+    <string name ="table">T</string>string>
+    <string name ="search">S</string>string>
+    <string name="title">Welcome to Mobile Library</string>
+    <string name="last_use_text">Last Used:</string>string>
+    <string name="add_book">Add New Book</string>
 </resources>
