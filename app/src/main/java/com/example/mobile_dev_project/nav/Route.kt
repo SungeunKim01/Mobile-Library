@@ -5,5 +5,7 @@ sealed class Route(val route: String) {
     data object Search   : Route("search")
     data object Home : Route("Home")
     data object Content: Route("Content")
-    data object Reading: Route("Reading")
+    data object Reading: Route("reading/{chapterIndex}"){
+        fun createRoute(chapterIndex: Int): String = "reading/$chapterIndex"
+    }
 }
