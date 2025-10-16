@@ -19,21 +19,17 @@ import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.mobile_dev_project.R
+import com.example.mobile_dev_project.data.mockChapters
+import com.example.mobile_dev_project.data.Chapter
+
 
 @Composable
 fun TableOfContentsScreen(
-    // List of chapters to display; default values provided
-    //Until we have a book class and list
-    chapters: List<String> = listOf(
-        "Chapter 1: The Beginning",
-        "Chapter 2: The Journey",
-        "Chapter 3: The End"
-    ),
-    // Callback triggered when a chapter is selected
-    onChapterSelected: (String) -> Unit = {},
-    // Callback triggered when the back button is pressed
+    chapters: List<Chapter> = mockChapters,
+    onChapterSelected: (Chapter) -> Unit = {},
     onBack: () -> Unit
-) {
+)
+{
     // --- Context and window setup for immersive mode ---
     val context = LocalContext.current
     val view = LocalView.current
@@ -98,7 +94,7 @@ fun TableOfContentsScreen(
                             .fillMaxWidth()
                             .testTag("chapter_button_$chapter")
                     ) {
-                        Text(text = chapter)
+                        Text(text = chapter.title)
                     }
                 }
             }
