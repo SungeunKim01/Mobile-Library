@@ -5,28 +5,37 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * Unit Test -JVM, this is fast and need no emulator
- * tests the pure logic used by DownloadBookScreen's Add button: canEnableAdd(url)
- * non blank => enabled, so matches my current implementation
+ * hvm unit tests for DownloadBookViewModel
+ * this verifies the "Add to Library" enable rule (canAdd) reacts to url changes
  */
 
 class DownloadBookScreenUnitTest {
 
     @Test
-    fun blank_is_rejected() {
-        assertFalse(canEnableAdd(""))
+    fun canAdd_is_false_initially_and_for_blank_or_whitespace() {
+        val vm = DownloadBookViewModel()
+
+        // initial state
+        assertFalse(vm.canAdd)
+
+        // tests blank
+        vm.onUrlChanged("")
+        assertFalse(vm.canAdd)
+
+        //tes whitespace
+        vm.onUrlChanged("   \t\n")
+        assertFalse(vm.canAdd)
     }
 
     @Test
-    fun whitespace_only_is_rejected() {
-        assertFalse(canEnableAdd(" "))
-        assertFalse(canEnableAdd("   \t\n"))
-    }
+    fun canAdd_becomes_true_when_url_is_non_blank() {
+        val vm = DownloadBookViewModel()
 
-    @Test
-    fun any_non_blank_is_accepted() {
-        assertTrue(canEnableAdd("x"))
-        assertTrue(canEnableAdd("https://example.org/book.html"))
-        assertTrue(canEnableAdd("  http://gutenberg.org/ebooks/1342.html  "))
+        vm.onUrlChanged("https://ex.com/book.html")
+        assertTrue(vm.canAdd)
+
+        // still true with leading or trailing spaces, current M1 rule is "non blank"
+        vm.onUrlChanged("   http://exam.com/ebooks/ch1.html   ")
+        assertTrue(vm.canAdd)
     }
 }
