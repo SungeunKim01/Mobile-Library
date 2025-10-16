@@ -18,6 +18,9 @@ class ReadingScreenKtTest {
     @get: Rule
     val composeTestRule = createComposeRule()
 
+    /**
+     * Set up the compose rule with the ReadingScreen composable
+     */
     @Before
     fun setUp() {
         composeTestRule.setContent{
@@ -27,23 +30,38 @@ class ReadingScreenKtTest {
             }
         }
     }
+
+    /**
+     * Test that the search button is displayed and that it is clickable
+     */
     @Test
     fun searchButtonIsDisplayed(){
         composeTestRule.onNodeWithTag("search_btn").assertExists().assertIsDisplayed()
+        composeTestRule.onNodeWithTag("search_btn").performClick()
 
     }
 
+    /**
+     * Test that the back button is displayed and that it is clickable
+     */
     @Test
     fun backButtonIsDisplayed(){
         composeTestRule.onNodeWithTag("back_btn").assertExists().assertIsDisplayed()
+        composeTestRule.onNodeWithTag("back_btn").performClick()
     }
 
+    /**
+     * Test that the chapter title is displayed
+     */
     @Test
     fun chapterTitleIsDisplayed(){
         composeTestRule.onNodeWithTag("title").assertExists().assertIsDisplayed()
 
     }
 
+    /**
+     * Test that the chapter content is displayed
+     */
     @Test
     fun chapterContentIsDisplayed(){
         composeTestRule.onNodeWithTag("content").assertExists().assertIsDisplayed()
