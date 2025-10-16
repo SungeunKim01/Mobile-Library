@@ -52,19 +52,12 @@ fun TableOfContentsScreen(
             .background(MaterialTheme.colorScheme.secondary)
             .testTag("toc_box")
     ) {
-        FloatingActionButton(onClick = onBack,
-            modifier = Modifier
-                .padding(bottom= 64.dp, end=24.dp)
-                .align(Alignment.TopStart),
-            elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 6.dp)
-        ) {
-            Text(text = stringResource(R.string.back_btn), fontSize = 20.sp)
-        }
         Column(
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .fillMaxWidth()
         ) {
+
             Text(
                 text = stringResource(R.string.table_of_contents),
                 modifier = Modifier.padding(bottom = 12.dp)
@@ -86,6 +79,16 @@ fun TableOfContentsScreen(
                     }
                 }
             }
+
+        }
+
+        FloatingActionButton(onClick = onBack,
+            modifier = Modifier
+                .padding(bottom= 64.dp, end=24.dp)
+                .align(Alignment.BottomEnd),
+            elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 6.dp)
+        ) {
+            Text(text = stringResource(R.string.back_btn), fontSize = 20.sp)
         }
 
         if (isImmersive) {
