@@ -1,6 +1,7 @@
 package com.example.mobile_dev_project.ui.screens
 
 import android.app.Activity
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -60,7 +61,7 @@ fun ReadingScreen (chapters: List<Chapter>,
     val windowInsetsController = remember {
         WindowCompat.getInsetsController(window, localView)
     }
-    Box(modifier = Modifier.clickable(onClick = {
+    Box(modifier = Modifier.background(MaterialTheme.colorScheme.primary).clickable(onClick = {
         isVisible = !isVisible
         if (isVisible) {
             windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
@@ -92,25 +93,21 @@ fun ReadingPageContent(
     LaunchedEffect(chapterIndexSelected) {
         listState.scrollToItem(chapterIndexSelected)
     }
-    Surface(
-        color = MaterialTheme.colorScheme.surface,
-        tonalElevation = 2.dp,
-        modifier = Modifier.fillMaxSize()
+
+    LazyRow(
+        state = listState,
+        horizontalArrangement = Arrangement.Center
     ) {
-        LazyRow(
-            state = listState,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            itemsIndexed(chapters) { index, (title, text) ->
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight()
-                ) {
-                    ChapterPage(title, text, onSearch, onBack)
-                }
+        itemsIndexed(chapters) { index, (title, text) ->
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+            ) {
+                ChapterPage(title, text, onSearch, onBack)
             }
         }
+
     }
 }
 
