@@ -31,7 +31,7 @@ fun TableOfContentsScreen(
     val window = (view.context as Activity).window
     val windowInsetsController = remember {
         WindowCompat.getInsetsController(window, view)
-    }g
+    }
 
     var isImmersive by remember { mutableStateOf(false) }
 
