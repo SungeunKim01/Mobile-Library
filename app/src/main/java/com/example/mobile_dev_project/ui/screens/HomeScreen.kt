@@ -51,7 +51,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel = viewModel(),
             Text(
                 text = "Welcome to Mobile Library",
                 style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.testTag("welcome_text")
+                modifier = Modifier.testTag("title")
             )
 
 
@@ -80,7 +80,8 @@ fun HomeScreen(viewModel: HomeScreenViewModel = viewModel(),
 @Composable
 fun Bookself(books: List<Book>){
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth()
+            .testTag("bookself"),
         verticalArrangement = Arrangement.SpaceEvenly
     ){
         books.forEach {
@@ -94,7 +95,7 @@ fun Bookself(books: List<Book>){
 fun Book(book: Book){
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth().testTag("book")
     ) {
         Image(
             //This is wrong I know, but i dont have images yet for the books
