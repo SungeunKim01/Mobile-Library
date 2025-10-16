@@ -4,4 +4,6 @@ sealed class Route(val route: String) {
     data object Download : Route("download")
     data object Search   : Route("search")
     data object Home : Route("Home")
+    data object Content: Route("Content")
+    data object Reading: Route("Reading")
 }
