@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
@@ -48,6 +49,7 @@ fun TableOfContentsScreen(
             .clickable { toggleImmersiveMode() }
             .padding(16.dp)
             .background(MaterialTheme.colorScheme.secondary)
+            .testTag("toc_box")
     ) {
         Column(
             modifier = Modifier
@@ -57,15 +59,18 @@ fun TableOfContentsScreen(
             Text(
                 text = stringResource(R.string.table_of_contents),
                 modifier = Modifier.padding(bottom = 12.dp)
+                    .testTag("toc_title")
             )
 
             LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.testTag("toc_list")
             ) {
                 items(chapters) { chapter ->
                     Button(
                         onClick = { onChapterSelected(chapter) },
                         modifier = Modifier.fillMaxWidth()
+                            .testTag("chapter_button_$chapter")
                     ) {
                         Text(text = chapter)
                     }
@@ -79,6 +84,7 @@ fun TableOfContentsScreen(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(8.dp)
+                    .testTag("fullscreen_text")
             )
         }
     }
