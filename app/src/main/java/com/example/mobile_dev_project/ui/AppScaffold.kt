@@ -22,7 +22,7 @@ fun AppScaffold(
         AppNavHost(
             nav = nav,
             // here, change Route.Search.route or Route.Home.route or Route.Download.route more
-            startDestination = Route.Search.route,
+            startDestination = Route.Download.route,
             modifier = Modifier.padding(innerPadding)
         )
     }

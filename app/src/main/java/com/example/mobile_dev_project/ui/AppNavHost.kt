@@ -12,11 +12,25 @@ import com.example.mobile_dev_project.ui.screens.HomeScreen
 import com.example.mobile_dev_project.ui.screens.TableOfContentsScreen
 import com.example.mobile_dev_project.ui.screens.ReadingScreen
 import com.example.mobile_dev_project.data.mockChapters
+import androidx.navigation.NavGraph.Companion.findStartDestination
+
 
 /**
  * this is centralized NavHost for the app
- * I'll put all my routes here so BottomBar / Rail / Drawer scaffolds can reuse it
+ * I'll put all my routes here so TopBar scaffolds can reuse it
  */
+
+// helper that pops if possible, otherwise navigates to Home as singleTop
+private fun NavHostController.safePopOrNavigateHome() {
+    val didPop = popBackStack()
+    if (!didPop) {
+        navigate(Route.Home.route) {
+            popUpTo(graph.findStartDestination().id) { inclusive = false }
+            launchSingleTop = true
+        }
+    }
+}
+
 @Composable
 fun AppNavHost(
     nav: NavHostController,
@@ -31,14 +45,14 @@ fun AppNavHost(
         // Download Book Screen - UI only for now for m1
         composable(Route.Download.route) {
             DownloadBookScreen(
-                onBack = { nav.popBackStack() }
+                onBack = { nav.safePopOrNavigateHome() }
             )
         }
 
         // Search Screen -UI only for now for m1
         composable(Route.Search.route) {
             SearchScreen(
-                onBack = { nav.popBackStack() }
+                onBack = { nav.safePopOrNavigateHome() }
             )
         }
 
