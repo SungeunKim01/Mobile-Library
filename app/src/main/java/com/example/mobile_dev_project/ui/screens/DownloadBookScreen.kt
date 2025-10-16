@@ -11,6 +11,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.VisualTransformation
 import com.example.mobile_dev_project.R
 import androidx.compose.ui.platform.testTag
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 
 /**
@@ -23,10 +24,9 @@ import androidx.compose.ui.platform.testTag
 @Composable
 fun DownloadBookScreen(
     onBack: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    vm: DownloadBookViewModel = viewModel()
 ) {
-    var url by remember { mutableStateOf("") }
-
     val pad = dimensionResource(id = R.dimen.space_md)
 
     Scaffold(
@@ -52,8 +52,8 @@ fun DownloadBookScreen(
             verticalArrangement = Arrangement.spacedBy(pad)
         ) {
             OutlinedTextField(
-                value = url,
-                onValueChange = { url = it },
+                value = vm.url, //read from vm
+                onValueChange = vm::onUrlChanged, //event to vm
                 shape = MaterialTheme.shapes.medium,
                 singleLine = true,
                 label = { Text(stringResource(R.string.download_title)) },
@@ -66,8 +66,9 @@ fun DownloadBookScreen(
             )
 
             Button(
-                onClick = { /* later milestone */ },
-                enabled = canEnableAdd(url),
+                onClick = { vm.onAddClicked() },
+                //here derived state from vm
+                enabled = vm.canAdd,
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("AddButton")
@@ -86,6 +87,3 @@ fun DownloadBookScreen(
         }
     }
 }
-
-// unit testable rule that mirrors current behavior - non empty URL enables the button
-internal fun canEnableAdd(url: String): Boolean = url.isNotBlank()
