@@ -67,7 +67,7 @@ fun DownloadBookScreen(
 
             Button(
                 onClick = { /* later milestone */ },
-                enabled = url.isNotBlank(),
+                enabled = canEnableAdd(url),
                 modifier = Modifier
                     .fillMaxWidth()
                     .testTag("AddButton")
@@ -86,3 +86,6 @@ fun DownloadBookScreen(
         }
     }
 }
+
+// unit testable rule that mirrors current behavior - non empty URL enables the button
+internal fun canEnableAdd(url: String): Boolean = url.isNotBlank()
