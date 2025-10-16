@@ -10,6 +10,8 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.VisualTransformation
 import com.example.mobile_dev_project.R
+import androidx.compose.ui.platform.testTag
+
 
 /**
  * TextField to enter a book URL
@@ -32,7 +34,10 @@ fun DownloadBookScreen(
             TopAppBar(
                 title = { Text(text = stringResource(R.string.download_title)) },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(
+                        onClick = onBack,
+                        modifier = Modifier.testTag("BackButton")
+                    ) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.cancel))
                     }
                 }
@@ -57,22 +62,30 @@ fun DownloadBookScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .heightIn(min = dimensionResource(R.dimen.field_height))
+                    .testTag("UrlField")
             )
 
             Button(
                 onClick = { /* later milestone */ },
-                enabled = url.isNotBlank(),
-                modifier = Modifier.fillMaxWidth()
+                enabled = canEnableAdd(url),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("AddButton")
             ) {
                 Text(text = stringResource(R.string.download_action))
             }
 
             OutlinedButton(
                 onClick = onBack,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("CancelButton")
             ) {
                 Text(text = stringResource(R.string.cancel))
             }
         }
     }
 }
+
+// unit testable rule that mirrors current behavior - non empty URL enables the button
+internal fun canEnableAdd(url: String): Boolean = url.isNotBlank()
