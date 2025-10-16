@@ -23,7 +23,7 @@ import com.example.mobile_dev_project.data.Chapter
 @Composable
 fun TableOfContentsScreen(
     chapters: List<Chapter> = mockChapters,
-    onChapterSelected: (String) -> Unit = {},
+    onChapterSelected: (Chapter) -> Unit = {},
     onBack: () -> Unit
 ){
     val context = LocalContext.current
@@ -31,7 +31,7 @@ fun TableOfContentsScreen(
     val window = (view.context as Activity).window
     val windowInsetsController = remember {
         WindowCompat.getInsetsController(window, view)
-    }
+    }g
 
     var isImmersive by remember { mutableStateOf(false) }
 
@@ -66,7 +66,7 @@ fun TableOfContentsScreen(
             ) {
                 items(chapters) { chapter ->
                     Button(
-                        onClick = { onChapterSelected(chapter.title) },
+                        onClick = { onChapterSelected(chapter) },
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(text = chapter.title)
