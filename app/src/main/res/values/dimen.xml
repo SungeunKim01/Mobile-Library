@@ -8,4 +8,10 @@
     <dimen name="field_height">56dp</dimen>
     <dimen name="logo_size">100dp</dimen>
     <dimen name="icon_size">24dp</dimen>
+
+    <dimen name="padding_reg">16dp</dimen>
+    <dimen name="space_xxl">60dp</dimen>
+    <dimen name="content_reg">18sp</dimen>
+    <dimen name="line_height_reg">26sp</dimen>
+    <dimen name="line_height_md">34sp</dimen>
 </resources>

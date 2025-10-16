@@ -13,6 +13,8 @@ import com.example.mobile_dev_project.ui.screens.TableOfContentsScreen
 import com.example.mobile_dev_project.ui.screens.ReadingScreen
 import com.example.mobile_dev_project.data.mockChapters
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 
 
 /**
@@ -65,14 +67,24 @@ fun AppNavHost(
 
         composable(Route.Content.route){
             TableOfContentsScreen(
-                onBack = { nav.popBackStack() }
+                onBack = { nav.popBackStack() },
+                onChapterSelected = { chapter ->
+                    val index = mockChapters.indexOfFirst { it.title == chapter.title }
+                    if (index >= 0) {
+                        nav.navigate(Route.Reading.createRoute(index))
+                    }
+                }
             )
         }
-        composable(Route.Reading.route) {
+        composable(Route.Reading.route,
+            arguments = listOf(navArgument("chapterIndex") {
+                type = NavType.IntType
+            })
+        ) { backStackEntry ->
+            val chapterIndex = backStackEntry.arguments?.getInt("chapterIndex")
             ReadingScreen(
                 chapters = mockChapters,
-                //later, this will change depending on which chapter user clicks.
-                chapterIndexSelected = 0,
+                chapterIndexSelected = chapterIndex ?: 0,
                 onSearch = { nav.navigate(Route.Search.route) },
                 onBack = { nav.popBackStack() }
             )

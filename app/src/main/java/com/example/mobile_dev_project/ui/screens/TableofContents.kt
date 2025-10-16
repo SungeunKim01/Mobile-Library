@@ -17,11 +17,13 @@ import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.mobile_dev_project.R
+import com.example.mobile_dev_project.data.mockChapters
+import com.example.mobile_dev_project.data.Chapter
 
 @Composable
 fun TableOfContentsScreen(
-    chapters: List<String> = listOf("Chapter 1: The Beginning", "Chapter 2: The Journey", "Chapter 3: The End"),
-    onChapterSelected: (String) -> Unit = {},
+    chapters: List<Chapter> = mockChapters,
+    onChapterSelected: (Chapter) -> Unit = {},
     onBack: () -> Unit
 ){
     val context = LocalContext.current
@@ -67,7 +69,7 @@ fun TableOfContentsScreen(
                         onClick = { onChapterSelected(chapter) },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(text = chapter)
+                        Text(text = chapter.title)
                     }
                 }
             }

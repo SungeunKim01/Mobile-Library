@@ -2,7 +2,6 @@ package com.example.mobile_dev_project.ui.screens
 
 import android.app.Activity
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,16 +32,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import com.example.mobile_dev_project.data.Chapter
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.style.TextAlign
 import com.example.mobile_dev_project.R
 
@@ -55,37 +54,28 @@ fun ReadingScreen (chapters: List<Chapter>,
                    onSearch: () -> Unit,
                    onBack: () -> Unit){
     var currentChapterIndex by remember {mutableStateOf(chapterIndexSelected)}
-    var isVisible by remember { mutableStateOf(true) }
+    var isVisible by remember { mutableStateOf(false) }
     val localView = LocalView.current
-    val window = (localView.context as? Activity)?.window
-    //tap is deprecated so............ !
+    val window = (localView.context as Activity).window
     val windowInsetsController = remember {
-        window?.let { w ->
-            WindowCompat.getInsetsController(w, w.decorView).apply {
-                systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-            }
-        }
+        WindowCompat.getInsetsController(window, localView)
     }
-    ReadingPageContent(
-        chapters = chapters,
-        chapterIndexSelected = currentChapterIndex,
-        onSearch = onSearch,
-        onBack = onBack,
-        modifier = Modifier.clickable(
-            onClick = {
-                windowInsetsController?.let { controller ->
-                    if (isVisible) {
-                        controller.hide(WindowInsetsCompat.Type.systemBars())
-                    } else {
-                        controller.show(WindowInsetsCompat.Type.systemBars())
-                    }
-                    isVisible = !isVisible
-                }
-            }
+    Box(modifier = Modifier.clickable(onClick = {
+        isVisible = !isVisible
+        if (isVisible) {
+            windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
+        } else {
+            windowInsetsController.show(WindowInsetsCompat.Type.systemBars())
+        }
+    })){
+        ReadingPageContent(
+            chapters = chapters,
+            chapterIndexSelected = currentChapterIndex,
+            onSearch = onSearch,
+            onBack = onBack
         )
-    )
+    }
 }
-
 /**
  * Displays content of the book and handles horizontal/vertical scrolling.
  */
@@ -141,22 +131,22 @@ fun ChapterPage(
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
-            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 60.dp).verticalScroll(rememberScrollState())
+            modifier = Modifier.fillMaxSize().padding(horizontal = dimensionResource(R.dimen.padding_reg), vertical = dimensionResource(R.dimen.space_xxl)).verticalScroll(rememberScrollState())
         ) {
             SearchButton(onSearch)
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(dimensionResource(R.dimen.padding_reg)))
             Text(text = title,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                lineHeight = 34.sp,
-                modifier = Modifier.padding(bottom = 16.dp),
+                lineHeight = dimensionResource(R.dimen.line_height_reg).value.sp,
+                modifier = Modifier.padding(bottom = dimensionResource(R.dimen.padding_reg)).testTag("title"),
                 textAlign = TextAlign.Center
             )
             ChapterContent(content)
         }
         FloatingActionButton(onClick = onBack,
             modifier = Modifier
-                .padding(bottom= 64.dp, end=24.dp).align(Alignment.BottomEnd),
+                .padding(bottom= dimensionResource(R.dimen.space_xxl), end= dimensionResource(R.dimen.space_lg)).align(Alignment.BottomEnd).testTag("back_btn"),
             elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 6.dp)
         ) {
             Text(text = stringResource(R.string.back_btn), fontSize = 20.sp)
@@ -168,11 +158,11 @@ fun ChapterPage(
  * Displays the content of a chapter.
  */
 @Composable
-fun ChapterContent(content : String){
-    Column(modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp - 20.dp)){
+fun ChapterContent(content : String, modifier: Modifier = Modifier){
+    Column(modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp - dimensionResource(R.dimen.space_lg))){
         Text(text = content,
             fontSize = 18.sp,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().testTag("content"),
             lineHeight = 26.sp
         )
     }
@@ -190,7 +180,7 @@ fun SearchButton(onSearch: () -> Unit, modifier: Modifier = Modifier){
         ) {
             Button(
                 onClick = onSearch,
-                modifier = modifier
+                modifier = modifier.testTag("search_btn")
             ) {
                 Text(text = stringResource(R.string.search_btn))
             }
