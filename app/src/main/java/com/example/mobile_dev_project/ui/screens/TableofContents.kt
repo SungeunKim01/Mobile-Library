@@ -22,75 +22,106 @@ import com.example.mobile_dev_project.R
 
 @Composable
 fun TableOfContentsScreen(
-    chapters: List<String> = listOf("Chapter 1: The Beginning", "Chapter 2: The Journey", "Chapter 3: The End"),
+    // List of chapters to display; default values provided
+    //Until we have a book class and list
+    chapters: List<String> = listOf(
+        "Chapter 1: The Beginning",
+        "Chapter 2: The Journey",
+        "Chapter 3: The End"
+    ),
+    // Callback triggered when a chapter is selected
     onChapterSelected: (String) -> Unit = {},
+    // Callback triggered when the back button is pressed
     onBack: () -> Unit
-){
+) {
+    // --- Context and window setup for immersive mode ---
     val context = LocalContext.current
     val view = LocalView.current
     val window = (view.context as Activity).window
+
+    // Create a controller to show/hide system bars
     val windowInsetsController = remember {
         WindowCompat.getInsetsController(window, view)
     }
 
+    // Mutable state that tracks whether the screen is in immersive mode
     var isImmersive by remember { mutableStateOf(false) }
 
-    fun toggleImmersiveMode(){
+    // Function to toggle immersive mode on and off
+    fun toggleImmersiveMode() {
         isImmersive = !isImmersive
-        if(isImmersive){
+        if (isImmersive) {
+            // Hide system bars (enter fullscreen)
             windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
-        }
-        else{
+        } else {
+            // Show system bars (exit fullscreen)
             windowInsetsController.show(WindowInsetsCompat.Type.systemBars())
         }
     }
+
+    // --- Main screen layout ---
     Box(
         modifier = Modifier
             .fillMaxSize()
+            // Clicking anywhere toggles immersive mode
             .clickable { toggleImmersiveMode() }
             .padding(16.dp)
+            // Apply a background color from the current Material theme
             .background(MaterialTheme.colorScheme.secondary)
+            // Test tag for UI testing
             .testTag("toc_box")
     ) {
+        // Column holds the title and list of chapters
         Column(
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .fillMaxWidth()
         ) {
-
+            // --- Title text ---
             Text(
                 text = stringResource(R.string.table_of_contents),
-                modifier = Modifier.padding(bottom = 12.dp)
+                modifier = Modifier
+                    .padding(bottom = 12.dp)
                     .testTag("toc_title")
-
             )
 
+            // --- Scrollable list of chapters ---
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.testTag("toc_list")
             ) {
                 items(chapters) { chapter ->
+                    // Each chapter is displayed as a button
                     Button(
                         onClick = { onChapterSelected(chapter) },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
                             .testTag("chapter_button_$chapter")
                     ) {
                         Text(text = chapter)
                     }
                 }
             }
-
         }
 
-        FloatingActionButton(onClick = onBack,
+        // --- Floating Action Button for going back ---
+        FloatingActionButton(
+            onClick = onBack,
             modifier = Modifier
-                .padding(bottom= 64.dp, end=24.dp)
-                .align(Alignment.BottomEnd),
+                .padding(bottom = 64.dp, end = 24.dp)
+                .align(Alignment.BottomEnd)
+                .testTag("back_button"),
+
             elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 6.dp)
         ) {
-            Text(text = stringResource(R.string.back_btn), fontSize = 20.sp)
+            // The back button text (large font for visibility)
+            Text(
+                text = stringResource(R.string.back_btn),
+                fontSize = 20.sp
+            )
         }
 
+        // --- Message shown only when immersive mode is active ---
         if (isImmersive) {
             Text(
                 text = stringResource(R.string.tap_anywhere_to_exit_fullscreen),
@@ -101,5 +132,4 @@ fun TableOfContentsScreen(
             )
         }
     }
-
 }
