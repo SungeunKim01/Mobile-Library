@@ -15,6 +15,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.mobile_dev_project.R
@@ -51,6 +52,14 @@ fun TableOfContentsScreen(
             .background(MaterialTheme.colorScheme.secondary)
             .testTag("toc_box")
     ) {
+        FloatingActionButton(onClick = onBack,
+            modifier = Modifier
+                .padding(bottom= 64.dp, end=24.dp)
+                .align(Alignment.TopStart),
+            elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 6.dp)
+        ) {
+            Text(text = stringResource(R.string.back_btn), fontSize = 20.sp)
+        }
         Column(
             modifier = Modifier
                 .align(Alignment.TopCenter)
@@ -60,6 +69,7 @@ fun TableOfContentsScreen(
                 text = stringResource(R.string.table_of_contents),
                 modifier = Modifier.padding(bottom = 12.dp)
                     .testTag("toc_title")
+
             )
 
             LazyColumn(
