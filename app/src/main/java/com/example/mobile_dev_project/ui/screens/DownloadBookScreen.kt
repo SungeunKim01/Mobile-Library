@@ -36,6 +36,7 @@ fun DownloadBookScreen(
                 navigationIcon = {
                     IconButton(
                         onClick = onBack,
+                        modifier = Modifier.testTag("BackButton")
                     ) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.cancel))
                     }
@@ -69,6 +70,7 @@ fun DownloadBookScreen(
                 enabled = url.isNotBlank(),
                 modifier = Modifier
                     .fillMaxWidth()
+                    .testTag("AddButton")
             ) {
                 Text(text = stringResource(R.string.download_action))
             }
@@ -77,6 +79,7 @@ fun DownloadBookScreen(
                 onClick = onBack,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .testTag("CancelButton")
             ) {
                 Text(text = stringResource(R.string.cancel))
             }
