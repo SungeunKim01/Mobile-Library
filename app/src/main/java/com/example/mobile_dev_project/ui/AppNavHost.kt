@@ -59,7 +59,7 @@ fun AppNavHost(
         // Add other screens like Home, we will merge this file after we finish all the screens
         composable(Route.Home.route) {
             HomeScreen(
-                onNavigateToDownload = { nav.popBackStack() }
+                onNavigateToDownload = { nav.navigate(Route.Download.route)  }
             )
         }
 
