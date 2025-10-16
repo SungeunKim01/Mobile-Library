@@ -54,28 +54,27 @@ fun ReadingScreen (chapters: List<Chapter>,
                    onSearch: () -> Unit,
                    onBack: () -> Unit){
     var currentChapterIndex by remember {mutableStateOf(chapterIndexSelected)}
-    var isVisible by remember { mutableStateOf(true) }
+    var isVisible by remember { mutableStateOf(false) }
     val localView = LocalView.current
     val window = (localView.context as Activity).window
     val windowInsetsController = remember {
-        WindowCompat.getInsetsController(window, window.decorView)
+        WindowCompat.getInsetsController(window, localView)
     }
-    ReadingPageContent(
-        chapters = chapters,
-        chapterIndexSelected = currentChapterIndex,
-        onSearch = onSearch,
-        onBack = onBack,
-        modifier = Modifier.clickable(
-            onClick = {
-                if (isVisible) {
-                    windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
-                } else {
-                    windowInsetsController.show(WindowInsetsCompat.Type.systemBars())
-                }
-                isVisible = !isVisible
-            }
+    Box(modifier = Modifier.clickable(onClick = {
+        isVisible = !isVisible
+        if (isVisible) {
+            windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
+        } else {
+            windowInsetsController.show(WindowInsetsCompat.Type.systemBars())
+        }
+    })){
+        ReadingPageContent(
+            chapters = chapters,
+            chapterIndexSelected = currentChapterIndex,
+            onSearch = onSearch,
+            onBack = onBack
         )
-    )
+    }
 }
 /**
  * Displays content of the book and handles horizontal/vertical scrolling.
