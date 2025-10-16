@@ -43,6 +43,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import com.example.mobile_dev_project.R
 
@@ -149,14 +150,14 @@ fun ChapterPage(
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 lineHeight = 34.sp,
-                modifier = Modifier.padding(bottom = 16.dp),
+                modifier = Modifier.padding(bottom = 16.dp).testTag("title"),
                 textAlign = TextAlign.Center
             )
             ChapterContent(content)
         }
         FloatingActionButton(onClick = onBack,
             modifier = Modifier
-                .padding(bottom= 64.dp, end=24.dp).align(Alignment.BottomEnd),
+                .padding(bottom= 64.dp, end=24.dp).align(Alignment.BottomEnd).testTag("back_btn"),
             elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 6.dp)
         ) {
             Text(text = stringResource(R.string.back_btn), fontSize = 20.sp)
@@ -168,11 +169,11 @@ fun ChapterPage(
  * Displays the content of a chapter.
  */
 @Composable
-fun ChapterContent(content : String){
+fun ChapterContent(content : String, modifier: Modifier = Modifier){
     Column(modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp - 20.dp)){
         Text(text = content,
             fontSize = 18.sp,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().testTag("content"),
             lineHeight = 26.sp
         )
     }
@@ -190,7 +191,7 @@ fun SearchButton(onSearch: () -> Unit, modifier: Modifier = Modifier){
         ) {
             Button(
                 onClick = onSearch,
-                modifier = modifier
+                modifier = modifier.testTag("search_btn")
             ) {
                 Text(text = stringResource(R.string.search_btn))
             }
