@@ -28,7 +28,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mobile_dev_project.R
 import com.example.mobile_dev_project.ui.theme.MobileDevProjectTheme
 import androidx.compose.material3.ButtonDefaults
-
+import androidx.compose.ui.platform.testTag
 
 
 @Composable
@@ -40,16 +40,18 @@ fun HomeScreen(viewModel: HomeScreenViewModel = viewModel(),
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.secondary)
             .padding(16.dp)
+            .testTag("home_screen")
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            RestaurantLogo()
+            RestaurantLogo(modifier = Modifier.testTag("restaurant_logo"))
 
             Text(
                 text = "Welcome to Mobile Library",
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.testTag("welcome_text")
             )
 
 
@@ -59,7 +61,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel = viewModel(),
     }
 }
     @Composable
-    fun RestaurantLogo(modifier: Modifier = Modifier.Companion) {
+    fun RestaurantLogo(modifier: Modifier = Modifier) {
         val image = painterResource(R.drawable.mobile_library)
         Column {
             Image(
@@ -70,7 +72,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel = viewModel(),
                     .clip(RoundedCornerShape(16.dp))
                     .aspectRatio(1f),
 
-                contentScale = ContentScale.Companion.Crop
+                contentScale = ContentScale.Crop
             )
         }
     }
@@ -103,7 +105,7 @@ fun Book(book: Book){
                 .clip(RoundedCornerShape(16.dp))
                 .aspectRatio(1f),
 
-            contentScale = ContentScale.Companion.Crop
+            contentScale = ContentScale.Crop
         )
         Spacer(modifier = Modifier.width(16.dp))
         Text(text = "Last Used: ${book.lastAccess}")
@@ -113,7 +115,8 @@ fun Book(book: Book){
 fun DownloadBookButton(onNavigateToDownload: () -> Unit){
     Button(onClick = onNavigateToDownload,
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .testTag("download_button"),
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary
         )
