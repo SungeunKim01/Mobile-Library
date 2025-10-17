@@ -1,43 +1,63 @@
 package com.example.mobile_dev_project
 
+import com.example.mobile_dev_project.ui.screens.SearchViewModel
 import com.example.mobile_dev_project.ui.screens.findMatches
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-
-//test findMatches(paragraphs, query) unction
+/**
+ * unit tests for SearchViewModel
+ * this verifie vm correctly computes the list of matches based on the user's query using the sample paragraphs
+ */
 class SearchScreenUnitTest {
-    private val sampleContent = listOf(
-        "Chapter 1 : THE BOY WHO LIVED",
-        "Chapter 2 : THE VANISHING GLASS",
-        "Chapter 3 : THE LETTERS FROM NO ONE",
-        "Chapter 4 : THE KEEPER OF THE KEYS"
-    )
-
     @Test
     fun blank_query_returns_empty_list() {
-        assertEquals(emptyList<Pair<Int, String>>(), findMatches(sampleContent, ""))
-        assertEquals(emptyList<Pair<Int, String>>(), findMatches(sampleContent, "   "))
+        val vm = SearchViewModel()
+
+        // test empty string
+        vm.onQueryChanged("")
+        assertEquals(emptyList<Pair<Int, String>>(), vm.matches)
+
+        // test whitespace
+        vm.onQueryChanged("   ")
+        assertEquals(emptyList<Pair<Int, String>>(), vm.matches)
     }
 
     @Test
     fun finds_single_match_case_insensitive() {
-        val result = findMatches(sampleContent, "vanishing")
-        //expect one match: index 1
-        assertEquals(listOf(1 to sampleContent[1]), result)
+        val vm = SearchViewModel()
+
+        // "vanishing" should match the 2nd item (index = 1)
+        vm.onQueryChanged("vanishing")
+
+        val expected = listOf(1 to "Chapter 2 : THE VANISHING GLASS")
+        assertEquals(expected, vm.matches)
     }
 
     @Test
-    fun finds_multiple_matches() {
-        val result = findMatches(sampleContent, "Chapter")
-        //all lines contain the word, "Chapter"
-        val expected = sampleContent.indices.map { it to sampleContent[it] }
-        assertEquals(expected, result)
+    fun finds_multiple_matches_when_query_is_common_word() {
+        val vm = SearchViewModel()
+
+        // "chapter" appears in all four items
+        vm.onQueryChanged("Chapter")
+
+        val expected = listOf(
+            0 to "Chapter 1 : THE BOY WHO LIVED",
+            1 to "Chapter 2 : THE VANISHING GLASS",
+            2 to "Chapter 3 : THE LETTERS FROM NO ONE",
+            3 to "Chapter 4 : THE KEEPER OF THE KEYS"
+        )
+
+        assertEquals(expected, vm.matches)
     }
 
     @Test
     fun no_match_returns_empty_list() {
-        assertEquals(emptyList<Pair<Int, String>>(), findMatches(sampleContent, "nomatch"))
+        val vm = SearchViewModel()
+
+        // test string not present
+        vm.onQueryChanged("nomatch")
+        assertEquals(emptyList<Pair<Int, String>>(), vm.matches)
     }
 
 }

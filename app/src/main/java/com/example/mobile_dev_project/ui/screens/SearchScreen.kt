@@ -17,7 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import com.example.mobile_dev_project.R
 import androidx.compose.ui.platform.testTag
-
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 /**
  * TextField to search within the current book
@@ -29,25 +29,10 @@ import androidx.compose.ui.platform.testTag
 @Composable
 fun SearchScreen(
     onBack: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    vm: SearchViewModel = viewModel()
 ) {
-    var query by remember { mutableStateOf("") }
-
-    // Example content so UI works now
-    val paragraphs = remember {
-        listOf(
-            "Chapter 1 : THE BOY WHO LIVED",
-            "Chapter 2 : THE VANISHING GLASS",
-            "Chapter 3 : THE LETTERS FROM NO ONE",
-            "Chapter 4 : THE KEEPER OF THE KEYS"
-        )
-    }
-
     val pad = dimensionResource(id = R.dimen.space_md)
-
-    // here, only compute raw matches in remember, calling findMatches pure function here.
-    val matches = remember(query) { findMatches(paragraphs, query) }
-
 
     Scaffold(
         topBar = {
@@ -75,8 +60,10 @@ fun SearchScreen(
             verticalArrangement = Arrangement.spacedBy(pad)
         ) {
             OutlinedTextField(
-                value = query,
-                onValueChange = { query = it },
+                // read vm state
+                value = vm.query,
+                //event to vm
+                onValueChange = vm::onQueryChanged,
                 shape = MaterialTheme.shapes.medium,
                 singleLine = true,
                 label = { Text(stringResource(R.string.search_title)) },
@@ -88,10 +75,10 @@ fun SearchScreen(
                     .testTag("QueryField")
             )
 
-            val countText = if (matches.isEmpty() && query.isNotBlank())
+            val countText = if (vm.matches.isEmpty() && vm.query.isNotBlank())
                 stringResource(R.string.no_results)
             else
-                stringResource(R.string.results_fmt, matches.size)
+                stringResource(R.string.results_fmt, vm.matches.size)
 
             Text(
                 text = countText,
@@ -106,9 +93,8 @@ fun SearchScreen(
                 verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.space_sm)),
                 modifier = Modifier.weight(1f)
             ) {
-                itemsIndexed(matches, key = { idx, _ -> idx }) { idx, (_, paragraph) ->
-                    // composable call here
-                    val annotated: AnnotatedString = highlight(paragraph, query)
+                itemsIndexed(vm.matches, key = { idx, _ -> idx }) { idx, (_, paragraph) ->
+                    val annotated: AnnotatedString = highlight(paragraph, vm.query)
                     ElevatedCard(
                         elevation = CardDefaults.elevatedCardElevation(
                             defaultElevation = dimensionResource(R.dimen.card_elevation)
