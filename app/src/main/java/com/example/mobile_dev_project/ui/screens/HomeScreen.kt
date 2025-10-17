@@ -84,7 +84,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel = viewModel(),
 fun Bookself(books: List<Book>){
     Column(
         modifier = Modifier.fillMaxWidth()
-            .testTag("bookself"),
+            .testTag("bookshelf"),
         verticalArrangement = Arrangement.SpaceEvenly
     ){
         books.forEach {

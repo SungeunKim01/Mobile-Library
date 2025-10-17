@@ -35,12 +35,6 @@ class AppScaffoldKtTest {
 
     @Test
     fun bottomNavigationBar() {
-        composeTestRule.setContent {
-            MobileDevProjectTheme {
-                BottomNavigationBar(navController = rememberNavController())
-            }
-        }
-
         composeTestRule.onNodeWithText("H").assertExists().assertIsDisplayed().performClick()
         composeTestRule.onNodeWithText("T").assertExists().assertIsDisplayed().performClick()
         composeTestRule.onNodeWithText("S").assertExists().assertIsDisplayed().performClick()
