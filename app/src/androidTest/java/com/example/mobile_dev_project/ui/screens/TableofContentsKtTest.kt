@@ -65,11 +65,11 @@ class TableOfContentsScreenTest {
         }
 
         // Perform a click on the first chapter button
-        composeTestRule.onNodeWithText("Chapter 1: The Beginning", useUnmergedTree = true)
+        composeTestRule.onNodeWithText("progris riport 1", useUnmergedTree = true)
             .performClick()
 
         // Verify that the callback was triggered with the correct value
-        assert(selectedChapter == "Chapter 1: The Beginning")
+        assert(selectedChapter == "progris riport 1")
     }
 
     // Test 4: Check that clicking the background toggles fullscreen text

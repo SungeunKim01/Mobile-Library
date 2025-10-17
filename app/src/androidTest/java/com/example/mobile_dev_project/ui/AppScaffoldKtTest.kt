@@ -11,7 +11,6 @@ import androidx.navigation.compose.rememberNavController
 import org.junit.Test
 import org.junit.runner.RunWith
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.mobile_dev_project.HiltTestRunner
 import com.example.mobile_dev_project.MainActivity
 import com.example.mobile_dev_project.ui.screens.HomeScreen
 import com.example.mobile_dev_project.ui.theme.MobileDevProjectTheme
