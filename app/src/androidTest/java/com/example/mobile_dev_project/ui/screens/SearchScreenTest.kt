@@ -1,4 +1,4 @@
-package com.example.mobile_dev_project
+package com.example.mobile_dev_project.ui.screens
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
@@ -7,12 +7,6 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performTextInput
 import org.junit.Rule
 import org.junit.Test
-import com.example.mobile_dev_project.ui.screens.SearchScreen
-
-
-//Instrumentation ui testsfor SearchScreen
-//typing into QueryField shows result cards and updates count text
-///I refer compose testing cheatsheet (setContent, finders, assertions)
 
 class SearchScreenTest {
 

@@ -1,4 +1,4 @@
-package com.example.mobile_dev_project
+package com.example.mobile_dev_project.ui.screens
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.assertIsDisplayed
@@ -10,7 +10,6 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import org.junit.Rule
 import org.junit.Test
-import com.example.mobile_dev_project.ui.screens.DownloadBookScreen
 
 // instrumentation ui tests (Compose) - this verify actual screen behavior liike:
 // - Add button disabled on start
