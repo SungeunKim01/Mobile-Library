@@ -51,7 +51,10 @@ fun HomeScreen(viewModel: HomeScreenViewModel = viewModel(),
 
             Text(
                 text = stringResource(R.string.title),
-                style = MaterialTheme.typography.titleLarge,
+                //Had to force change the color because mine was not visible enough to be seen on page
+                style = MaterialTheme.typography.titleLarge.copy(
+                    color = MaterialTheme.colorScheme.onSecondary
+                ),
                 modifier = Modifier.testTag("title")
             )
 
@@ -113,7 +116,8 @@ fun Book(book: Book){
             contentScale = ContentScale.Crop
         )
         Spacer(modifier = Modifier.width(16.dp))
-        Text(text = stringResource(R.string.last_use_text) + " ${book.lastAccess}")
+        Text(text = stringResource(R.string.last_use_text) + " ${book.lastAccess}",
+            color = MaterialTheme.colorScheme.onSecondary)
     }
 }
 //This will be a button that will navigate to Download screen so that they can add a book
