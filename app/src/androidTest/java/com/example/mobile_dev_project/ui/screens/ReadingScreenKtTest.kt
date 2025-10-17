@@ -55,7 +55,7 @@ class ReadingScreenKtTest {
      */
     @Test
     fun chapterTitleIsDisplayed(){
-        composeTestRule.onNodeWithTag("title").assertExists().assertIsDisplayed()
+        composeTestRule.onNodeWithTag("title", useUnmergedTree = true).assertExists().assertIsDisplayed()
 
     }
 
@@ -64,7 +64,7 @@ class ReadingScreenKtTest {
      */
     @Test
     fun chapterContentIsDisplayed(){
-        composeTestRule.onNodeWithTag("content").assertExists().assertIsDisplayed()
+        composeTestRule.onNodeWithTag("content", useUnmergedTree = true).assertExists().assertIsDisplayed()
     }
 
 }
