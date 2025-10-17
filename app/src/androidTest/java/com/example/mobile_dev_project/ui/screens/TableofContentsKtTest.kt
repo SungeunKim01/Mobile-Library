@@ -3,6 +3,7 @@ package com.example.mobile_dev_project.ui.screens
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.example.mobile_dev_project.data.mockChapters
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -34,11 +35,7 @@ class TableOfContentsScreenTest {
     @Test
     fun chapters_areDisplayed() {
         // Create a list of test chapters
-        val chapters = listOf(
-            "Chapter 1: The Beginning",
-            "Chapter 2: The Journey",
-            "Chapter 3: The End"
-        )
+        var chapters = mockChapters
 
         // Display the composable with the provided chapter list
         composeTestRule.setContent {
@@ -47,7 +44,7 @@ class TableOfContentsScreenTest {
 
         // For each chapter, assert that its text exists on screen
         chapters.forEach { chapter ->
-            composeTestRule.onNodeWithText(chapter, useUnmergedTree = true)
+            composeTestRule.onNodeWithText(chapter.title, useUnmergedTree = true)
                 .assertIsDisplayed()
         }
     }
@@ -56,23 +53,23 @@ class TableOfContentsScreenTest {
     @Test
     fun clickingChapter_callsCallback() {
         var selectedChapter: String? = null
-        val chapters = listOf("Chapter 1: The Beginning")
+        var chapters = mockChapters
 
         // Render the composable with a callback that records the selected chapter
         composeTestRule.setContent {
             TableOfContentsScreen(
                 chapters = chapters,
-                onChapterSelected = { selectedChapter = it },
+                onChapterSelected = { selectedChapter = it.title },
                 onBack = {}
             )
         }
 
         // Perform a click on the first chapter button
-        composeTestRule.onNodeWithText("Chapter 1: The Beginning", useUnmergedTree = true)
+        composeTestRule.onNodeWithText("progris riport 1", useUnmergedTree = true)
             .performClick()
 
         // Verify that the callback was triggered with the correct value
-        assert(selectedChapter == "Chapter 1: The Beginning")
+        assert(selectedChapter == "progris riport 1")
     }
 
     // Test 4: Check that clicking the background toggles fullscreen text
@@ -118,7 +115,7 @@ class TableOfContentsScreenTest {
     // Test 6: Verify that each chapter button is a child of the LazyColumn
     @Test
     fun chapterButtons_areInsideLazyColumn() {
-        val chapters = listOf("Chapter 1: The Beginning", "Chapter 2: The Journey")
+        var chapters = mockChapters
 
         composeTestRule.setContent {
             TableOfContentsScreen(chapters = chapters, onBack = {})

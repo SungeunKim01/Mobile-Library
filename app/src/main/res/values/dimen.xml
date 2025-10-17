@@ -14,4 +14,7 @@
     <dimen name="content_reg">18sp</dimen>
     <dimen name="line_height_reg">26sp</dimen>
     <dimen name="line_height_md">34sp</dimen>
+
+    <dimen name="elevation_high">8dp</dimen>
+    <dimen name="elevation_med">6dp</dimen>
 </resources>

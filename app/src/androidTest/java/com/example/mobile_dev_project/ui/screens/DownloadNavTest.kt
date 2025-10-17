@@ -43,7 +43,7 @@ class DownloadNavTest {
         compose.onNodeWithTag("home_screen").assertIsDisplayed()
 
         // go to Download Book
-        compose.onNodeWithTag("AddNewBookButton").assertIsDisplayed().performClick()
+        compose.onNodeWithTag("download_button").assertIsDisplayed().performClick()
 
         //on Download Book (Url field present)
         compose.onNodeWithTag("UrlField").assertIsDisplayed()
