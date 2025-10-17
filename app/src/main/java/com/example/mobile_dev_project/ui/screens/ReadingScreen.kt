@@ -61,7 +61,7 @@ fun ReadingScreen (chapters: List<Chapter>,
     val windowInsetsController = remember {
         WindowCompat.getInsetsController(window, localView)
     }
-    Box(modifier = Modifier.background(MaterialTheme.colorScheme.primary).clickable(onClick = {
+    Box(modifier = Modifier.clickable(onClick = {
         isVisible = !isVisible
         if (isVisible) {
             windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
@@ -144,9 +144,9 @@ fun ChapterPage(
         FloatingActionButton(onClick = onBack,
             modifier = Modifier
                 .padding(bottom= dimensionResource(R.dimen.space_xxl), end= dimensionResource(R.dimen.space_lg)).align(Alignment.BottomEnd).testTag("back_btn"),
-            elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 6.dp)
+            elevation = FloatingActionButtonDefaults.elevation(defaultElevation = dimensionResource(R.dimen.elevation_med))
         ) {
-            Text(text = stringResource(R.string.back_btn), fontSize = 20.sp)
+            Text(text = stringResource(R.string.back_btn), fontWeight = FontWeight.Bold)
         }
     }
 }
@@ -158,9 +158,8 @@ fun ChapterPage(
 fun ChapterContent(content : String, modifier: Modifier = Modifier){
     Column(modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp - dimensionResource(R.dimen.space_lg))){
         Text(text = content,
-            fontSize = 18.sp,
             modifier = Modifier.fillMaxWidth().testTag("content"),
-            lineHeight = 26.sp
+            lineHeight = dimensionResource(R.dimen.line_height_reg).value.sp
         )
     }
 }
@@ -172,7 +171,7 @@ fun ChapterContent(content : String, modifier: Modifier = Modifier){
 fun SearchButton(onSearch: () -> Unit, modifier: Modifier = Modifier){
     Box(modifier = Modifier.fillMaxSize()) {
         Surface(
-            tonalElevation = 8.dp,
+            tonalElevation = dimensionResource(R.dimen.elevation_high),
             shape = MaterialTheme.shapes.medium
         ) {
             Button(
