@@ -1,23 +1,34 @@
 package com.example.mobile_dev_project.data.entity
 
-import java.util.Date
 
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+@Entity(tableName="Book")
 class Book {
-    var BookId: Int = 0
-    var BookTitle: String? = null
-    var LastAccessed: Date? = null
-    var DateAccessed: Date? = null
-    var BookCoverPath: String? = null
+
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "bookId")
+    var bookId: Int = 0
+//the date should update every 1 minute
+    @ColumnInfo(name="bookTitle")
+    var bookTitle: String? = null
+
+    @ColumnInfo(name = "bookCoverPath")
+    var bookCoverPath: String? = null
+
+    @ColumnInfo(name= "lastAccessed")
+    var lastAccessed: Long? = null
+    @ColumnInfo(name = "bookAdded")
+    var bookAdded: Long? = null
+
 
     constructor() {}
 
-    constructor(BookId: Int, BookTitlel: String, LastAccessed: Date, DateAdded: Date, BookCoverPath: String) {
-        this.BookId = BookId
-        this.BookTitle = BookTitle
-        this.LastAccessed = LastAccessed
-        this.DateAccessed = DateAccessed
-        this.BookCoverPath = BookCoverPath
+    constructor(BookTitle: String, BookCoverPath: String, bookAdded: Long) {
+        this.bookTitle = BookTitle
+        this.bookCoverPath = BookCoverPath
+        this.bookAdded =bookAdded
     }
-
-
 }
+
