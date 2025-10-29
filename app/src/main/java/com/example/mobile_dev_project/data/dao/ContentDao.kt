@@ -5,31 +5,31 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.example.mobile_dev_project.data.entity.Book
+import com.example.mobile_dev_project.data.entity.Content
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ContentDao {
 
     @Insert
-    suspend fun insertBook(book: Book)
+    suspend fun insertContent(content: Content)
 
     @Update
-    suspend fun updateBook(book: Book)
+    suspend fun updateContent(content: Content)
 
     @Delete
-    suspend fun deleteBook(book: Book)
+    suspend fun deleteContent(content: Content)
 
 
     @Query("select * from Book")
-    fun getAllBooks(): Flow<List<Book>>
+    fun getAllBooks(): Flow<List<Content>>
 
-    @Query("select * from Book where bookId = :bookId")
-    fun getBookById(bookId: Int): Flow<Book?>
+    @Query("select * from contents where contentId = :contentId")
+    fun getBookById(contentId: Int): Flow<Content?>
 
-    @Query("Select * from book order by lastAccessed desc")
-    fun getBooksByLastAccessed(): Flow<List<Book>>
+    @Query("Select * from contents where chapterId = :chapterId")
+    fun getContentForChapter(chapterId: Int): Flow<Content?>
 
-    @Query("select * from book order by bookAdded desc")
-    fun getBooksByDateAdded(): Flow<List<Book>>
+    @Query("select * from contents where chapterId = :chapterId")
+    suspend fun deleteContentForChapter(chapterId: Int)
 }
