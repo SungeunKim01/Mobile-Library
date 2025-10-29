@@ -21,6 +21,7 @@ class Chapter {
     @ColumnInfo(name = "chapterId")
     var chapterId: Int = 0
 
+    //Foreign key for book
     @ColumnInfo(name = "bookId")
     var bookId: Int = 0
 
