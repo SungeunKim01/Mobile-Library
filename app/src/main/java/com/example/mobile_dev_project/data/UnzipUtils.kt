@@ -47,4 +47,21 @@ object UnzipUtils {
             }
         }
     }
+    //cp all bytes from input stream to dest file using buffer
+    @Throws(IOException::class)
+    private fun writeStreamToFile(input: InputStream, destFile: File) {
+        //4096 buffer
+        val buffer = ByteArray(4096)
+
+        BufferedOutputStream(FileOutputStream(destFile)).use { bos ->
+            while (true) {
+                val read = input.read(buffer)
+                if (read == -1) {
+                    break
+                }
+                bos.write(buffer, 0, read)
+            }
+            bos.close()
+        }
+    }
 }
