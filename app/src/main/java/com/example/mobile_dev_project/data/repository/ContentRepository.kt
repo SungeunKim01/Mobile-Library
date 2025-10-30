@@ -1,36 +1,36 @@
 package com.example.mobile_dev_project.data.repository
 
-import com.example.mobile_dev_project.data.dao.BookDao
-import com.example.mobile_dev_project.data.entity.Book
+import com.example.mobile_dev_project.data.dao.ContentDao
+import com.example.mobile_dev_project.data.entity.Content
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class ContentRepository @Inject constructor(
-    private val bookDao: BookDao
+    private val contentDao: ContentDao
 ) {
-    val allBooks: Flow<List<Book>> = bookDao.getAllBooks()
+    val allContents: Flow<List<Content>> = contentDao.getAllContents()
 
-    fun getBookById(bookId: Int): Flow<Book?> {
-        return bookDao.getBookById(bookId)
+    fun getContentById(contentId: Int): Flow<Content?> {
+        return contentDao.getContentById(contentId)
     }
 
-    fun getBooksByLastAccessed(): Flow<List<Book>> {
-        return bookDao.getBooksByLastAccessed()
+    fun getContentForChapter(chapterId: Int): Flow<Content?> {
+        return contentDao.getContentForChapter(chapterId)
     }
 
-    fun getBooksByDateAdded(): Flow<List<Book>> {
-        return bookDao.getBooksByDateAdded()
+    suspend fun insertContent(content: Content) {
+        contentDao.insertContent(content)
     }
 
-    suspend fun insertBook(book: Book) {
-        bookDao.insertBook(book)
+    suspend fun updateContent(content: Content) {
+        contentDao.updateContent(content)
     }
 
-    suspend fun updateBook(book: Book) {
-        bookDao.updateBook(book)
+    suspend fun deleteContent(content: Content) {
+        contentDao.deleteContent(content)
     }
 
-    suspend fun deleteBook(book: Book) {
-        bookDao.deleteBook(book)
+    suspend fun deleteContentForChapter(chapterId: Int) {
+        contentDao.deleteContentForChapter(chapterId)
     }
 }

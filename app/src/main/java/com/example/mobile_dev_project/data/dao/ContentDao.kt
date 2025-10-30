@@ -22,10 +22,10 @@ interface ContentDao {
 
 
     @Query("select * from Book")
-    fun getAllBooks(): Flow<List<Content>>
+    fun getAllContents(): Flow<List<Content>>
 
     @Query("select * from contents where contentId = :contentId")
-    fun getBookById(contentId: Int): Flow<Content?>
+    fun getContentById(contentId: Int): Flow<Content?>
 
     @Query("Select * from contents where chapterId = :chapterId")
     fun getContentForChapter(chapterId: Int): Flow<Content?>
