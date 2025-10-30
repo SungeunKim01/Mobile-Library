@@ -69,4 +69,37 @@ class BooksRepository(
             }
         }
 
+    // mapping to title
+    private fun titleFor(id: String) = when (id) {
+        "book1" -> "A Christmas Carol"
+        "book2" -> "Pride and Prejudice"
+        "book3" -> "The Odyssey"
+        else -> id.replaceFirstChar {
+            if (it.isLowerCase()) {
+                it.titlecase(Locale.ROOT)
+            } else {
+                it.toString()
+            }
+        }
+    }
+
+    //zips put the cover under /content/images/ and filename is cover
+    private fun findCover(root: File): File? {
+        //content/images/cover
+        val imagesDir = File(root, "images")
+        if (!imagesDir.exists()) {
+            return null
+        }
+
+        //exact match only
+        val exact = File(imagesDir, "cover")
+        if (exact.exists() && exact.isFile) {
+            return exact
+        }
+
+        // if the unzip produced a different case, allow strict name match ignoring case
+        return imagesDir.listFiles()?.firstOrNull { f ->
+            f.isFile && f.name.equals("cover", ignoreCase = true)
+        }
+    }
 }
