@@ -24,4 +24,15 @@
     <string name="title">Welcome to Mobile Library</string>
     <string name="last_use_text">Last Used:</string>string>
     <string name="add_book">Add New Book</string>
+
+    <!--- phase2 - book links-->
+    <string-array name="book_urls">
+        <!-- A Christmas Carol -->
+        <item>https://www.gutenberg.org/cache/epub/46/pg46-h.zip</item>
+        <!-- Pride and Prejudice -->
+        <item>https://www.gutenberg.org/cache/epub/1342/pg1342-h.zip</item>
+        <!-- The Odyssey -->
+        <item>https://www.gutenberg.org/cache/epub/1727/pg1727-h.zip</item>
+    </string-array>
+
 </resources>
