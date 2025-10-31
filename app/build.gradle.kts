@@ -4,22 +4,26 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.kapt)
+    id("com.google.devtools.ksp")
 }
 
 android {
     namespace = "com.example.mobile_dev_project"
-    compileSdk = 36
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.mobile_dev_project"
-        minSdk = 26
-        targetSdk = 36
+        minSdk = 30
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "com.example.mobile_dev_project.ui.screens.HiltTestRunner"
     }
-
+    ksp {
+        arg("room.schemaLocation", "$projectDir/schemas")
+        arg("room.expandProjection", "true")
+    }
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -69,6 +73,17 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation("androidx.compose.ui:ui-text-google-fonts:1.6.0")
 
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    implementation("androidx.compose.foundation:foundation-layout-android:1.9.4")
+    annotationProcessor("androidx.room:room-compiler:2.6.1")
+    ksp("androidx.room:room-compiler:2.6.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+
+    //Phase2
+    implementation(libs.okhttp.v4110)
+
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -79,4 +94,5 @@ dependencies {
 
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
 }
