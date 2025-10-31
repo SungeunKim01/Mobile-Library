@@ -3,22 +3,15 @@ package com.example.mobile_dev_project.data
 import java.time.LocalDate
 import java.util.Date
 
-class Book {
-    var chapters: List<Chapter>
-    var title: String
-    var dateAdded: Date
-    var lastAccessed: Date
-
-    constructor(title: String, chapters: List<Chapter>){
-        this.title = title
-        this.chapters = chapters
-        this.dateAdded = Date(LocalDate.now().year, LocalDate.now().monthValue, LocalDate.now().dayOfMonth)
-        this.lastAccessed = Date(LocalDate.now().year, LocalDate.now().monthValue, LocalDate.now().dayOfMonth)
-    }
-
-    fun accessedBook(){
-        this.lastAccessed = Date(LocalDate.now().year, LocalDate.now().monthValue, LocalDate.now().dayOfMonth)
+data class Book (
+    var chapters: List<UiChapter>,
+    var title: String,
+    var dateAdded: Date = Date(),
+    var lastAccessed: Date = Date(),
+) {
+    fun accessedBook() {
+        lastAccessed = Date()
     }
 }
 
-val mockBook = Book("Hello", mockChapters)
+val mockBook = Book(mockChapters, "Hello")

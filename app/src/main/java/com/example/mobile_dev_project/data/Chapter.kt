@@ -1,42 +1,37 @@
 package com.example.mobile_dev_project.data
 
-class Chapter {
-    var chaptertitle: String
-    var content: Content
-
-    constructor(chaptertitle: String, content: Content){
-        this.chaptertitle = chaptertitle
-        this.content = content
-    }
-}
-var mockContent = Content("Mock Mock Mock")
+data class UiChapter (
+    var chaptertitle: String,
+    var content: UiContent
+)
+var mockContent = UiContent("Mock Mock Mock")
 
 val mockChapters = listOf(
-    Chapter(
+    UiChapter(
         "progtis riport 1",
         mockContent
     ),
-    Chapter(
+    UiChapter(
         "progris riport 2",
         mockContent
     ),
-    Chapter(
+    UiChapter(
         "progris riport 3",
         mockContent
     ),
-    Chapter(
+    UiChapter(
         "progris riport 4",
         mockContent
     ),
-    Chapter(
+    UiChapter(
         "progris riport 5",
         mockContent
     ),
-    Chapter(
+    UiChapter(
         "progris riport 6",
         mockContent
     ),
-    Chapter(
+    UiChapter(
         "progris riport 7",
         mockContent
     )
