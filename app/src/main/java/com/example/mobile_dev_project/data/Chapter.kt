@@ -1,8 +1,8 @@
 package com.example.mobile_dev_project.data
 
 data class UiChapter (
-    var chaptertitle: String,
-    var content: UiContent
+    val chaptertitle: String,
+    val content: UiContent
 )
 var mockContent = UiContent("Mock Mock Mock")
 
