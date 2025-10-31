@@ -17,7 +17,7 @@ fun UiBook.toEntity(): BookEntity {
 fun BookEntity.toUi(): UiBook {
     val uiBook = UiBook(
         title = this.bookTitle ?: "",
-        chapters = emptyList() 
+        chapters = emptyList()
     )
     uiBook.dateAdded = java.util.Date(this.bookAdded ?: System.currentTimeMillis())
     uiBook.lastAccessed = java.util.Date(this.lastAccessed ?: System.currentTimeMillis())
