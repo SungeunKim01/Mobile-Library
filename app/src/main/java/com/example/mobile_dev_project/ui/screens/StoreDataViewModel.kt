@@ -29,7 +29,7 @@ class StoreDataViewModel @Inject constructor(
 
             //Insert chapters
             uiBook.chapters.forEachIndexed { index, uiChapter ->
-                val chapterEntity = uiChapter.copy(chapterOrder = index + 1).toEntity()
+                val chapterEntity = uiChapter.copy(bookId = bookId.toInt(), chapterOrder = index + 1).toEntity()
                 chapterRepository.insertChapter(chapterEntity)
             }
         }
