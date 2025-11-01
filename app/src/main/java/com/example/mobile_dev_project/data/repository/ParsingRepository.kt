@@ -19,6 +19,7 @@ class ParsingRepository @Inject constructor(
     private val chapterd: ChapterDao,
     private val contentd: ContentDao
 ){
+    //Locate the html file from the created book folder upon url entry and store metadata in database.
     //for the basics: https://github.com/fleeksoft/ksoup
     suspend fun parseHtml(bookId: Int) = withContext(Dispatchers.IO){
         try {
@@ -37,50 +38,62 @@ class ParsingRepository @Inject constructor(
             }
 
             val htmlContent = html.readText(Charsets.UTF_8)
-
             val doc: Document = Ksoup.parse(htmlContent)
 
             //get the title that is inside meta tag and if doesnt exist, just get title from title tag
-            val title = doc.selectFirst("meta[name=dc.title]")?.attr("content")?.trim()
-                ?: doc.selectFirst("title")?.text()?.substringBefore("|")?.trim()
-                ?: doc.selectFirst("h1")?.text()?.trim()
-                ?: "Untitled Book"
-
-            val bookToUpdate = bookd.getSingularBookById(bookId)
-            if(bookToUpdate != null) {
-                bookToUpdate.bookTitle = title
-                bookd.updateBook(bookToUpdate)
-            }
+            updateBookTitle(bookId, doc)
 
             //get chapters & their content
-            val chapters = doc.select("div.chapter")
-            //might need to do smt here so that it doesnt save "toc" chapter
-            var order = 1
-            for( c in chapters){
-                val chapTitle = c.select("h2").text().trim()
-                val contentp = c.select("p")
-
-                val formattedContent = contentp.joinToString( "\n" ) {it.outerHtml()}
-
-                val chapter = Chapter(bookId, chapTitle, order, null)
-
-                val chapId = chapterd.insertChapter(chapter)
-
-                val content = Content(chapId.toInt(), formattedContent)
-
-                val contentId = contentd.insertContent(content)
-
-                //now that we have content id, add it to the created chapter
-                chapter.contentId = contentId.toString()
-                chapterd.updateChapter(chapter)
-
-                order++
-            }
+            storeChapterAndContentData(bookId, doc)
 
         } catch (e: Exception){
             Log.e("ParsingRepository", "Error occurred while parsing book with id $bookId: ${e.message}")
         }
 
+    }
+
+    /**
+     * Locate the title that is inside <meta> tag with name="dc.title".
+     * Store the title in provided bookId.
+     */
+    private suspend fun updateBookTitle(bookId: Int, doc: Document){
+        val title = doc.selectFirst("meta[name=dc.title]")?.attr("content")?.trim()
+            ?: doc.selectFirst("h1")?.text()?.trim()
+            ?: "Untitled Book"
+
+        val bookToUpdate = bookd.getSingularBookById(bookId)
+        if(bookToUpdate != null) {
+            bookToUpdate.bookTitle = title
+            bookd.updateBook(bookToUpdate)
+        }
+    }
+
+    /**
+     * Locate <div> with the class name "chapter".
+     * Within that div, each one has a <h2> that represents their title,
+     * and each one has <p> tags that represents all their content.
+     * Store the books chapters and their corresponding content.
+     */
+    private suspend fun storeChapterAndContentData(bookId: Int, doc: Document){
+        val chapters = doc.select("div.chapter")
+        //might need to do smt here so that it doesnt save "toc" chapter
+        var order = 1
+        for( c in chapters){
+            val chapTitle = c.select("h2").text().trim()
+            val contentp = c.select("p")
+
+            val formattedContent = contentp.joinToString( "\n" ) {it.outerHtml()}
+            val chapter = Chapter(bookId, chapTitle, order, null)
+            val chapId = chapterd.insertChapter(chapter)
+            val content = Content(chapId.toInt(), formattedContent)
+            val contentId = contentd.insertContent(content)
+
+            //now that we have content id, add it to the created chapter
+            chapter.contentId = contentId.toString()
+            chapterd.updateChapter(chapter)
+
+            order++
+        }
     }
 
 }
