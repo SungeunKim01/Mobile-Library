@@ -4,20 +4,23 @@ import com.example.mobile_dev_project.data.UiChapter
 import com.example.mobile_dev_project.data.UiContent
 import com.example.mobile_dev_project.data.entity.Chapter as ChapterEntity
 
-fun UiChapter.toEntity(bookId: Int): ChapterEntity {
+fun UiChapter.toEntity(): ChapterEntity {
     val entity = ChapterEntity(
-        bookId = bookId,
-        chapterName = this.chaptertitle,
-        chapterOrder = 0, // assign order later
-        contentId = null  // contentId will be set after content is saved
+        bookId = this.bookId,
+        chapterName = this.chapterTitle,
+        chapterOrder = this.chapterOrder,
+        contentId = this.contentId ?: 0
     )
+    entity.chapterId = this.chapterId ?: 0
     return entity
 }
 
-fun ChapterEntity.toUi(content: UiContent? = null): UiChapter {
-    val uiChapter = UiChapter(
-        chaptertitle = this.chapterName ?: "",
-        content = content ?: UiContent("")
+fun ChapterEntity.toUi(): UiChapter {
+    return UiChapter(
+        chapterId = this.chapterId,
+        chapterTitle = this.chapterName ?: "",
+        chapterOrder = this.chapterOrder,
+        bookId = this.bookId,
+        contentId = this.contentId
     )
-    return uiChapter
 }

@@ -4,9 +4,10 @@ import java.time.LocalDate
 import java.util.Date
 
 data class UiBook (
-    val chapters: List<UiChapter>,
+    val bookId: Int? = null,
+    val chapters: List<UiChapter> = emptyList(),
     val title: String,
-    val coverPath: String? = null
+    val coverPath: String? = null,
 ) {
     var dateAdded: Date = Date()
     var lastAccessed: Date = Date()
@@ -16,4 +17,4 @@ data class UiBook (
     }
 }
 
-val mockBook = UiBook(mockChapters, "Hello")
+val mockBook = UiBook(1, mockChapters, "Hello")
