@@ -44,7 +44,7 @@ class ParsingRepository @Inject constructor(
             updateBookTitle(bookId, doc)
 
             //get chapters & their content
-            storeChapterAndContentData(bookId, doc)
+            storeChapterAndContentData(bookId, directory, doc)
 
         } catch (e: Exception){
             Log.e("ParsingRepository", "Error occurred while parsing book with id $bookId: ${e.message}")
@@ -74,7 +74,7 @@ class ParsingRepository @Inject constructor(
      * and each one has <p> tags that represents all their content.
      * Store the books chapters and their corresponding content.
      */
-    private suspend fun storeChapterAndContentData(bookId: Int, doc: Document){
+    private suspend fun storeChapterAndContentData(bookId: Int, directory: File, doc: Document){
         val chapters = doc.select("div.chapter")
         //might need to do smt here so that it doesnt save "toc" chapter
         var order = 1
@@ -83,6 +83,8 @@ class ParsingRepository @Inject constructor(
             val contentp = c.select("p")
 
             val formattedContent = contentp.joinToString( "\n" ) {it.outerHtml()}
+            saveChaptersInHtml(directory, order, chapTitle, formattedContent)
+
             val chapter = Chapter(bookId, chapTitle, order, null)
             val chapId = chapterd.insertChapter(chapter)
             val content = Content(chapId.toInt(), formattedContent)
@@ -94,6 +96,22 @@ class ParsingRepository @Inject constructor(
 
             order++
         }
+    }
+    /**
+     * Save processed chapters as seperate HTML files
+     */
+    private fun saveChaptersInHtml(directory: File, order: Int, title: String, content: String){
+        //IT SHOULD EXIST. since we retrieved it earlier.
+//        if(!directory.exists()){
+//            directory.mkdirs()
+//        }
+
+        // no weird spacing or characters for folder names
+        val formattedTitle = title.replace("[^a-zA-Z0-9_-]".toRegex(), "_")
+        val htmlName = "${order}_$formattedTitle.html"
+        val file = File(directory, htmlName)
+
+        file.writeText(content, Charsets.UTF_8)
     }
 
 }
