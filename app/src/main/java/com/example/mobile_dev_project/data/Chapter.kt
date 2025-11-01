@@ -1,5 +1,7 @@
 package com.example.mobile_dev_project.data
 
+import com.example.mobile_dev_project.data.UiContent
+
 data class UiChapter (
     val chapterId: Int? = null,
     val chapterTitle: String,
@@ -7,7 +9,15 @@ data class UiChapter (
     val bookId: Int,
     val contentId: Int? = null
 )
+var mockContents = listOf(
+    UiContent(1, 1, "Mock Mock Mock") ,
+    UiContent(2, 1, "Mock Mock Mock"),
+    UiContent(3, 1, "Mock Mock Mock"),
+    UiContent(4, 1, "Mock Mock Mock")
+)
+
 var mockContent = UiContent(1, 1, "Mock Mock Mock")
+
 
 val mockChapters = listOf(
     UiChapter(

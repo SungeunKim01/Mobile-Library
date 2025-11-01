@@ -19,18 +19,24 @@ class StoreDataViewModel @Inject constructor(
 
     fun storeBookData(uiBook: UiBook, uiContents: List<UiContent>) {
         viewModelScope.launch {
-            //Insert Book
+            // Insert Book
             val bookId = bookRepository.insertBook(uiBook.toEntity())
 
-            //Insert content
-            uiContents.forEach { uiContent ->
-                contentRepository.insertContent(uiContent.toEntity())
-            }
-
-            //Insert chapters
+            // Insert Chapter
             uiBook.chapters.forEachIndexed { index, uiChapter ->
-                val chapterEntity = uiChapter.copy(bookId = bookId.toInt(), chapterOrder = index + 1).toEntity()
-                chapterRepository.insertChapter(chapterEntity)
+                val chapterEntity = uiChapter.copy(
+                    bookId = bookId.toInt(),
+                    chapterOrder = index + 1
+                ).toEntity()
+
+                val chapterId = chapterRepository.insertChapter(chapterEntity)
+
+                // Insert Content
+                val content = uiContents.find { it.chapterId == uiChapter.chapterId }
+                if (content != null) {
+                    val contentEntity = content.copy(chapterId = chapterId.toInt()).toEntity()
+                    contentRepository.insertContent(contentEntity)
+                }
             }
         }
     }
