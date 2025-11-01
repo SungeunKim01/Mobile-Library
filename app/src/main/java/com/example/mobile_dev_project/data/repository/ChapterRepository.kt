@@ -5,7 +5,7 @@ import com.example.mobile_dev_project.data.entity.Chapter
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class BookRepository @Inject constructor(
+class ChapterRepository @Inject constructor(
     private val chapterDao: ChapterDao
 ) {
     val allChapters: Flow<List<Chapter>> = chapterDao.getAllChapters()
