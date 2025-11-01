@@ -22,8 +22,8 @@ class BookRepository @Inject constructor(
         return bookDao.getBooksByDateAdded()
     }
 
-    suspend fun insertBook(book: Book) {
-        bookDao.insertBook(book)
+    suspend fun insertBook(book: Book): Long {
+        return bookDao.insertBook(book)
     }
 
     suspend fun updateBook(book: Book) {

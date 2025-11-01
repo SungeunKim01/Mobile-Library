@@ -32,11 +32,11 @@ class Chapter {
     var chapterOrder: Int = 0
 
     @ColumnInfo(name = "contentId")
-    var contentId: String? = null
+    var contentId: Int = 0
 
     constructor() {}
 
-    constructor(bookId: Int, chapterName: String?, chapterOrder: Int, contentId: String?) {
+    constructor(bookId: Int, chapterName: String?, chapterOrder: Int, contentId: Int) {
         this.bookId = bookId
         this.chapterName = chapterName
         this.chapterOrder = chapterOrder
