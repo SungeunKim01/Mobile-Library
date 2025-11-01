@@ -46,6 +46,11 @@ class ParsingRepository @Inject constructor(
                 ?: doc.selectFirst("h1")?.text()?.trim()
                 ?: "Untitled Book"
 
+            val bookToUpdate = bookd.getSingularBookById(bookId)
+            if(bookToUpdate != null) {
+                bookToUpdate.bookTitle = title
+                bookd.updateBook(bookToUpdate)
+            }
 
             //get chapters & their content
             val chapters = doc.select("div.chapter")
