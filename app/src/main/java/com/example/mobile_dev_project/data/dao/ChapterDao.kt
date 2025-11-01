@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 interface ChapterDao {
 
     @Insert
-    suspend fun insertChapter(chapter: Chapter)
+    suspend fun insertChapter(chapter: Chapter) : Long
 
     @Update
     suspend fun updateChapter(chapter: Chapter)
