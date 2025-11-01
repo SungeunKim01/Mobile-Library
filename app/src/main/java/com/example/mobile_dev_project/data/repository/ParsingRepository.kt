@@ -4,7 +4,9 @@ import android.util.Log
 import java.io.File
 import javax.inject.Inject
 import com.example.mobile_dev_project.data.dao.*
-import com.example.mobile_dev_project.data.entity.*
+import com.example.mobile_dev_project.data.entity.Book
+import com.example.mobile_dev_project.data.entity.Chapter
+import com.example.mobile_dev_project.data.entity.Content
 import com.example.mobile_dev_project.data.BooksPaths
 import com.fleeksoft.ksoup.Ksoup
 import com.fleeksoft.ksoup.nodes.Document
@@ -17,6 +19,7 @@ class ParsingRepository @Inject constructor(
     private val chapterd: ChapterDao,
     private val contentd: ContentDao
 ){
+    //for the basics: https://github.com/fleeksoft/ksoup
     suspend fun parseHtml(bookId: Int) = withContext(Dispatchers.IO){
         try {
             //get html file
@@ -43,14 +46,30 @@ class ParsingRepository @Inject constructor(
                 ?: doc.selectFirst("h1")?.text()?.trim()
                 ?: "Untitled Book"
 
+
             //get chapters & their content
             val chapters = doc.select("div.chapter")
-            val order = 1
+            //might need to do smt here so that it doesnt save "toc" chapter
+            var order = 1
             for( c in chapters){
                 val chapTitle = c.select("h2").text().trim()
-                val content = c.select("p")
+                val contentp = c.select("p")
 
-                val formattedContent = content.joinToString( "\n" ) {it.outerHtml()}
+                val formattedContent = contentp.joinToString( "\n" ) {it.outerHtml()}
+
+                val chapter = Chapter(bookId, chapTitle, order, null)
+
+                val chapId = chapterd.insertChapter(chapter)
+
+                val content = Content(chapId.toInt(), formattedContent)
+
+                val contentId = contentd.insertContent(content)
+
+                //now that we have content id, add it to the created chapter
+                chapter.contentId = contentId.toString()
+                chapterd.updateChapter(chapter)
+
+                order++
             }
 
         } catch (e: Exception){
