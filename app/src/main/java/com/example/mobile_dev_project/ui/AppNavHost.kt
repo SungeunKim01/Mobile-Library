@@ -12,9 +12,11 @@ import com.example.mobile_dev_project.ui.screens.HomeScreen
 import com.example.mobile_dev_project.ui.screens.TableOfContentsScreen
 import com.example.mobile_dev_project.ui.screens.ReadingScreen
 import com.example.mobile_dev_project.data.mockChapters
+import com.example.mobile_dev_project.data.mockContents
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.example.mobile_dev_project.data.mockContent
 
 
 /**
@@ -69,7 +71,7 @@ fun AppNavHost(
             TableOfContentsScreen(
                 onBack = { nav.popBackStack() },
                 onChapterSelected = { chapter ->
-                    val index = mockChapters.indexOfFirst { it.title == chapter.title }
+                    val index = mockChapters.indexOfFirst { it.chapterTitle == chapter.chapterTitle }
                     if (index >= 0) {
                         nav.navigate(Route.Reading.createRoute(index))
                     }
@@ -84,6 +86,7 @@ fun AppNavHost(
             val chapterIndex = backStackEntry.arguments?.getInt("chapterIndex")
             ReadingScreen(
                 chapters = mockChapters,
+                contents = mockContents,
                 chapterIndexSelected = chapterIndex ?: 0,
                 onSearch = { nav.navigate(Route.Search.route) },
                 onBack = { nav.popBackStack() }

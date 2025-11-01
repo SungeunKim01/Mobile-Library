@@ -85,13 +85,13 @@ class ParsingRepository @Inject constructor(
             val formattedContent = contentp.joinToString( "\n" ) {it.outerHtml()}
             saveChaptersInHtml(directory, order, chapTitle, formattedContent)
 
-            val chapter = Chapter(bookId, chapTitle, order, null)
+            val chapter = Chapter(bookId, chapTitle, order, 0)
             val chapId = chapterd.insertChapter(chapter)
             val content = Content(chapId.toInt(), formattedContent)
             val contentId = contentd.insertContent(content)
 
             //now that we have content id, add it to the created chapter
-            chapter.contentId = contentId.toString()
+            chapter.contentId = contentId.toInt()
             chapterd.updateChapter(chapter)
 
             order++

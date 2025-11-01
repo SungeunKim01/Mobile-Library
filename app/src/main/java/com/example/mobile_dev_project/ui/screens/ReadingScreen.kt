@@ -36,7 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.font.FontWeight
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import com.example.mobile_dev_project.data.Chapter
+import com.example.mobile_dev_project.data.UiChapter as Chapter
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.material3.MaterialTheme
@@ -45,12 +45,14 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.style.TextAlign
 import com.example.mobile_dev_project.R
+import com.example.mobile_dev_project.data.UiContent
 
 /**
  * Sets up the immersive mode and handles displaying the entire screen
  */
 @Composable
 fun ReadingScreen (chapters: List<Chapter>,
+                   contents: List<UiContent>,
                    chapterIndexSelected: Int,
                    onSearch: () -> Unit,
                    onBack: () -> Unit){
@@ -71,6 +73,7 @@ fun ReadingScreen (chapters: List<Chapter>,
     })){
         ReadingPageContent(
             chapters = chapters,
+            contents = contents,
             chapterIndexSelected = currentChapterIndex,
             onSearch = onSearch,
             onBack = onBack
@@ -84,6 +87,7 @@ fun ReadingScreen (chapters: List<Chapter>,
 @Composable
 fun ReadingPageContent(
     chapters: List<Chapter>,
+    contents: List<UiContent>,
     chapterIndexSelected: Int,
     onSearch: () -> Unit,
     onBack: () -> Unit,
@@ -98,16 +102,15 @@ fun ReadingPageContent(
         state = listState,
         horizontalArrangement = Arrangement.Center
     ) {
-        itemsIndexed(chapters) { index, (title, text) ->
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-            ) {
-                ChapterPage(title, text, onSearch, onBack)
-            }
+        itemsIndexed(chapters) { _, chapter ->
+            val contentText = contents.find { it.chapterId == chapter.chapterId }?.content ?: ""
+            ChapterPage(
+                title = chapter.chapterTitle,
+                content = contentText,
+                onSearch = onSearch,
+                onBack = onBack
+            )
         }
-
     }
 }
 

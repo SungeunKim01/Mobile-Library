@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 interface BookDao {
 
     @Insert
-    suspend fun insertBook(book: Book)
+    suspend fun insertBook(book: Book): Long
 
     @Update
     suspend fun updateBook(book: Book)

@@ -20,7 +20,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.mobile_dev_project.R
 import com.example.mobile_dev_project.data.mockChapters
-import com.example.mobile_dev_project.data.Chapter
+import com.example.mobile_dev_project.data.UiChapter as Chapter
 
 @Composable
 fun TableOfContentsScreen(
@@ -96,7 +96,7 @@ fun TableOfContentsScreen(
                             .fillMaxWidth()
                             .testTag("chapter_button_$chapter")
                     ) {
-                        Text(text = chapter.title)
+                        Text(text = chapter.chapterTitle)
                     }
                 }
             }
