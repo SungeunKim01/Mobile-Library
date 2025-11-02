@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 interface ContentDao {
 
     @Insert
-    suspend fun insertContent(content: Content)
+    suspend fun insertContent(content: Content) : Long
 
     @Update
     suspend fun updateContent(content: Content)
