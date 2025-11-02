@@ -8,22 +8,25 @@ import com.example.mobile_dev_project.data.mappers.toEntity
 import com.example.mobile_dev_project.data.repository.BookRepository
 import com.example.mobile_dev_project.data.repository.ChapterRepository
 import com.example.mobile_dev_project.data.repository.ContentRepository
+import com.example.mobile_dev_project.data.repository.ParsingRepository
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class StoreDataViewModel @Inject constructor(
     private val bookRepository: BookRepository,
     private val chapterRepository: ChapterRepository,
-    private val contentRepository: ContentRepository
+    private val contentRepository: ContentRepository,
+    private val parsingRepository: ParsingRepository
 ) : ViewModel() {
 
-    fun storeBookData(uiBook: UiBook, uiContents: List<UiContent>) {
+    fun storeBookData(uiBook: UiBook) {
         viewModelScope.launch {
             // Insert Book
             val bookId = bookRepository.insertBook(uiBook.toEntity())
+            val (parsedBook, parsedContents) = parsingRepository.parseHtml(bookId)
 
             // Insert Chapter
-            uiBook.chapters.forEachIndexed { index, uiChapter ->
+            parsedBook.chapters.forEachIndexed { index, uiChapter ->
                 val chapterEntity = uiChapter.copy(
                     bookId = bookId.toInt(),
                     chapterOrder = index + 1
@@ -32,11 +35,10 @@ class StoreDataViewModel @Inject constructor(
                 val chapterId = chapterRepository.insertChapter(chapterEntity)
 
                 // Insert Content
-                val content = uiContents.find { it.chapterId == uiChapter.chapterId }
-                if (content != null) {
-                    val contentEntity = content.copy(chapterId = chapterId.toInt()).toEntity()
-                    contentRepository.insertContent(contentEntity)
-                }
+                //bcs in parse repo chapter and content ids are null, it could run into error
+                val content = parsedContents[index]
+                val contentEntity = content.copy(chapterId = chapterId.toInt()).toEntity()
+                contentRepository.insertContent(contentEntity)
             }
         }
     }
