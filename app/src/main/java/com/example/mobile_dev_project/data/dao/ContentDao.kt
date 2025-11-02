@@ -21,7 +21,7 @@ interface ContentDao {
     suspend fun deleteContent(content: Content)
 
 
-    @Query("select * from contents")
+    @Query("select * from Book")
     fun getAllContents(): Flow<List<Content>>
 
     @Query("select * from contents where contentId = :contentId")
@@ -30,6 +30,6 @@ interface ContentDao {
     @Query("Select * from contents where chapterId = :chapterId")
     fun getContentForChapter(chapterId: Int): Flow<Content?>
 
-    @Query("delete from contents where chapterId = :chapterId")
+    @Query("select * from contents where chapterId = :chapterId")
     suspend fun deleteContentForChapter(chapterId: Int)
 }

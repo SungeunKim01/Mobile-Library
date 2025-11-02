@@ -22,8 +22,8 @@ class ChapterRepository @Inject constructor(
         return chapterDao.getChapterByOrder(bookId, order)
     }
 
-    suspend fun insertChapter(chapter: Chapter) {
-        chapterDao.insertChapter(chapter)
+    suspend fun insertChapter(chapter: Chapter) : Long {
+        return chapterDao.insertChapter(chapter)
     }
 
     suspend fun updateChapter(chapter: Chapter) {
