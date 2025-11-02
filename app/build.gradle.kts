@@ -83,7 +83,6 @@ dependencies {
     //Phase2
     implementation(libs.okhttp.v4110)
     implementation("com.fleeksoft.ksoup:ksoup:0.1.2")
-    implementation("com.fleeksoft.ksoup:ksoup-kotlinx:0.1.2")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
