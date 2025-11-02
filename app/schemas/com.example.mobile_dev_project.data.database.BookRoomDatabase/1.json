@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "0495bc170203160906ed2ed15381e591",
+    "identityHash": "3d72ed86cb8b06fc2a275f9289969095",
     "entities": [
       {
         "tableName": "Book",
@@ -50,7 +50,7 @@
       },
       {
         "tableName": "chapters",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`chapterId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `bookId` INTEGER NOT NULL, `chapterName` TEXT, `chapterOrder` INTEGER NOT NULL, `contentId` INTEGER NOT NULL, FOREIGN KEY(`bookId`) REFERENCES `Book`(`bookId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`chapterId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `bookId` INTEGER NOT NULL, `chapterName` TEXT, `chapterOrder` INTEGER NOT NULL, `contentId` INTEGER, FOREIGN KEY(`bookId`) REFERENCES `Book`(`bookId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "chapterId",
@@ -80,7 +80,7 @@
             "fieldPath": "contentId",
             "columnName": "contentId",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -152,7 +152,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0495bc170203160906ed2ed15381e591')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3d72ed86cb8b06fc2a275f9289969095')"
     ]
   }
 }

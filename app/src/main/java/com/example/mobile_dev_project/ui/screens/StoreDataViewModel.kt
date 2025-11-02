@@ -23,7 +23,7 @@ class StoreDataViewModel @Inject constructor(
         viewModelScope.launch {
             // Insert Book
             val bookId = bookRepository.insertBook(uiBook.toEntity())
-            val (parsedBook, parsedContents) = parsingRepository.parseHtml(bookId)
+            val (parsedBook, parsedContents) = parsingRepository.parseHtml(bookId.toString())
 
             // Insert Chapter
             parsedBook.chapters.forEachIndexed { index, uiChapter ->
