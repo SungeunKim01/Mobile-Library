@@ -18,10 +18,10 @@ class ParsingRepository @Inject constructor(
 ){
     //Locate the html file from the created book folder upon url entry and extract all metadata needed for storing later.
     //for the basics: https://github.com/fleeksoft/ksoup
-    suspend fun parseHtml(bookId: String): Pair<UiBook, List<UiContent>> = withContext(Dispatchers.IO){
+    suspend fun parseHtml(bookId: Long): Pair<UiBook, List<UiContent>> = withContext(Dispatchers.IO){
         try {
             //get html file
-            val directory = paths.bookContentFolder(bookId)
+            val directory = paths.bookContentFolder(bookId.toString())
             //val htmlFile = contentFolder.listFiles()
             //    ?.firstOrNull { it.name.endsWith(".html", ignoreCase = true) }
             //this is better bcs on other websites, maybe html file is under nested subfolder
@@ -76,7 +76,7 @@ class ParsingRepository @Inject constructor(
      * Extract the books chapters and their corresponding content.
      */
     private fun extractChapterAndContent(bookId: Int, directory: File, doc: Document)
-    :Pair<List<UiChapter>, List<UiContent>>{
+            :Pair<List<UiChapter>, List<UiContent>>{
         val chapters = mutableListOf<UiChapter>()
         val contents = mutableListOf<UiContent>()
 

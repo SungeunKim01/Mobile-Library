@@ -15,12 +15,12 @@ class DownloadBookViewModel : ViewModel() {
 
     //backing state for the url text field.
     var url by mutableStateOf("")
-    private set
+        private set
 
     //enabling the Add button
     //Now, any non blank text enables
     val canAdd: Boolean
-    get() = url.isNotBlank()
+        get() = url.isNotBlank()
 
     // event from Uui when user types into url textfield
     fun onUrlChanged(newUrl: String) {

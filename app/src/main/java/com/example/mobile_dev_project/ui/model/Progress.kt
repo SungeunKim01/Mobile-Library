@@ -8,5 +8,4 @@ data class ProgressState(
     val phase: ImportPhase,
     val message: String,
     val detail: String? = null,
-    val done: String? = null
 )

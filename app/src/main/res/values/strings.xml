@@ -35,4 +35,6 @@
         <item>https://www.gutenberg.org/cache/epub/1727/pg1727-h.zip</item>
     </string-array>
 
+    <string name="done">Done</string>
+
 </resources>
