@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 interface ContentDao {
 
     @Insert
-    suspend fun insertContent(content: Content)
+    suspend fun insertContent(content: Content): Long
 
     @Update
     suspend fun updateContent(content: Content)
@@ -21,7 +21,7 @@ interface ContentDao {
     suspend fun deleteContent(content: Content)
 
 
-    @Query("select * from Book")
+    @Query("select * from contents")
     fun getAllContents(): Flow<List<Content>>
 
     @Query("select * from contents where contentId = :contentId")
