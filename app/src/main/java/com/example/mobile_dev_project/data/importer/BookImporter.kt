@@ -23,7 +23,7 @@ import javax.inject.Inject
  * 3 Parse html(ParsingRepository) - UiBook and UiContent
  * 4 - Save to Room (Book, Chapter, Content)
  */
-class ImportBooksUseCase @Inject constructor(
+class BookImporter @Inject constructor(
     private val paths: BooksPaths,
     private val downloader: OkHttpDownloader,
     private val unzipper: UnzipUtils,
