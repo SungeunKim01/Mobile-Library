@@ -4,9 +4,6 @@ import android.util.Log
 import java.io.File
 import javax.inject.Inject
 import com.example.mobile_dev_project.data.*
-import com.example.mobile_dev_project.data.entity.Book
-import com.example.mobile_dev_project.data.entity.Chapter
-import com.example.mobile_dev_project.data.entity.Content
 import com.example.mobile_dev_project.data.BooksPaths
 import com.fleeksoft.ksoup.Ksoup
 import com.fleeksoft.ksoup.nodes.Document
@@ -18,15 +15,19 @@ class ParsingRepository @Inject constructor(
 ){
     //Locate the html file from the created book folder upon url entry and extract all metadata needed for storing later.
     //for the basics: https://github.com/fleeksoft/ksoup
-    suspend fun parseHtml(bookId: Long): Pair<UiBook, List<UiContent>> = withContext(Dispatchers.IO){
+    suspend fun parseHtml(bookId: String): Pair<UiBook, List<UiContent>> = withContext(Dispatchers.IO){
         try {
             //get html file
-            val directory = paths.bookContentFolder(bookId.toString())
+            val directory = paths.bookContentFolder(bookId)
             //val htmlFile = contentFolder.listFiles()
             //    ?.firstOrNull { it.name.endsWith(".html", ignoreCase = true) }
             //this is better bcs on other websites, maybe html file is under nested subfolder
             //src: https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.io/walk-top-down.html
-            val html = directory.walkTopDown().firstOrNull {it.extension.equals("html", ignoreCase = true)}
+            val html = directory
+                .walkTopDown().firstOrNull { f ->
+                    val extension = f.extension.lowercase()
+                    extension == "html" || extension == "htm"
+                }
 
             if (html == null) {
                 Log.e("ParsingRepository", "HTML file not foudn for book: $bookId.")
@@ -70,47 +71,127 @@ class ParsingRepository @Inject constructor(
     }
 
     /**
-     * Locate <div> with the class name "chapter".
-     * Within that div, each one has a <h2> that represents their title,
-     * and each one has <p> tags that represents all their content.
-     * Extract the books chapters and their corresponding content.
+     * chapter and content extraction, returns Pair<List<UiChapter>, List<UiContent>>
+     * 1) Container based - if the source uses <div class="chapter"> per chapter:
+     * -Pick a display title from first h2/h3 in that div or default Chapter n
+     * - drop boilerplate within each chapter block
+     * -sve the chapter's html to file for offline viewing and caching
+     *
+     * 2 Heading based -If there are no div.chapter wrappers:
+     * - collect h2/h3 headings that look like chapter headings - CHAPTER n/roman num/digit
+     * - walk the doc forward (not only siblings) to collect the content until the next heading
+     * - clean boilerplate & save to file, then emit UiChapter and UiContent
+     *
+     * 3)fallback -if neither pattern matches, put entire <body> as one chapter
      */
     private fun extractChapterAndContent(bookId: Int, directory: File, doc: Document)
-            :Pair<List<UiChapter>, List<UiContent>>{
+    :Pair<List<UiChapter>, List<UiContent>> {
         val chapters = mutableListOf<UiChapter>()
         val contents = mutableListOf<UiContent>()
 
+        // div.chapter layout
         val chapterDivs = doc.select("div.chapter")
-        //might need to do smt here so that it doesnt save "toc" chapter
-        var order = 1
-        for( c in chapterDivs){
-            val chapTitle = c.select("h2").text().trim()
-            val contentp = c.select("p")
+        if (chapterDivs.isNotEmpty()) {
+            var order = 1
+            for (c in chapterDivs) {
+                // explicit heading within the chapter block (h2/h3) & Clean whitespace
+                val raw = c.select("h2, h3").firstOrNull()?.text()?.trim()
+                val chapTitle =
+                    if (raw.isNullOrBlank()) {
+                        "Chapter $order"
+                    } else {
+                        raw
+                    }
 
-            val formattedContent = contentp.joinToString( "\n" ) {it.outerHtml()}
-            saveChaptersInHtml(directory, order, chapTitle, formattedContent)
+                // strip boilerplate inside each chapter
+                c.select("div.agate, div.secthead").remove()
 
-            val uiChapter = UiChapter(null, chapTitle, order, bookId, null)
-            chapters.add(uiChapter)
+                //chapter payload becomes the remaining html inside this chapter div
+                val chapterHtml = c.html()
+                // persist each chapter chunk as an individual html file
+                saveChaptersInHtml(directory, order, chapTitle, chapterHtml)
 
-
-            val uiContent = UiContent(null, 0, formattedContent) // temporarily chapter id is set to 0
-            contents.add(uiContent)
-
-            order++
+                chapters += UiChapter(null, chapTitle, order, bookId, null)
+                contents += UiContent(null, 0, chapterHtml)
+                order++
+            }
+            return chapters to contents
         }
-        return Pair(chapters, contents)
-    }
-    /**
-     * Save processed chapters as seperate HTML files
-     */
-    private fun saveChaptersInHtml(directory: File, order: Int, title: String, content: String){
-        //IT SHOULD EXIST. since we retrieved it earlier.
-//        if(!directory.exists()){
-//            directory.mkdirs()
-//        }
 
-        // no weird spacing or characters for folder names
+        // heading based - no div.chapter
+        // filter h2/h3 that resemble real chapter headings
+        val headings = doc.select("h2, h3").filter { looksLikeChapter(it.text()) }
+        if (headings.isNotEmpty()) {
+            var order = 1
+
+            //from Dorian's referring source - https://github.com/fleeksoft/ksoup
+            // class i used - com.fleeksoft.ksoup.nodes.Element
+            fun isHeading(e: com.fleeksoft.ksoup.nodes.Element?): Boolean {
+                if (e == null) return false
+                val tag = e.tagName().lowercase()
+                return tag == "h2" || tag == "h3"
+            }
+
+            // walk forward in document order, not just direct siblings
+            fun nextBlock(cur: com.fleeksoft.ksoup.nodes.Element?): com.fleeksoft.ksoup.nodes.Element? {
+                // try nxt element sibling
+                cur?.nextElementSibling()?.let { return it }
+                // otherwise, climb up until can go right, then down
+                var up = cur?.parent()
+                var child: com.fleeksoft.ksoup.nodes.Element? = cur
+                while (up != null) {
+                    val next = child?.nextElementSibling()
+                    if (next != null) {
+                        return next
+                    }
+                    child = up
+                    up = up.parent()
+                }
+                return null
+            }
+            // for each chapter like heading, gather all subsequent blocks until the next heading
+            for ((i, h) in headings.withIndex()) {
+                val raw = h.text().trim()
+                val chapTitle =
+                    if (raw.isBlank()) {
+                        "Chapter $order"
+                    } else {
+                        raw
+                    }
+
+                val nextHeading = headings.getOrNull(i + 1)
+
+                // accumulate everything after this heading until the nxt heading
+                val chunk = StringBuilder()
+                var node = nextBlock(h)
+                while (node != null && node != nextHeading && !isHeading(node)) {
+                    // strip boilerplate that I do noy want to store
+                    node.select("div.agate, div.secthead").remove()
+                    chunk.append(node.outerHtml()).append('\n')
+                    node = nextBlock(node)
+                }
+                // if nothing accumulated, fallback to the nxt immediate block or empty paragraph
+                val chapterHtml = if (chunk.isEmpty()) h.nextElementSibling()?.outerHtml() ?: "<p></p>" else chunk.toString()
+                saveChaptersInHtml(directory, order, chapTitle, chapterHtml)
+
+                chapters += UiChapter(null, chapTitle, order, bookId, null)
+                contents += UiContent(null, 0, chapterHtml)
+                order++
+            }
+            return chapters to contents
+        }
+
+        // nothing matched
+        chapters += UiChapter(null, "Untitled", 1, bookId, null)
+        contents += UiContent(null, 0, doc.body()?.html().orEmpty())
+        return chapters to contents
+    }
+
+    //helper -save processed chapters as seperate html files
+    // referred this website for regex method: https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.text/to-regex.html
+    private fun saveChaptersInHtml(directory: File, order: Int, title: String, content: String){
+        // no weird spacing OR chars for folder names
+        // here im sing regex
         val formattedTitle = title.replace("[^a-zA-Z0-9_-]".toRegex(), "_")
         val htmlName = "${order}_$formattedTitle.html"
         val file = File(directory, htmlName)
@@ -118,4 +199,11 @@ class ParsingRepository @Inject constructor(
         file.writeText(content, Charsets.UTF_8)
     }
 
+    //helper - heading looks like a chapter - accet roman num or digits after CHAPTER
+    //Also I refer this website for using Regex: https://www.geeksforgeeks.org/kotlin/kotlin-regular-expression/
+    private fun looksLikeChapter(text: String): Boolean {
+        val t = text.trim().uppercase()
+        // common Gutenberg patterns
+        return t.startsWith("CHAPTER ") || t.matches(Regex("""^CHAPTER\s+[IVXLC\d]+.*"""))
+    }
 }
