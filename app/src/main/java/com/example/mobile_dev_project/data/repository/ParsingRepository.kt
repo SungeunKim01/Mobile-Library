@@ -104,7 +104,7 @@ class ParsingRepository @Inject constructor(
                     }
 
                 // strip boilerplate inside each chapter
-                c.select("div.agate, div.secthead").remove()
+                c.select("div#titlepage, div.agate, div.advertisement").remove()
 
                 //chapter payload becomes the remaining html inside this chapter div
                 val chapterHtml = c.html()
@@ -166,7 +166,7 @@ class ParsingRepository @Inject constructor(
                 var node = nextBlock(h)
                 while (node != null && node != nextHeading && !isHeading(node)) {
                     // strip boilerplate that I do noy want to store
-                    node.select("div.agate, div.secthead").remove()
+                    node.select("div#titlepage, div.agate, div.advertisement").remove()
                     chunk.append(node.outerHtml()).append('\n')
                     node = nextBlock(node)
                 }
