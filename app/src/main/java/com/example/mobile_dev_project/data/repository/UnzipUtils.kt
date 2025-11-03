@@ -1,4 +1,4 @@
-package com.example.mobile_dev_project.data
+package com.example.mobile_dev_project.data.repository
 
 import java.io.BufferedOutputStream
 import java.io.File

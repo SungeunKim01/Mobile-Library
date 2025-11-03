@@ -4,23 +4,23 @@
     <string name="table_of_contents">Table of Contents</string>
 
     <string name="download_title">Download Book</string>
-    <string name="download_url">Enter book URL</string>
+    <string name="download_url_label">Book URL</string>
+    <string name="download_url">Enter Book URL</string>
     <string name="download_action">Download &amp; Add to Library</string>
+    <string name="done">Done</string>
+    <string name="cancel">Cancel</string>
 
     <string name="search_title">Search</string>
     <string name="search_text">Search within the current book</string>
     <string name="no_results">No matches</string>
     <string name="results_fmt">%1$d results</string>
-
-    <string name="cancel">Cancel</string>
-
-
     <string name="search_btn">search</string>
-    <string name="back_btn">←</string>
 
+    <string name="back_btn">←</string>
     <string name ="home">H</string>string>
     <string name ="table">T</string>string>
     <string name ="search">S</string>string>
+
     <string name="title">Welcome to Mobile Library</string>
     <string name="last_use_text">Last Used:</string>string>
     <string name="add_book">Add New Book</string>
@@ -34,5 +34,4 @@
         <!-- The Odyssey -->
         <item>https://www.gutenberg.org/cache/epub/1727/pg1727-h.zip</item>
     </string-array>
-
 </resources>

@@ -9,12 +9,12 @@ plugins {
 
 android {
     namespace = "com.example.mobile_dev_project"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.mobile_dev_project"
         minSdk = 30
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -83,7 +83,6 @@ dependencies {
     //Phase2
     implementation(libs.okhttp.v4110)
     implementation("com.fleeksoft.ksoup:ksoup:0.1.2")
-    implementation("com.fleeksoft.ksoup:ksoup-kotlinx:0.1.2")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

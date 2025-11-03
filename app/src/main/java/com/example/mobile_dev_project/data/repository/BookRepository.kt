@@ -1,13 +1,22 @@
 package com.example.mobile_dev_project.data.repository
-
+import com.example.mobile_dev_project.data.BooksPaths
 import com.example.mobile_dev_project.data.dao.BookDao
+import com.example.mobile_dev_project.data.dao.ChapterDao
+import com.example.mobile_dev_project.data.dao.ContentDao
 import com.example.mobile_dev_project.data.entity.Book
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class BookRepository @Inject constructor(
-    private val bookDao: BookDao
+    private val paths: BooksPaths,
+    private val downloader: OkHttpDownloader,
+    private val unzipper: UnzipUtils,
+    private val parser: ParsingRepository,
+    private val bookDao: BookDao,
+    private val chapterDao: ChapterDao,
+    private val contentDao: ContentDao
 ) {
+    ///Room passthroughs
     val allBooks: Flow<List<Book>> = bookDao.getAllBooks()
 
     fun getBookById(bookId: Int): Flow<Book?> {
@@ -34,3 +43,4 @@ class BookRepository @Inject constructor(
         bookDao.deleteBook(book)
     }
 }
+
