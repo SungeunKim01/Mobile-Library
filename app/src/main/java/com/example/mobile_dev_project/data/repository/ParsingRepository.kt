@@ -86,8 +86,7 @@ class ParsingRepository @Inject constructor(
      */
     private fun extractChapterAndContent(bookId: Int, directory: File, doc: Document)
     :Pair<List<UiChapter>, List<UiContent>> {
-        val chapters = mutableListOf<UiChapter>()
-        val contents = mutableListOf<UiContent>()
+        val pairs = mutableListOf<Pair<UiChapter, UiContent>>()
 
         // div.chapter layout
         val chapterDivs = doc.select("div.chapter")
@@ -111,11 +110,12 @@ class ParsingRepository @Inject constructor(
                 // persist each chapter chunk as an individual html file
                 saveChaptersInHtml(directory, order, chapTitle, chapterHtml)
 
-                chapters += UiChapter(null, chapTitle, order, bookId, null)
-                contents += UiContent(null, 0, chapterHtml)
+                val uiChapter = UiChapter(null, chapTitle, order, bookId, null)
+                val uiContent = UiContent(null, 0, chapterHtml)
+                pairs += (uiChapter to uiContent)
                 order++
             }
-            return chapters to contents
+            return Pair(pairs.map{it.first}, pairs.map{it.second})
         }
 
         // heading based - no div.chapter
@@ -174,17 +174,19 @@ class ParsingRepository @Inject constructor(
                 val chapterHtml = if (chunk.isEmpty()) h.nextElementSibling()?.outerHtml() ?: "<p></p>" else chunk.toString()
                 saveChaptersInHtml(directory, order, chapTitle, chapterHtml)
 
-                chapters += UiChapter(null, chapTitle, order, bookId, null)
-                contents += UiContent(null, 0, chapterHtml)
+                val uiChapter = UiChapter(null, chapTitle, order, bookId, null)
+                val uiContent = UiContent(null, 0, chapterHtml)
+                pairs += (uiChapter to uiContent)
                 order++
             }
-            return chapters to contents
+            return Pair(pairs.map{it.first}, pairs.map{it.second})
         }
 
         // nothing matched
-        chapters += UiChapter(null, "Untitled", 1, bookId, null)
-        contents += UiContent(null, 0, doc.body()?.html().orEmpty())
-        return chapters to contents
+        val chapters = UiChapter(null, "Untitled", 1, bookId, null)
+        val contents = UiContent(null, 0, doc.body()?.html().orEmpty())
+        pairs += (chapters to contents)
+        return Pair(pairs.map{it.first}, pairs.map{it.second})
     }
 
     //helper -save processed chapters as seperate html files

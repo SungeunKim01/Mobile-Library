@@ -26,20 +26,17 @@ class StoreDataViewModel @Inject constructor(
             val (parsedBook, parsedContents) = parsingRepository.parseHtml(bookId.toString())
 
             // Insert Chapter
-            parsedBook.chapters.forEachIndexed { index, uiChapter ->
-                val chapterEntity = uiChapter.copy(
-                    bookId = bookId.toInt(),
-                    chapterOrder = index + 1
+            for(i in parsedBook.chapters.indices){
+                val chap = parsedBook.chapters[i]
+                val content = parsedContents.getOrNull(i) ?: continue
+                val chapterEntity = chap.copy(
+                    bookId = bookId.toInt()
                 ).toEntity()
-
                 val chapterId = chapterRepository.insertChapter(chapterEntity)
-
-                // Insert Content
-                //bcs in parse repo chapter and content ids are null, it could run into error
-                val content = parsedContents[index]
                 val contentEntity = content.copy(chapterId = chapterId.toInt()).toEntity()
                 contentRepository.insertContent(contentEntity)
             }
+
         }
     }
 }
