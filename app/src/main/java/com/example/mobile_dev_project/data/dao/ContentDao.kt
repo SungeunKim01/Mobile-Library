@@ -32,4 +32,11 @@ interface ContentDao {
 
     @Query("select * from contents where chapterId = :chapterId")
     suspend fun deleteContentForChapter(chapterId: Int)
+
+    @Query("select contentLocation from contents where contentId = :contentId")
+    suspend fun getScrollPosition(contentId: Int): Float?
+
+    @Query("update contents set contentLocation = :scrollPosition where contentId = :contentId")
+    suspend fun updateScrollPosition(contentId: Int, scrollPosition: Float)
+
 }
