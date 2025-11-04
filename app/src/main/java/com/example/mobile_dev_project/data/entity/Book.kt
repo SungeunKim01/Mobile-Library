@@ -18,17 +18,17 @@ class Book {
     var bookCoverPath: String? = null
 
     @ColumnInfo(name= "lastAccessed")
-    var lastAccessed: Long? = null
+    var lastAccessed: String? = null
     @ColumnInfo(name = "bookAdded")
-    var bookAdded: Long? = null
+    var bookAdded: String? = null
 
 
     constructor() {}
 
-    constructor(BookTitle: String, BookCoverPath: String, bookAdded: Long) {
+    constructor(BookTitle: String, BookCoverPath: String, bookAdded: String) {
         this.bookTitle = BookTitle
         this.bookCoverPath = BookCoverPath
-        this.bookAdded =bookAdded
+        this.bookAdded = bookAdded
     }
 }
 
