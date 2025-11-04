@@ -205,7 +205,15 @@ class ParsingRepository @Inject constructor(
     //Also I refer this website for using Regex: https://www.geeksforgeeks.org/kotlin/kotlin-regular-expression/
     private fun looksLikeChapter(text: String): Boolean {
         val t = text.trim().uppercase()
-        // common Gutenberg patterns
-        return t.startsWith("CHAPTER ") || t.matches(Regex("""^CHAPTER\s+[IVXLC\d]+.*"""))
+
+        if (t.contains("CONTENTS") || t.contains("ILLUSTRATIONS")) return false
+
+        // common gutenberg patterns
+        return t.matches(Regex("""^(CHAPTER|BOOK|SECTION|STAVE)\b.*""")) ||
+                t.matches(Regex("""^([IVXLCDM]+|[0-9]+)[\.\s].*""")) ||
+                t.startsWith("CHAPTER ") ||
+                t.startsWith("STAVE ") ||
+                t.startsWith("BOOK ") ||
+                t.startsWith("SECTION ")
     }
 }
