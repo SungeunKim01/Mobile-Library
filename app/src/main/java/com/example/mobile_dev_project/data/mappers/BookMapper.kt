@@ -9,21 +9,21 @@ fun UiBook.toEntity(): BookEntity {
     val entity = BookEntity(
         BookTitle = this.title,
         BookCoverPath = this.coverPath ?: "",
-        bookAdded = this.dateAdded.time
+        bookAdded = this.dateAdded
     )
-    entity.lastAccessed = this.lastAccessed.time
+    entity.lastAccessed = this.lastAccessed
     entity.bookId = this.bookId ?: 0
     return entity
 }
 
 fun BookEntity.toUi(): UiBook {
-    val uiBook = UiBook(
+    return UiBook(
         bookId = this.bookId,
         title = this.bookTitle ?: "",
         coverPath = this.bookCoverPath,
         chapters = emptyList()
-    )
-    uiBook.dateAdded = Date(this.bookAdded ?: System.currentTimeMillis())
-    uiBook.lastAccessed = Date(this.lastAccessed ?: System.currentTimeMillis())
-    return uiBook
+    ).apply {
+        dateAdded = this@toUi.bookAdded ?: ""
+        lastAccessed = this@toUi.lastAccessed ?: ""
+    }
 }
