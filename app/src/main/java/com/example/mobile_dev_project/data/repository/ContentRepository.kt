@@ -33,4 +33,12 @@ class ContentRepository @Inject constructor(
     suspend fun deleteContentForChapter(chapterId: Int) {
         contentDao.deleteContentForChapter(chapterId)
     }
+
+    suspend fun getScreenPosition(contentId: Int): Float? {
+        return contentDao.getScrollPosition(contentId)
+    }
+
+    suspend fun updateScreenPosition(contentId: Int, scrollPosition: Float) {
+        contentDao.updateScrollPosition(contentId, scrollPosition)
+    }
 }
