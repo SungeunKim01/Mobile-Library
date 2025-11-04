@@ -1,5 +1,6 @@
 package com.example.mobile_dev_project.ui.screens
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mobile_dev_project.data.UiBook
@@ -21,6 +22,14 @@ class StoreDataViewModel @Inject constructor(
 
     fun storeBookData(uiBook: UiBook) {
         viewModelScope.launch {
+
+            //note: checking if book exists before inserting!
+            val existingBook = bookRepository.bookExists(uiBook.title)
+            if (existingBook) {
+                Log.e("StoreDataViewModel","Book already exists. No duplicates allowed.")
+                return@launch
+            }
+
             // Insert Book
             val bookId = bookRepository.insertBook(uiBook.toEntity())
             val (parsedBook, parsedContents) = parsingRepository.parseHtml(bookId.toString())

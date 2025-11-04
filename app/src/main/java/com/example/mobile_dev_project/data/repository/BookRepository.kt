@@ -42,5 +42,9 @@ class BookRepository @Inject constructor(
     suspend fun deleteBook(book: Book) {
         bookDao.deleteBook(book)
     }
+
+    suspend fun bookExists(title: String): Boolean{
+        return bookDao.getBookByTitle(title) != null
+    }
 }
 
