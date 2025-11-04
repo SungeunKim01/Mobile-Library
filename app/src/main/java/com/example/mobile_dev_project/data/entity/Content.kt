@@ -26,10 +26,19 @@ class Content {
     @ColumnInfo(name = "content")
     var content: String? = null
 
+    //Ask teacher about this!!!!!!!
+    @ColumnInfo(name = "contentLongitude")
+    var contentLongitude: Double = 0.0
+
+    @ColumnInfo(name = "contentLocation")
+    var contentLocation: Float = 0f
+
     constructor() {}
 
     constructor(chapterId: Int, content: String?) {
         this.chapterId = chapterId
         this.content = content
     }
+
+
 }

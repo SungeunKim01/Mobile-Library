@@ -13,7 +13,7 @@ import com.example.mobile_dev_project.data.entity.Content
 
 @Database(
     entities = [Book::class, Chapter::class, Content::class],
-    version = 1,
+    version = 2,
     )
 abstract class BookRoomDatabase : RoomDatabase(){
 
@@ -31,7 +31,9 @@ abstract class BookRoomDatabase : RoomDatabase(){
                         context.applicationContext,
                         BookRoomDatabase::class.java,
                         "book_reading_database"
-                    ).build()
+                    )
+                        .fallbackToDestructiveMigration()
+                        .build()
                     INSTANCE = instance
                 }
                 return instance

@@ -85,8 +85,11 @@ class BookImporter @Inject constructor(
             val bookEntity = Book().apply {
                 bookTitle = uiBook.title
                 bookCoverPath = uiBook.coverPath
-                bookAdded = System.currentTimeMillis()
-                lastAccessed = System.currentTimeMillis()
+                val formatter = java.text.SimpleDateFormat("yyyy/MM/dd HH:mm:ss", java.util.Locale.getDefault())
+                val currentTime = formatter.format(java.util.Date())
+
+                bookAdded = currentTime
+                lastAccessed = currentTime
             }
             val newBookId = bookDao.insertBook(bookEntity).toInt()
 
