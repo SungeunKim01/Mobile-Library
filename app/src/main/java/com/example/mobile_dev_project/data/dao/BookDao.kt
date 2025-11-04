@@ -24,6 +24,9 @@ interface BookDao {
     @Query("select * from Book where bookId = :bookId Limit 1")
     suspend fun getSingularBookById(bookId: Int): Book?
 
+    @Query("select * from Book where bookTitle = :title limit 1")
+    suspend fun getBookByTitle(title: String): Book?
+
     //for the ui, we need flows
     @Query("select * from Book")
     fun getAllBooks(): Flow<List<Book>>
