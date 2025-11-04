@@ -29,9 +29,7 @@ class RetrieveDataViewModel @Inject constructor(
         return chapterRepository.getChaptersForBook(bookId).first().map{ it.toUi()}
     }
     suspend fun getContentForChapter(chapId: Int): UiContent?{
-        val content = contentRepository.getContentForChapter(chapId)
-
-        return content.first()?.toUi()
+        return contentRepository.getContentForChapter(chapId).first()?.toUi()
     }
 
 }
