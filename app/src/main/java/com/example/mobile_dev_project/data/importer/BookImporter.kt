@@ -16,7 +16,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
-import androidx.core.net.toUri
 import androidx.room.withTransaction
 import com.example.mobile_dev_project.data.database.BookRoomDatabase
 import com.example.mobile_dev_project.data.util.normalizeUrl
@@ -64,7 +63,7 @@ class BookImporter @Inject constructor(
 
             // Resolve file paths
             // /files/books/{id}/{id}.zip
-            val zip: File = paths.bookZipFolder(bookId)
+            val zip: File = paths.bookZipFile(bookId)
             // /files/books/{id}/content
             val contentDir: File = paths.bookContentFolder(bookId)
 
