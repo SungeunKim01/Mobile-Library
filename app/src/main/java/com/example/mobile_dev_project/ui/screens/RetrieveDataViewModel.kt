@@ -14,9 +14,10 @@ import jakarta.inject.Inject
 import kotlinx.coroutines.launch
 import com.example.mobile_dev_project.data.mappers.*
 import com.example.mobile_dev_project.data.entity.*
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
 
-
+@HiltViewModel
 class RetrieveDataViewModel @Inject constructor(
     private val bookRepository: BookRepository,
     private val chapterRepository: ChapterRepository,

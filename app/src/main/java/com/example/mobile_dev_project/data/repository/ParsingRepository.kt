@@ -19,8 +19,6 @@ class ParsingRepository @Inject constructor(
         try {
             //get html file
             val directory = paths.bookContentFolder(bookId)
-            //val htmlFile = contentFolder.listFiles()
-            //    ?.firstOrNull { it.name.endsWith(".html", ignoreCase = true) }
             //this is better bcs on other websites, maybe html file is under nested subfolder
             //src: https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.io/walk-top-down.html
             val html = directory
@@ -28,7 +26,6 @@ class ParsingRepository @Inject constructor(
                     val extension = f.extension.lowercase()
                     extension == "html" || extension == "htm"
                 }
-
             if (html == null) {
                 Log.e("ParsingRepository", "HTML file not foudn for book: $bookId.")
                 return@withContext Pair(
@@ -38,15 +35,13 @@ class ParsingRepository @Inject constructor(
             }
             val htmlContent = html.readText(Charsets.UTF_8)
             val doc: Document = Ksoup.parse(htmlContent)
-
             //get the title that is inside meta tag and if doesnt exist, just get title from title tag
             val bookTitle = extractBookTitle(doc)
-
+            val image = findCoverImage(bookId, paths)
             //get chapters & their content
             val (chapters, contents) = extractChapterAndContent(bookId.toInt(), directory, doc)
-
             //create uibook using title
-            val uiBook = UiBook(bookId.toInt(), chapters, bookTitle,"")
+            val uiBook = UiBook(bookId.toInt(), chapters, bookTitle,image ?: "")
             Pair(uiBook, contents)
         } catch (e: Exception){
             Log.e("ParsingRepository", "Error occurred while parsing book with id $bookId: ${e.message}")
@@ -216,4 +211,22 @@ class ParsingRepository @Inject constructor(
                 t.startsWith("BOOK ") ||
                 t.startsWith("SECTION ")
     }
+
+    /**
+     * Find cover image in images folder and return it's absolute path to store in db later.
+     */
+    private fun findCoverImage(bookId: String, paths: BooksPaths): String? {
+        val imagesFolder = paths.bookImagesFolder(bookId)
+        val possibleCovers = listOf("cover.jpg", "cover.jpeg", "cover.png")
+
+        val coverFile = imagesFolder
+            .listFiles()
+            ?.firstOrNull { file ->
+                possibleCovers.any { name -> file.name.equals(name, ignoreCase = true) }
+            }
+
+        //store the absolute path in db
+        return coverFile?.absolutePath
+    }
+
 }
