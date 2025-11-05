@@ -16,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
+import androidx.core.net.toUri
 
 /**
  * 1-Download ZIP to /files/books/{id}/{id}.zip
