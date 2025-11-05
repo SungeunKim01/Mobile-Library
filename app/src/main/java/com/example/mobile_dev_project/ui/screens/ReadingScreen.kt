@@ -1,7 +1,6 @@
 package com.example.mobile_dev_project.ui.screens
 
 import android.app.Activity
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -20,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -53,6 +51,8 @@ import com.example.mobile_dev_project.data.UiChapter
 /**
  * Sets up the immersive mode and handles displaying the entire screen
  * Get data from table of contents, fetch content from chapters from view model.
+ * general sources: - Week 12: Room Database slide 63
+ *                  - https://developer.android.com/develop/ui/views/layout/immersive
  */
 @Composable
 fun ReadingScreen (bookId: Int,
@@ -123,12 +123,15 @@ fun ReadingPageContent(
     ) {
         itemsIndexed(chapters) { _, chapter ->
             val contentText = contents.find { it.chapterId == chapter.chapterId }?.content ?: ""
-            ChapterPage(
-                title = chapter.chapterTitle,
-                content = contentText,
-                onSearch = onSearch,
-                onBack = onBack
-            )
+            chapter.contentId?.let {
+                ChapterPage(
+                    title = chapter.chapterTitle,
+                    content = contentText,
+                    contentId = it,
+                    onSearch = onSearch,
+                    onBack = onBack,
+                    )
+            }
         }
     }
 }
@@ -137,6 +140,7 @@ fun ReadingPageContent(
 /**
  * Displays a single chapter of the book.
  * Display search and back button.
+ * scrolling: https://developer.android.com/reference/kotlin/androidx/compose/foundation/package-summary#rememberScrollState(kotlin.Int)
  */
 
 //for the floating action btn
@@ -145,22 +149,27 @@ fun ReadingPageContent(
 fun ChapterPage(
     title: String,
     content: String,
+    contentId: Int,
     onSearch: () -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    viewModel: PositionViewModel = hiltViewModel()
 ) {
+    val state = rememberScrollState()
+    LaunchedEffect(contentId) {
+        viewModel.getScrollPosition(contentId)?.let { saved ->
+            state.scrollTo(saved.toInt())
+        }
+    }
+    LaunchedEffect(state.value) {
+        viewModel.saveScrollPosition(contentId, state.value.toFloat())
+    }
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
-            modifier = Modifier.fillMaxSize().padding(horizontal = dimensionResource(R.dimen.padding_reg), vertical = dimensionResource(R.dimen.space_xxl)).verticalScroll(rememberScrollState())
+            modifier = Modifier.fillMaxSize().padding(horizontal = dimensionResource(R.dimen.padding_reg), vertical = dimensionResource(R.dimen.space_xxl)).verticalScroll(state)
         ) {
             SearchButton(onSearch)
             Spacer(Modifier.height(dimensionResource(R.dimen.padding_reg)))
-            Text(text = title,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                lineHeight = dimensionResource(R.dimen.line_height_reg).value.sp,
-                modifier = Modifier.padding(bottom = dimensionResource(R.dimen.padding_reg)).testTag("title"),
-                textAlign = TextAlign.Center
-            )
+            ChapterTitle(title)
             ChapterContent(content)
         }
         FloatingActionButton(onClick = onBack,
@@ -173,6 +182,16 @@ fun ChapterPage(
     }
 }
 
+@Composable
+fun ChapterTitle(title: String){
+    Text(text = title,
+        style = MaterialTheme.typography.titleLarge,
+        fontWeight = FontWeight.Bold,
+        lineHeight = dimensionResource(R.dimen.line_height_reg).value.sp,
+        modifier = Modifier.padding(bottom = dimensionResource(R.dimen.padding_reg)).testTag("title"),
+        textAlign = TextAlign.Center
+    )
+}
 /**
  * Displays the content of a chapter.
  */
