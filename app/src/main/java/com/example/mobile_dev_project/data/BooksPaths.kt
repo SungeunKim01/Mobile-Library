@@ -15,14 +15,14 @@ class BooksPaths(private val appContext: Context) {
         File(appContext.filesDir, "books").apply { mkdirs() }
     }
     //per book folder- /files/books/{bookId}
-    fun bookFolder(bookId: String): File =
+    fun bookRoot(bookId: String): File =
         File(booksRoot, bookId).apply { mkdirs() }
     // downloaded zip path - /files/books/{bookId}/{bookId}.zip
-    fun bookZipFolder(bookId: String): File =
-        File(bookFolder(bookId), "$bookId.zip")
+    fun bookZipFile(bookId: String): File =
+        File(bookRoot(bookId), "$bookId.zip")
     //unzipped html content - /files/books/{bookId}/content
     fun bookContentFolder(bookId: String): File =
-        File(bookFolder(bookId), "content").apply { mkdirs() }
+        File(bookRoot(bookId), "content").apply { mkdirs() }
 
     // folder containing images: /files/books/{bookId}/content/images
     fun bookImagesFolder(bookId: String): File =

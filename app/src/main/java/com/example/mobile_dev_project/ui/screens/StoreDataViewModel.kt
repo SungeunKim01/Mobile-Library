@@ -20,7 +20,7 @@ class StoreDataViewModel @Inject constructor(
     private val parsingRepository: ParsingRepository
 ) : ViewModel() {
 
-    fun storeBookData(uiBook: UiBook) {
+    fun storeBookData(uiBook: UiBook, sourceUrl: String) {
         viewModelScope.launch {
 
             //note: checking if book exists before inserting!
@@ -31,21 +31,19 @@ class StoreDataViewModel @Inject constructor(
             }
 
             // Insert Book
-            val bookId = bookRepository.insertBook(uiBook.toEntity())
+            val bookId = bookRepository.insertBook(uiBook.toEntity(sourceUrl))
+            // pasrse html using the forlder key
             val (parsedBook, parsedContents) = parsingRepository.parseHtml(bookId.toString())
 
-            // Insert Chapter
+            // Insert Chapter and contents w returned ids
             for(i in parsedBook.chapters.indices){
                 val chap = parsedBook.chapters[i]
                 val content = parsedContents.getOrNull(i) ?: continue
-                val chapterEntity = chap.copy(
-                    bookId = bookId.toInt()
-                ).toEntity()
+                val chapterEntity = chap.copy(bookId = bookId.toInt()).toEntity()
                 val chapterId = chapterRepository.insertChapter(chapterEntity)
                 val contentEntity = content.copy(chapterId = chapterId.toInt()).toEntity()
                 contentRepository.insertContent(contentEntity)
             }
-
         }
     }
 }
