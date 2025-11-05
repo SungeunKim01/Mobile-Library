@@ -20,22 +20,29 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mobile_dev_project.R
+import androidx.compose.runtime.getValue
 import com.example.mobile_dev_project.ui.theme.MobileDevProjectTheme
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import com.example.mobile_dev_project.data.entity.Book
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 //This will add everything together and add the title of the bookApp with the Logo on the top, in typography title size
 @Composable
-fun HomeScreen(viewModel: HomeScreenViewModel = viewModel(),
+fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel(),
                onNavigateToDownload: () -> Unit = {}
 ) {
+    val books by viewModel.topThreeBooks.collectAsState()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -61,7 +68,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel = viewModel(),
 
         }
         DownloadBookButton(onNavigateToDownload = onNavigateToDownload)
-        Bookself(viewModel.exampleBooks)
+        Bookshelf(books)
     }
 }
 //This will display the Restaurant Logo on the top
@@ -84,14 +91,14 @@ fun RestaurantLogo(modifier: Modifier = Modifier) {
 //This Composable will display the books in Columns 1 by one once it is callled into Book Composable to get what each
 // book will be formated adn say and then will be added to the column
 @Composable
-fun Bookself(books: List<Book>){
+fun Bookshelf(books: List<Book>) {
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .testTag("bookshelf"),
         verticalArrangement = Arrangement.SpaceEvenly
-    ){
-        books.forEach {
-                book ->
+    ) {
+        books.forEach { book ->
             Book(book)
         }
     }
@@ -116,10 +123,28 @@ fun Book(book: Book){
             contentScale = ContentScale.Crop
         )
         Spacer(modifier = Modifier.width(16.dp))
-        Text(text = stringResource(R.string.last_use_text) + " ${book.lastAccess}",
+
+        val displayDate = if (book.lastAccessed != null){
+            formatDate(book.lastAccessed)
+        } else {
+            formatDate(book.bookAdded)
+        }
+        Text(text = stringResource(R.string.last_use_text) + " ${displayDate}",
             color = MaterialTheme.colorScheme.onSecondary)
     }
 }
+
+//Function for Date that will format the date the way I want
+fun formatDate(timestamp: Long?): String {
+    if (timestamp == null) {
+        return "Nothing"
+    }
+    val formatter = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault())
+    return formatter.format(Date(timestamp))
+}
+
+
+
 //This will be a button that will navigate to Download screen so that they can add a book
 @Composable
 fun DownloadBookButton(onNavigateToDownload: () -> Unit){
