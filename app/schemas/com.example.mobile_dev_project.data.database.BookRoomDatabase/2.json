@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "d74f243674332339324cec0d59c8be38",
+    "identityHash": "f292b636a33dcb4584073325ba632061",
     "entities": [
       {
         "tableName": "Book",
@@ -106,7 +106,7 @@
       },
       {
         "tableName": "contents",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`contentId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `chapterId` INTEGER NOT NULL, `content` TEXT, FOREIGN KEY(`chapterId`) REFERENCES `chapters`(`chapterId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`contentId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `chapterId` INTEGER NOT NULL, `content` TEXT, `contentLongitude` REAL NOT NULL, `contentLocation` REAL NOT NULL, FOREIGN KEY(`chapterId`) REFERENCES `chapters`(`chapterId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "contentId",
@@ -125,6 +125,18 @@
             "columnName": "content",
             "affinity": "TEXT",
             "notNull": false
+          },
+          {
+            "fieldPath": "contentLongitude",
+            "columnName": "contentLongitude",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "contentLocation",
+            "columnName": "contentLocation",
+            "affinity": "REAL",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -152,7 +164,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd74f243674332339324cec0d59c8be38')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f292b636a33dcb4584073325ba632061')"
     ]
   }
 }
