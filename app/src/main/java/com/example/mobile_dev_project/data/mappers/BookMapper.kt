@@ -5,11 +5,12 @@ import com.example.mobile_dev_project.data.UiBook
 import java.util.Date
 import com.example.mobile_dev_project.data.entity.Book as BookEntity
 
-fun UiBook.toEntity(): BookEntity {
+fun UiBook.toEntity(sourceUrl: String): BookEntity {
     val entity = BookEntity(
         BookTitle = this.title,
         BookCoverPath = this.coverPath ?: "",
-        bookAdded = this.dateAdded
+        bookAdded = this.dateAdded,
+        sourceUrl = sourceUrl
     )
     entity.lastAccessed = this.lastAccessed
     entity.bookId = this.bookId ?: 0
