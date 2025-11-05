@@ -17,6 +17,8 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.example.mobile_dev_project.data.mockContent
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.mobile_dev_project.ui.screens.RetrieveDataViewModel
 
 
 /**
@@ -67,8 +69,16 @@ fun AppNavHost(
             )
         }
 
-        composable(Route.Content.route){
+        composable(
+            route = Route.Content.route + "/{bookId}",
+            arguments = listOf(navArgument("bookId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val bookId = backStackEntry.arguments?.getInt("bookId") ?: 0
+            // get vm
+            val viewModel = hiltViewModel<RetrieveDataViewModel>()
             TableOfContentsScreen(
+                bookId = bookId,
+                viewModel = viewModel,
                 onBack = { nav.popBackStack() },
                 onChapterSelected = { chapter ->
                     val index = mockChapters.indexOfFirst { it.chapterTitle == chapter.chapterTitle }
@@ -78,6 +88,7 @@ fun AppNavHost(
                 }
             )
         }
+
         composable(Route.Reading.route,
             arguments = listOf(navArgument("chapterIndex") {
                 type = NavType.IntType

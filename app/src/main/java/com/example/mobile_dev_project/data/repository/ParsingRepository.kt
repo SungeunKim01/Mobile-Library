@@ -32,7 +32,7 @@ class ParsingRepository @Inject constructor(
             if (html == null) {
                 Log.e("ParsingRepository", "HTML file not foudn for book: $bookId.")
                 return@withContext Pair(
-                    UiBook(bookId = bookId.toInt(), title = "Untitled Book", coverPath = "", chapters = emptyList()),
+                    UiBook(bookId = null, title = "Untitled Book", coverPath = "", chapters = emptyList()),
                     emptyList()
                 )
             }
@@ -43,15 +43,15 @@ class ParsingRepository @Inject constructor(
             val bookTitle = extractBookTitle(doc)
 
             //get chapters & their content
-            val (chapters, contents) = extractChapterAndContent(bookId.toInt(), directory, doc)
+            val (chapters, contents) = extractChapterAndContent(-1, directory, doc)
 
             //create uibook using title
-            val uiBook = UiBook(bookId.toInt(), chapters, bookTitle,"")
+            val uiBook = UiBook(bookId = null, chapters = chapters, title = bookTitle, coverPath = "")
             Pair(uiBook, contents)
         } catch (e: Exception){
             Log.e("ParsingRepository", "Error occurred while parsing book with id $bookId: ${e.message}")
             Pair(
-                UiBook(bookId = bookId.toInt(), title = "Untitled Book", coverPath = "", chapters = emptyList()),
+                UiBook(bookId = null, title = "Untitled Book", coverPath = "", chapters = emptyList()),
                 emptyList()
             )
         }
