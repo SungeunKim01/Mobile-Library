@@ -14,23 +14,28 @@ import jakarta.inject.Inject
 import kotlinx.coroutines.launch
 import com.example.mobile_dev_project.data.mappers.*
 import com.example.mobile_dev_project.data.entity.*
-import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 
-@HiltViewModel
+
 class RetrieveDataViewModel @Inject constructor(
     private val bookRepository: BookRepository,
     private val chapterRepository: ChapterRepository,
     private val contentRepository: ContentRepository
 ) : ViewModel() {
-    suspend fun getBookshelf() : List<UiBook>{
-        return bookRepository.allBooks.first().map { it.toUi() }
+    fun getBookshelf(): Flow<List<UiBook>> {
+        return bookRepository.allBooks.map { books ->
+            books.map { it.toUi() }
+        }
     }
-    suspend fun getChaptersForBook(bookId: Int): List<UiChapter>?{
-        return chapterRepository.getChaptersForBook(bookId).first().map{ it.toUi()}
+    fun getChaptersForBook(bookId: Int): Flow<List<UiChapter>> {
+        return chapterRepository.getChaptersForBook(bookId)
+            .map { chapters -> chapters.map { it.toUi() } }
     }
-    suspend fun getContentForChapter(chapId: Int): UiContent?{
-        return contentRepository.getContentForChapter(chapId).first()?.toUi()
+    fun getContentForChapter(chapId: Int): Flow<UiContent?> {
+        return contentRepository.getContentForChapter(chapId)
+            .map { contentEntity -> contentEntity?.toUi() }
     }
 
 }

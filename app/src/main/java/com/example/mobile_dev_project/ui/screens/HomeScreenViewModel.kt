@@ -1,23 +1,35 @@
 package com.example.mobile_dev_project.ui.screens
 
 import androidx.lifecycle.ViewModel
-import androidx.compose.runtime.mutableStateListOf
+import androidx.lifecycle.viewModelScope
+import com.example.mobile_dev_project.data.entity.Book
+import com.example.mobile_dev_project.data.repository.BookRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import javax.inject.Inject
+import kotlinx.coroutines.launch
 
-//Temporary until we actually add books and dataclass
-data class Book(val title: String, val coverId: Int, val lastAccess: String)
-class HomeScreenViewModel : ViewModel() {
 
-    //Christian
-    //List of books examples This is just examples, I know that the text should be in string.xml but its not a composable, I will fix this next milestone
-    val exampleBooks = mutableStateListOf(
-        Book("Book 1", 1, "Oct 14, 2025"),
-        Book("Book 2", 2, "Oct 13, 2023"),
-        Book("Book 3", 3, "Oct 12, 2024"),
-        Book("Book 4", 4, "Oct 11, 2022")
-    )
+@HiltViewModel
+class HomeScreenViewModel @Inject constructor (
+    private val repository: BookRepository
+) : ViewModel() {
+    private val _topThreeBooks = MutableStateFlow<List<Book>>(emptyList())
+    val topThreeBooks: StateFlow<List<Book>> = _topThreeBooks.asStateFlow()
 
-    fun addBook(book: Book){
-        exampleBooks.add(book)
+    init {
+        viewModelScope.launch {
+            repository.getBooksByLastAccessed().collect { books ->
+                val sortedBooks = books.sortedByDescending { book ->
+                    //This is actually fun which says if lastAccessed
+                    // is null then go to bookAdded
+                    book.lastAccessed ?: book.bookAdded
+                }
+                _topThreeBooks.value = sortedBooks.take(3)
+            }
+        }
     }
 }
 
