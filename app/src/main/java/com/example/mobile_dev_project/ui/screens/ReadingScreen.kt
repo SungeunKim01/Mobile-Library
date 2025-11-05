@@ -1,0 +1,186 @@
+package com.example.mobile_dev_project.ui.screens
+
+import android.app.Activity
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Text
+import androidx.compose.material3.Button
+import androidx.compose.runtime.Composable
+import androidx.compose.material3.Surface
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.font.FontWeight
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import com.example.mobile_dev_project.data.Chapter
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.text.style.TextAlign
+import com.example.mobile_dev_project.R
+
+/**
+ * Sets up the immersive mode and handles displaying the entire screen
+ */
+@Composable
+fun ReadingScreen (chapters: List<Chapter>,
+                   chapterIndexSelected: Int,
+                   onSearch: () -> Unit,
+                   onBack: () -> Unit){
+    var currentChapterIndex by remember {mutableStateOf(chapterIndexSelected)}
+    var isVisible by remember { mutableStateOf(false) }
+    val localView = LocalView.current
+    val window = (localView.context as Activity).window
+    val windowInsetsController = remember {
+        WindowCompat.getInsetsController(window, localView)
+    }
+    Box(modifier = Modifier.clickable(onClick = {
+        isVisible = !isVisible
+        if (isVisible) {
+            windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
+        } else {
+            windowInsetsController.show(WindowInsetsCompat.Type.systemBars())
+        }
+    })){
+        ReadingPageContent(
+            chapters = chapters,
+            chapterIndexSelected = currentChapterIndex,
+            onSearch = onSearch,
+            onBack = onBack
+        )
+    }
+}
+/**
+ * Displays content of the book and handles horizontal/vertical scrolling.
+ */
+//https://developer.android.com/develop/ui/compose/lists
+@Composable
+fun ReadingPageContent(
+    chapters: List<Chapter>,
+    chapterIndexSelected: Int,
+    onSearch: () -> Unit,
+    onBack: () -> Unit,
+    modifier : Modifier = Modifier
+) {
+    val listState = rememberLazyListState()
+    LaunchedEffect(chapterIndexSelected) {
+        listState.scrollToItem(chapterIndexSelected)
+    }
+
+    LazyRow(
+        state = listState,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        itemsIndexed(chapters) { index, (title, text) ->
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+            ) {
+                ChapterPage(title, text, onSearch, onBack)
+            }
+        }
+
+    }
+}
+
+
+/**
+ * Displays a single chapter of the book.
+ * Display search and back button.
+ */
+
+//for the floating action btn
+//https://developer.android.com/develop/ui/compose/components/fab
+@Composable
+fun ChapterPage(
+    title: String,
+    content: String,
+    onSearch: () -> Unit,
+    onBack: () -> Unit
+) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier.fillMaxSize().padding(horizontal = dimensionResource(R.dimen.padding_reg), vertical = dimensionResource(R.dimen.space_xxl)).verticalScroll(rememberScrollState())
+        ) {
+            SearchButton(onSearch)
+            Spacer(Modifier.height(dimensionResource(R.dimen.padding_reg)))
+            Text(text = title,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                lineHeight = dimensionResource(R.dimen.line_height_reg).value.sp,
+                modifier = Modifier.padding(bottom = dimensionResource(R.dimen.padding_reg)).testTag("title"),
+                textAlign = TextAlign.Center
+            )
+            ChapterContent(content)
+        }
+        FloatingActionButton(onClick = onBack,
+            modifier = Modifier
+                .padding(bottom= dimensionResource(R.dimen.space_xxl), end= dimensionResource(R.dimen.space_lg)).align(Alignment.BottomEnd).testTag("back_btn"),
+            elevation = FloatingActionButtonDefaults.elevation(defaultElevation = dimensionResource(R.dimen.elevation_med))
+        ) {
+            Text(text = stringResource(R.string.back_btn), fontWeight = FontWeight.Bold)
+        }
+    }
+}
+
+/**
+ * Displays the content of a chapter.
+ */
+@Composable
+fun ChapterContent(content : String, modifier: Modifier = Modifier){
+    Column(modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp - dimensionResource(R.dimen.space_lg))){
+        Text(text = content,
+            modifier = Modifier.fillMaxWidth().testTag("content"),
+            lineHeight = dimensionResource(R.dimen.line_height_reg).value.sp
+        )
+    }
+}
+
+/**
+ * Displays the search button.
+ */
+@Composable
+fun SearchButton(onSearch: () -> Unit, modifier: Modifier = Modifier){
+    Box(modifier = Modifier.fillMaxSize()) {
+        Surface(
+            tonalElevation = dimensionResource(R.dimen.elevation_high),
+            shape = MaterialTheme.shapes.medium
+        ) {
+            Button(
+                onClick = onSearch,
+                modifier = modifier.testTag("search_btn")
+            ) {
+                Text(text = stringResource(R.string.search_btn))
+            }
+        }
+    }
+
+}
