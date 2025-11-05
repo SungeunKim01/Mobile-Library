@@ -27,8 +27,8 @@
 
     <!--- phase2 - book links-->
     <string-array name="book_urls">
-        <!-- A Christmas Carol -->
-        <item>https://www.gutenberg.org/cache/epub/46/pg46-h.zip</item>
+        <!-- Moby Dick; Or, The Whale by Herman Melville -->
+        <item>https://www.gutenberg.org/cache/epub/2701/pg2701-h.zip</item>
         <!-- Pride and Prejudice -->
         <item>https://www.gutenberg.org/cache/epub/1342/pg1342-h.zip</item>
         <!-- The Odyssey -->

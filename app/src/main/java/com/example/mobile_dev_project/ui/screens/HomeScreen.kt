@@ -125,10 +125,11 @@ fun Book(book: Book){
         Spacer(modifier = Modifier.width(16.dp))
 
         val displayDate = if (book.lastAccessed != null){
-            formatDate(book.lastAccessed)
+            formatDate(parseDateStringToLong(book.lastAccessed))
         } else {
-            formatDate(book.bookAdded)
+            formatDate(parseDateStringToLong(book.bookAdded))
         }
+
         Text(text = stringResource(R.string.last_use_text) + " ${displayDate}",
             color = MaterialTheme.colorScheme.onSecondary)
     }
@@ -141,6 +142,15 @@ fun formatDate(timestamp: Long?): String {
     }
     val formatter = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault())
     return formatter.format(Date(timestamp))
+}
+fun parseDateStringToLong(str: String?): Long? {
+    if (str.isNullOrBlank()) return null
+    return try {
+        val sdf = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault())
+        sdf.parse(str)?.time
+    } catch (e: Exception) {
+        null
+    }
 }
 
 
