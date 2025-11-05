@@ -16,18 +16,15 @@ import kotlinx.coroutines.launch
 class HomeScreenViewModel @Inject constructor (
     private val repository: BookRepository
 ) : ViewModel() {
-    private val _topThreeBooks = MutableStateFlow<List<Book>>(emptyList())
-    val topThreeBooks: StateFlow<List<Book>> = _topThreeBooks.asStateFlow()
-
+    private val _allBooks = MutableStateFlow<List<Book>>(emptyList())
+    val allBooks: StateFlow<List<Book>> = _allBooks.asStateFlow()
     init {
         viewModelScope.launch {
             repository.getBooksByLastAccessed().collect { books ->
                 val sortedBooks = books.sortedByDescending { book ->
-                    //This is actually fun which says if lastAccessed
-                    // is null then go to bookAdded
                     book.lastAccessed ?: book.bookAdded
                 }
-                _topThreeBooks.value = sortedBooks.take(3)
+                _allBooks.value = sortedBooks
             }
         }
     }
