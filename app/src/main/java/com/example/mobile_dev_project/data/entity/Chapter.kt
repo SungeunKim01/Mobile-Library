@@ -31,12 +31,13 @@ class Chapter {
     @ColumnInfo(name = "chapterOrder")
     var chapterOrder: Int = 0
 
+    //edit - nullable so can assign it after inserting content
     @ColumnInfo(name = "contentId")
-    var contentId: String? = null
+    var contentId: Int? = null
 
     constructor() {}
 
-    constructor(bookId: Int, chapterName: String?, chapterOrder: Int, contentId: String?) {
+    constructor(bookId: Int, chapterName: String?, chapterOrder: Int, contentId: Int?) {
         this.bookId = bookId
         this.chapterName = chapterName
         this.chapterOrder = chapterOrder

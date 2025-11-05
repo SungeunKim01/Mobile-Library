@@ -72,22 +72,22 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel(),
     }
 }
 //This will display the Restaurant Logo on the top
-    @Composable
-    fun RestaurantLogo(modifier: Modifier = Modifier) {
-        val image = painterResource(R.drawable.mobile_library)
-        Column {
-            Image(
-                painter = image,
-                contentDescription = null,
-                modifier = modifier
-                    .size(100.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .aspectRatio(1f),
+@Composable
+fun RestaurantLogo(modifier: Modifier = Modifier) {
+    val image = painterResource(R.drawable.mobile_library)
+    Column {
+        Image(
+            painter = image,
+            contentDescription = null,
+            modifier = modifier
+                .size(100.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .aspectRatio(1f),
 
-                contentScale = ContentScale.Crop
-            )
-        }
+            contentScale = ContentScale.Crop
+        )
     }
+}
 //This Composable will display the books in Columns 1 by one once it is callled into Book Composable to get what each
 // book will be formated adn say and then will be added to the column
 @Composable
@@ -155,7 +155,7 @@ fun DownloadBookButton(onNavigateToDownload: () -> Unit){
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary
         )
-            ) {
+    ) {
         Text(stringResource(R.string.add_book))
     }
 }
