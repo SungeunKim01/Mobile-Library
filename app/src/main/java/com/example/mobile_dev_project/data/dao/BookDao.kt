@@ -36,4 +36,7 @@ interface BookDao {
 
     @Query("select * from book order by bookAdded desc")
     fun getBooksByDateAdded(): Flow<List<Book>>
+
+    @Query("select exists(select 1 from Book where sourceUrl = :url)")
+    suspend fun existsByUrl(url: String): Boolean
 }
