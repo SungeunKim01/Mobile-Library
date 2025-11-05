@@ -33,6 +33,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import com.example.mobile_dev_project.data.entity.Book
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
 //This will add everything together and add the title of the bookApp with the Logo on the top, in typography title size
 @Composable
 fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel(),
@@ -119,10 +123,28 @@ fun Book(book: Book){
             contentScale = ContentScale.Crop
         )
         Spacer(modifier = Modifier.width(16.dp))
-        Text(text = stringResource(R.string.last_use_text) + " ${book.lastAccess}",
+
+        val displayDate = if (book.lastAccessed != null){
+            formatDate(book.lastAccessed)
+        } else {
+            formatDate(book.bookAdded)
+        }
+        Text(text = stringResource(R.string.last_use_text) + " ${displayDate}",
             color = MaterialTheme.colorScheme.onSecondary)
     }
 }
+
+//Function for Date that will format the date the way I want
+fun formatDate(timestamp: Long?): String {
+    if (timestamp == null) {
+        return "Nothing"
+    }
+    val formatter = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault())
+    return formatter.format(Date(timestamp))
+}
+
+
+
 //This will be a button that will navigate to Download screen so that they can add a book
 @Composable
 fun DownloadBookButton(onNavigateToDownload: () -> Unit){
