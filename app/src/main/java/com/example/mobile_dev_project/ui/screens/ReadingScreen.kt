@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.runtime.LaunchedEffect
@@ -44,40 +45,58 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.mobile_dev_project.R
 import com.example.mobile_dev_project.data.UiContent
+import com.example.mobile_dev_project.data.UiChapter
 
 /**
  * Sets up the immersive mode and handles displaying the entire screen
+ * Get data from table of contents, fetch content from chapters from view model.
  */
 @Composable
-fun ReadingScreen (chapters: List<Chapter>,
-                   contents: List<UiContent>,
-                   chapterIndexSelected: Int,
+fun ReadingScreen (bookId: Int,
+                   chapterId: Int,
                    onSearch: () -> Unit,
-                   onBack: () -> Unit){
-    var currentChapterIndex by remember {mutableStateOf(chapterIndexSelected)}
-    var isVisible by remember { mutableStateOf(false) }
-    val localView = LocalView.current
-    val window = (localView.context as Activity).window
-    val windowInsetsController = remember {
-        WindowCompat.getInsetsController(window, localView)
-    }
-    Box(modifier = Modifier.clickable(onClick = {
-        isVisible = !isVisible
-        if (isVisible) {
-            windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
-        } else {
-            windowInsetsController.show(WindowInsetsCompat.Type.systemBars())
+                   onBack: () -> Unit,
+                   viewModel: RetrieveDataViewModel = hiltViewModel()){
+    var chapters by remember { mutableStateOf<List<UiChapter>>(emptyList()) }
+    var contents by remember { mutableStateOf<List<UiContent>>(emptyList()) }
+    var selectedIndex by remember { mutableStateOf(0) }
+
+    LaunchedEffect(bookId, chapterId) {
+        val allChaps = viewModel.getChaptersForBook(bookId) ?: emptyList()
+        //https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/map-not-null.html
+        val allContents = allChaps.mapNotNull { chap ->
+            viewModel.getContentForChapter(chap.chapterId ?: 0)
         }
-    })){
-        ReadingPageContent(
-            chapters = chapters,
-            contents = contents,
-            chapterIndexSelected = currentChapterIndex,
-            onSearch = onSearch,
-            onBack = onBack
-        )
+        chapters = allChaps
+        contents = allContents
+        selectedIndex = allChaps.indexOfFirst { it.chapterId == chapterId }
+    }
+    if (chapters.isEmpty() || contents.isEmpty()) {
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            //https://developer.android.com/reference/com/google/android/material/progressindicator/CircularProgressIndicator
+            CircularProgressIndicator()
+        }
+    } else {
+        var isVisible by remember { mutableStateOf(false) }
+        val localView = LocalView.current
+        val window = (localView.context as Activity).window
+        val windowInsetsController = remember {
+            WindowCompat.getInsetsController(window, localView)
+        }
+        Box(modifier = Modifier.clickable(onClick = {
+            isVisible = !isVisible
+            if (isVisible) {
+                windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
+            } else {
+                windowInsetsController.show(WindowInsetsCompat.Type.systemBars())
+            }
+        })) {
+            ReadingPageContent(chapters = chapters, contents = contents, chapterIndexSelected = selectedIndex, onSearch = onSearch, onBack = onBack
+            )
+        }
     }
 }
 /**
