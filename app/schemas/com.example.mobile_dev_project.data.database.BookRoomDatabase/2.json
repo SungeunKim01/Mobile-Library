@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "f292b636a33dcb4584073325ba632061",
+    "identityHash": "2f7151c8606339e2a47ef8e252626eb4",
     "entities": [
       {
         "tableName": "Book",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`bookId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `bookTitle` TEXT, `bookCoverPath` TEXT, `lastAccessed` TEXT, `bookAdded` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`bookId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `bookTitle` TEXT, `bookCoverPath` TEXT, `lastAccessed` TEXT, `bookAdded` TEXT, `sourceUrl` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "bookId",
@@ -37,6 +37,12 @@
             "columnName": "bookAdded",
             "affinity": "TEXT",
             "notNull": false
+          },
+          {
+            "fieldPath": "sourceUrl",
+            "columnName": "sourceUrl",
+            "affinity": "TEXT",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -45,7 +51,17 @@
             "bookId"
           ]
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "index_Book_sourceUrl",
+            "unique": true,
+            "columnNames": [
+              "sourceUrl"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_Book_sourceUrl` ON `${TABLE_NAME}` (`sourceUrl`)"
+          }
+        ],
         "foreignKeys": []
       },
       {
@@ -164,7 +180,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f292b636a33dcb4584073325ba632061')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2f7151c8606339e2a47ef8e252626eb4')"
     ]
   }
 }
