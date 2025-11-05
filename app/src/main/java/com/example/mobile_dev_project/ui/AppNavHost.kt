@@ -79,15 +79,15 @@ fun AppNavHost(
             )
         }
         composable(Route.Reading.route,
-            arguments = listOf(navArgument("chapterIndex") {
+            arguments = listOf(navArgument("bookId") {
                 type = NavType.IntType
-            })
+            }, navArgument("chapterId") {type = NavType.IntType})
         ) { backStackEntry ->
-            val chapterIndex = backStackEntry.arguments?.getInt("chapterIndex")
+            val bookId = backStackEntry.arguments?.getInt("bookId") ?:0
+            val chapId = backStackEntry.arguments?.getInt("chapId") ?:0
             ReadingScreen(
-                chapters = mockChapters,
-                contents = mockContents,
-                chapterIndexSelected = chapterIndex ?: 0,
+                bookId = bookId,
+                chapterId = chapId,
                 onSearch = { nav.navigate(Route.Search.route) },
                 onBack = { nav.popBackStack() }
             )
