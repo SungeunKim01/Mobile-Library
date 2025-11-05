@@ -42,7 +42,7 @@ import java.util.Locale
 fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel(),
                onNavigateToDownload: () -> Unit = {}
 ) {
-    val books by viewModel.topThreeBooks.collectAsState()
+    val books by viewModel.allBooks.collectAsState()
     Column(
         modifier = Modifier
             .fillMaxSize()
