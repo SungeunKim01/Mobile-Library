@@ -1,10 +1,13 @@
 package com.example.mobile_dev_project.data.entity
 
-
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-@Entity(tableName="Book")
+import androidx.room.*
+@Entity(
+    tableName="Book",
+    indices = [
+        // dedupe by url, here Room will reject any 2nd row w the same url
+        Index(value = ["sourceUrl"], unique = true)
+    ]
+)
 class Book {
 
     @PrimaryKey(autoGenerate = true)
@@ -22,13 +25,17 @@ class Book {
     @ColumnInfo(name = "bookAdded")
     var bookAdded: String? = null
 
+    //dedupe field -unique
+    @ColumnInfo(name = "sourceUrl")
+    lateinit var sourceUrl: String
 
     constructor() {}
 
-    constructor(BookTitle: String, BookCoverPath: String, bookAdded: String) {
+    constructor(BookTitle: String, BookCoverPath: String, bookAdded: String, sourceUrl: String) {
         this.bookTitle = BookTitle
         this.bookCoverPath = BookCoverPath
         this.bookAdded = bookAdded
+        this.sourceUrl = sourceUrl
     }
 }
 
