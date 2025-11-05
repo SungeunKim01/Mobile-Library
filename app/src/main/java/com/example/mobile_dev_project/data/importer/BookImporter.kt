@@ -9,7 +9,7 @@ import com.example.mobile_dev_project.data.entity.Chapter
 import com.example.mobile_dev_project.data.entity.Content
 import com.example.mobile_dev_project.data.repository.OkHttpDownloader
 import com.example.mobile_dev_project.data.repository.ParsingRepository
-import com.example.mobile_dev_project.data.repository.UnzipUtils
+import com.example.mobile_dev_project.data.util.UnzipUtils
 import com.example.mobile_dev_project.ui.model.ProgressState
 import com.example.mobile_dev_project.ui.model.ImportPhase
 import kotlinx.coroutines.Dispatchers
