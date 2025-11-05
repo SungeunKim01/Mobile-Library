@@ -24,9 +24,8 @@ import com.example.mobile_dev_project.data.UiChapter as Chapter
 
 @Composable
 fun TableOfContentsScreen(
-    //mock chapters for display
-    chapters: List<Chapter> = mockChapters,
-    //Callback that is activated when a button is pressed
+    bookId: Int,
+    viewModel: RetrieveDataViewModel,
     onChapterSelected: (Chapter) -> Unit = {},
     //Callback that is used to go back to the previous page
     onBack: () -> Unit
@@ -56,6 +55,8 @@ fun TableOfContentsScreen(
             windowInsetsController.show(WindowInsetsCompat.Type.systemBars())
         }
     }
+
+    val chapters by viewModel.getChaptersForBook(bookId).collectAsState(initial = emptyList())
 
     // --- Main screen layout ---
     Box(
@@ -94,7 +95,7 @@ fun TableOfContentsScreen(
                         onClick = { onChapterSelected(chapter) },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .testTag("chapter_button_$chapter")
+                            .testTag("chapter_button_$chapter.chapter_id")
                     ) {
                         Text(text = chapter.chapterTitle)
                     }
