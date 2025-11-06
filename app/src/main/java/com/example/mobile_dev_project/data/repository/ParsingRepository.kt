@@ -102,11 +102,12 @@ class ParsingRepository @Inject constructor(
 
                 //chapter payload becomes the remaining html inside this chapter div
                 val chapterHtml = c.html()
+                val chapterText = c.text()
                 // persist each chapter chunk as an individual html file
                 saveChaptersInHtml(directory, order, chapTitle, chapterHtml)
 
                 val uiChapter = UiChapter(null, chapTitle, order, bookId, null)
-                val uiContent = UiContent(null, 0, chapterHtml)
+                val uiContent = UiContent(null, 0, chapterText)
                 pairs += (uiChapter to uiContent)
                 order++
             }
