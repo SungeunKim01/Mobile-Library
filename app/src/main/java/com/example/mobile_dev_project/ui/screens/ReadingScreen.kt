@@ -39,6 +39,7 @@ import com.example.mobile_dev_project.data.UiChapter as Chapter
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
@@ -47,6 +48,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.mobile_dev_project.R
 import com.example.mobile_dev_project.data.UiContent
 import com.example.mobile_dev_project.data.UiChapter
+import kotlinx.coroutines.flow.first
 
 /**
  * Sets up the immersive mode and handles displaying the entire screen
@@ -63,22 +65,20 @@ fun ReadingScreen (bookId: Int,
     var chapters by remember { mutableStateOf<List<UiChapter>>(emptyList()) }
     var contents by remember { mutableStateOf<List<UiContent>>(emptyList()) }
     var selectedIndex by remember { mutableStateOf(0) }
+    val allChaps by viewModel.getChaptersForBook(bookId).collectAsState(initial = emptyList())
 
-    LaunchedEffect(bookId, chapterId) {
-        val allChaps = viewModel.getChaptersForBook(bookId) ?: emptyList()
+    LaunchedEffect(allChaps) {
         //https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/map-not-null.html
-        val allContents = allChaps.mapNotNull { chap ->
-            viewModel.getContentForChapter(chap.chapterId ?: 0)
+        val allContents = allChaps.mapNotNull {
+            val content = viewModel.getContentForChapter(it.chapterId ?: 0).first()
+            content
         }
         chapters = allChaps
         contents = allContents
         selectedIndex = allChaps.indexOfFirst { it.chapterId == chapterId }
     }
     if (chapters.isEmpty() || contents.isEmpty()) {
-        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            //https://developer.android.com/reference/com/google/android/material/progressindicator/CircularProgressIndicator
-            CircularProgressIndicator()
-        }
+        LoadingIndicator()
     } else {
         var isVisible by remember { mutableStateOf(false) }
         val localView = LocalView.current
@@ -99,6 +99,21 @@ fun ReadingScreen (bookId: Int,
         }
     }
 }
+
+/**
+ * Shows circle that indicates loading
+ * src: //https://developer.android.com/reference/com/google/android/material/progressindicator/CircularProgressIndicator
+ */
+@Composable
+private fun LoadingIndicator() {
+    Box(
+        Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator()
+    }
+}
+
 /**
  * Displays content of the book and handles horizontal/vertical scrolling.
  */
@@ -116,7 +131,6 @@ fun ReadingPageContent(
     LaunchedEffect(chapterIndexSelected) {
         listState.scrollToItem(chapterIndexSelected)
     }
-
     LazyRow(
         state = listState,
         horizontalArrangement = Arrangement.Center
