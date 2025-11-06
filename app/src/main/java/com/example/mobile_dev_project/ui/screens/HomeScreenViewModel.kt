@@ -10,6 +10,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 @HiltViewModel
@@ -27,6 +30,15 @@ class HomeScreenViewModel @Inject constructor (
                 _allBooks.value = sortedBooks
             }
         }
+    }
+
+    //Function for Date that will format the date the way I want
+    fun formatDate(timestamp: Long?): String {
+        if (timestamp == null) {
+            return "Nothing"
+        }
+        val formatter = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault())
+        return formatter.format(Date(timestamp))
     }
 }
 
