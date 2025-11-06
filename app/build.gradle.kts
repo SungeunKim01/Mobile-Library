@@ -84,6 +84,8 @@ dependencies {
     implementation(libs.okhttp.v4110)
     implementation("com.fleeksoft.ksoup:ksoup:0.1.2")
 
+    testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

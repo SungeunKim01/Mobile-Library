@@ -64,19 +64,14 @@ fun ReadingScreen (bookId: Int,
                    onBack: () -> Unit,
                    onToggleNavBar: (Boolean) -> Unit = {},
                    viewModel: RetrieveDataViewModel = hiltViewModel()){
-
     val view = LocalView.current
     val window = (view.context as Activity).window
-
-
     // Create a controller to show/hide system bars
     val windowInsetsController = remember {
         WindowCompat.getInsetsController(window, view)
     }
-
     // Mutable state that tracks whether the screen is in immersive mode
     var isImmersive by remember { mutableStateOf(false) }
-
     fun toggleImmersiveMode() {
         isImmersive = !isImmersive
         if (isImmersive) {
@@ -88,7 +83,6 @@ fun ReadingScreen (bookId: Int,
         }
         onToggleNavBar(!isImmersive)
     }
-
     var chapters by remember { mutableStateOf<List<UiChapter>>(emptyList()) }
     var contents by remember { mutableStateOf<List<UiContent>>(emptyList()) }
     var selectedIndex by remember { mutableStateOf(0) }
@@ -264,3 +258,24 @@ fun SearchButton(onSearch: () -> Unit, modifier: Modifier = Modifier){
     }
 
 }
+
+/**
+ * Composable used for testing
+ */
+@Composable
+fun ReadingScreenForTest(
+    chapters: List<UiChapter>,
+    contents: List<UiContent>,
+    chapterIndexSelected: Int = 0,
+    onSearch: () -> Unit = {},
+    onBack: () -> Unit = {}
+) {
+    ReadingPageContent(
+        chapters = chapters,
+        contents = contents,
+        chapterIndexSelected = chapterIndexSelected,
+        onSearch = onSearch,
+        onBack = onBack
+    )
+}
+
