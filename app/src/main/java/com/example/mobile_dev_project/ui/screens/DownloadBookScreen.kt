@@ -1,16 +1,22 @@
 package com.example.mobile_dev_project.ui.screens
 
+import android.app.Activity
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.VisualTransformation
 import com.example.mobile_dev_project.R
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import com.example.mobile_dev_project.ui.model.ImportPhase
 import androidx.hilt.navigation.compose.hiltViewModel
 
@@ -24,8 +30,33 @@ import androidx.hilt.navigation.compose.hiltViewModel
 fun DownloadBookScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
-    vm: DownloadBookViewModel = hiltViewModel()
+    vm: DownloadBookViewModel = hiltViewModel(),
+    onToggleNavBar: (Boolean) -> Unit = {}
 ) {
+    val view = LocalView.current
+    val window = (view.context as Activity).window
+
+
+    // Create a controller to show/hide system bars
+    val windowInsetsController = remember {
+        WindowCompat.getInsetsController(window, view)
+    }
+
+    // Mutable state that tracks whether the screen is in immersive mode
+    var isImmersive by remember { mutableStateOf(false) }
+
+    fun toggleImmersiveMode() {
+        isImmersive = !isImmersive
+        if (isImmersive) {
+            // Hide system bars (enter fullscreen)
+            windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
+        } else {
+            // Show system bars (exit fullscreen)
+            windowInsetsController.show(WindowInsetsCompat.Type.systemBars())
+        }
+        onToggleNavBar(!isImmersive)
+    }
+
     //spacing
     val pad = dimensionResource(id = R.dimen.space_md)
 
@@ -54,6 +85,7 @@ fun DownloadBookScreen(
         Column(
             modifier = modifier
                 .padding(innerPadding)
+                .clickable { toggleImmersiveMode() }
                 .padding(horizontal = pad, vertical = pad)
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(pad)
@@ -133,6 +165,14 @@ fun DownloadBookScreen(
                         Text(stringResource(R.string.done))
                     }
                 }
+            }
+            if (isImmersive) {
+                Text(
+                    text = stringResource(R.string.tap_anywhere_to_exit_fullscreen),
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .testTag("fullscreen_text")
+                )
             }
         }
     }

@@ -41,7 +41,8 @@ private fun NavHostController.safePopOrNavigateHome() {
 fun AppNavHost(
     nav: NavHostController,
     startDestination: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onToggleNavBar: (Boolean) -> Unit = {}
 ) {
     NavHost(
         navController = nav,
@@ -51,14 +52,16 @@ fun AppNavHost(
         // Download Book Screen - UI only for now for m1
         composable(Route.Download.route) {
             DownloadBookScreen(
-                onBack = { nav.safePopOrNavigateHome() }
+                onBack = { nav.safePopOrNavigateHome() },
+                onToggleNavBar = onToggleNavBar
             )
         }
 
         // Search Screen -UI only for now for m1
         composable(Route.Search.route) {
             SearchScreen(
-                onBack = { nav.safePopOrNavigateHome() }
+                onBack = { nav.safePopOrNavigateHome() },
+                onToggleNavBar = onToggleNavBar
             )
         }
 
@@ -68,7 +71,8 @@ fun AppNavHost(
                 onNavigateToDownload = { nav.navigate(Route.Download.route)  },
                 onNavigateToContents = { bookId ->
                     nav.navigate(Route.Content.createRoute(bookId))
-                }
+                },
+                onToggleNavBar = onToggleNavBar
             )
         }
 
@@ -82,10 +86,9 @@ fun AppNavHost(
                 bookId = bookId,
                 onBack = { nav.popBackStack() },
                 onChapterSelected = { chapter ->
-
-                        nav.navigate(Route.Reading.createRoute(bookId, chapter.chapterId ?:0))
-
-                }
+                    nav.navigate(Route.Reading.createRoute(bookId, chapter.chapterId ?:0))
+                },
+                onToggleNavBar = onToggleNavBar
             )
         }
 
@@ -100,7 +103,8 @@ fun AppNavHost(
                 bookId = bookId,
                 chapterId = chapId,
                 onSearch = { nav.navigate(Route.Search.route) },
-                onBack = { nav.popBackStack() }
+                onBack = { nav.popBackStack() },
+                onToggleNavBar = onToggleNavBar
             )
         }
     }

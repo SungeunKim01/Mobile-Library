@@ -62,7 +62,33 @@ fun ReadingScreen (bookId: Int,
                    chapterId: Int,
                    onSearch: () -> Unit,
                    onBack: () -> Unit,
+                   onToggleNavBar: (Boolean) -> Unit = {},
                    viewModel: RetrieveDataViewModel = hiltViewModel()){
+
+    val view = LocalView.current
+    val window = (view.context as Activity).window
+
+
+    // Create a controller to show/hide system bars
+    val windowInsetsController = remember {
+        WindowCompat.getInsetsController(window, view)
+    }
+
+    // Mutable state that tracks whether the screen is in immersive mode
+    var isImmersive by remember { mutableStateOf(false) }
+
+    fun toggleImmersiveMode() {
+        isImmersive = !isImmersive
+        if (isImmersive) {
+            // Hide system bars (enter fullscreen)
+            windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
+        } else {
+            // Show system bars (exit fullscreen)
+            windowInsetsController.show(WindowInsetsCompat.Type.systemBars())
+        }
+        onToggleNavBar(!isImmersive)
+    }
+
     var chapters by remember { mutableStateOf<List<UiChapter>>(emptyList()) }
     var contents by remember { mutableStateOf<List<UiContent>>(emptyList()) }
     var selectedIndex by remember { mutableStateOf(0) }
@@ -85,15 +111,16 @@ fun ReadingScreen (bookId: Int,
         val windowInsetsController = remember {
             WindowCompat.getInsetsController(window, localView)
         }
-        Box(modifier = Modifier.clickable(onClick = {
-            isVisible = !isVisible
-            if (isVisible) {
-                windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
-            } else {
-                windowInsetsController.show(WindowInsetsCompat.Type.systemBars())
-            }
-        })) {
+        Box(modifier = Modifier.clickable { toggleImmersiveMode() }){
             ReadingPageContent(chapters = chapters, contents = contents, chapterIndexSelected = selectedIndex, onSearch = onSearch, onBack = onBack)
+            if (isImmersive) {
+                Text(
+                    text = stringResource(R.string.tap_anywhere_to_exit_fullscreen),
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .testTag("fullscreen_text")
+                )
+            }
         }
     }
 }
