@@ -128,7 +128,7 @@ fun Book(book: Book, viewModel: HomeScreenViewModel){
 @Composable
 fun BookCover(coverPath: String?) {
     val bitmap = coverPath?.let{
-        BitmapFactory.decodeFile(it)?.asImageBitmap()
+        BitmapFactory.decodeFile(coverPath)?.asImageBitmap()
     }
     if(bitmap != null) {
         Image(
