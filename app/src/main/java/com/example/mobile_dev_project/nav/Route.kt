@@ -4,8 +4,11 @@ sealed class Route(val route: String) {
     data object Download : Route("download")
     data object Search   : Route("search")
     data object Home : Route("Home")
-    data object Content: Route("Content")
-    data object Reading: Route("reading/{bookId}/{chapterId}"){
+    data object Content: Route("Content/{bookId}"){
+        fun createRoute(bookId: Int): String = "Content/$bookId"
+    }
+    data object Reading: Route("reading/{bookId}/{chapterId}") {
         fun createRoute(bookId: Int, chapterId: Int): String = "reading/$bookId/$chapterId"
     }
+
 }

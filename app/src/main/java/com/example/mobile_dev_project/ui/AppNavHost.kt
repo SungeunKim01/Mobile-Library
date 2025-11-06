@@ -65,12 +65,15 @@ fun AppNavHost(
         // Add other screens like Home, we will merge this file after we finish all the screens
         composable(Route.Home.route) {
             HomeScreen(
-                onNavigateToDownload = { nav.navigate(Route.Download.route)  }
+                onNavigateToDownload = { nav.navigate(Route.Download.route)  },
+                onNavigateToContents = { bookId ->
+                    nav.navigate(Route.Content.createRoute(bookId))
+                }
             )
         }
 
         composable(
-            route = Route.Content.route + "/{bookId}",
+            route = Route.Content.route,
             arguments = listOf(navArgument("bookId") { type = NavType.IntType })
         ) { backStackEntry ->
             val bookId = backStackEntry.arguments?.getInt("bookId") ?: 0
