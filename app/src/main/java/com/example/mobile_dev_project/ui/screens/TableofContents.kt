@@ -29,7 +29,9 @@ fun TableOfContentsScreen(
     viewModel: RetrieveDataViewModel = hiltViewModel(),
     onChapterSelected: (Chapter) -> Unit = {},
     //Callback that is used to go back to the previous page
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    //Callback for hiding
+    onToggleNavBar: (Boolean) -> Unit = {}
 )
 {
     // --- Context and window setup for immersive mode ---
@@ -55,6 +57,7 @@ fun TableOfContentsScreen(
             // Show system bars (exit fullscreen)
             windowInsetsController.show(WindowInsetsCompat.Type.systemBars())
         }
+        onToggleNavBar(!isImmersive)
     }
 
     val chapters by viewModel.getChaptersForBook(bookId).collectAsState(initial = emptyList())
@@ -80,6 +83,9 @@ fun TableOfContentsScreen(
             // --- Title text ---
             Text(
                 text = stringResource(R.string.table_of_contents),
+                style = MaterialTheme.typography.titleLarge.copy(
+                    color = MaterialTheme.colorScheme.onSecondary
+                ),
                 modifier = Modifier
                     .padding(bottom = 12.dp)
                     .testTag("toc_title")
