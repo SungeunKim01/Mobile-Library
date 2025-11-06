@@ -67,12 +67,15 @@ fun AppNavHost(
         composable(Route.Home.route) {
             HomeScreen(
                 onNavigateToDownload = { nav.navigate(Route.Download.route)  },
+                onNavigateToContents = { bookId ->
+                    nav.navigate(Route.Content.createRoute(bookId))
+                },
                 onToggleNavBar = onToggleNavBar
             )
         }
 
         composable(
-            route = Route.Content.route + "/{bookId}",
+            route = Route.Content.route,
             arguments = listOf(navArgument("bookId") { type = NavType.IntType })
         ) { backStackEntry ->
             val bookId = backStackEntry.arguments?.getInt("bookId") ?: 0
