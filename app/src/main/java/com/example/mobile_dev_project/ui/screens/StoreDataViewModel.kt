@@ -22,10 +22,9 @@ class StoreDataViewModel @Inject constructor(
 
     fun storeBookData(uiBook: UiBook, sourceUrl: String) {
         viewModelScope.launch {
-
-            //note: checking if book exists before inserting!
+            val existingBookWithUrl = bookRepository.urlExists(sourceUrl)
             val existingBook = bookRepository.bookExists(uiBook.title)
-            if (existingBook) {
+            if(existingBookWithUrl || existingBook){
                 Log.e("StoreDataViewModel","Book already exists. No duplicates allowed.")
                 return@launch
             }

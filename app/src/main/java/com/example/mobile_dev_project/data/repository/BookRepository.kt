@@ -47,5 +47,9 @@ class BookRepository @Inject constructor(
     suspend fun bookExists(title: String): Boolean{
         return bookDao.getBookByTitle(title) != null
     }
+
+    suspend fun urlExists(url: String): Boolean{
+        return bookDao.existsByUrl(url)
+    }
 }
 
