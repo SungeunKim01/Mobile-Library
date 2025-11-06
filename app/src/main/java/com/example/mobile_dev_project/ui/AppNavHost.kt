@@ -74,11 +74,9 @@ fun AppNavHost(
             arguments = listOf(navArgument("bookId") { type = NavType.IntType })
         ) { backStackEntry ->
             val bookId = backStackEntry.arguments?.getInt("bookId") ?: 0
-            // get vm
-            val viewModel = hiltViewModel<RetrieveDataViewModel>()
+
             TableOfContentsScreen(
                 bookId = bookId,
-                viewModel = viewModel,
                 onBack = { nav.popBackStack() },
                 onChapterSelected = { chapter ->
 
