@@ -52,7 +52,8 @@ fun AppNavHost(
         // Download Book Screen - UI only for now for m1
         composable(Route.Download.route) {
             DownloadBookScreen(
-                onBack = { nav.safePopOrNavigateHome() }
+                onBack = { nav.safePopOrNavigateHome() },
+                onToggleNavBar = onToggleNavBar
             )
         }
 

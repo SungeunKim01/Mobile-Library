@@ -83,6 +83,9 @@ fun TableOfContentsScreen(
             // --- Title text ---
             Text(
                 text = stringResource(R.string.table_of_contents),
+                style = MaterialTheme.typography.titleLarge.copy(
+                    color = MaterialTheme.colorScheme.onSecondary
+                ),
                 modifier = Modifier
                     .padding(bottom = 12.dp)
                     .testTag("toc_title")
