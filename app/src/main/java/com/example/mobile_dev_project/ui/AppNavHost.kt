@@ -79,32 +79,27 @@ fun AppNavHost(
             arguments = listOf(navArgument("bookId") { type = NavType.IntType })
         ) { backStackEntry ->
             val bookId = backStackEntry.arguments?.getInt("bookId") ?: 0
-            // get vm
-            val viewModel = hiltViewModel<RetrieveDataViewModel>()
+
             TableOfContentsScreen(
                 bookId = bookId,
-                viewModel = viewModel,
                 onBack = { nav.popBackStack() },
                 onChapterSelected = { chapter ->
-                    val index = mockChapters.indexOfFirst { it.chapterTitle == chapter.chapterTitle }
-                    if (index >= 0) {
-                        nav.navigate(Route.Reading.createRoute(index))
-                    }
+                    nav.navigate(Route.Reading.createRoute(bookId, chapter.chapterId ?:0))
                 },
                 onToggleNavBar = onToggleNavBar
             )
         }
 
         composable(Route.Reading.route,
-            arguments = listOf(navArgument("chapterIndex") {
+            arguments = listOf(navArgument("bookId") {
                 type = NavType.IntType
-            })
+            }, navArgument("chapterId") {type = NavType.IntType})
         ) { backStackEntry ->
-            val chapterIndex = backStackEntry.arguments?.getInt("chapterIndex")
+            val bookId = backStackEntry.arguments?.getInt("bookId") ?:0
+            val chapId = backStackEntry.arguments?.getInt("chapterId") ?:0
             ReadingScreen(
-                chapters = mockChapters,
-                contents = mockContents,
-                chapterIndexSelected = chapterIndex ?: 0,
+                bookId = bookId,
+                chapterId = chapId,
                 onSearch = { nav.navigate(Route.Search.route) },
                 onBack = { nav.popBackStack() }
             )

@@ -1,7 +1,6 @@
 package com.example.mobile_dev_project.ui.screens
 
 import android.app.Activity
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -20,11 +19,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.runtime.LaunchedEffect
@@ -40,46 +39,79 @@ import com.example.mobile_dev_project.data.UiChapter as Chapter
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.mobile_dev_project.R
 import com.example.mobile_dev_project.data.UiContent
+import com.example.mobile_dev_project.data.UiChapter
+import kotlinx.coroutines.flow.first
 
 /**
  * Sets up the immersive mode and handles displaying the entire screen
+ * Get data from table of contents, fetch content from chapters from view model.
+ * general sources: - Week 12: Room Database slide 63
+ *                  - https://developer.android.com/develop/ui/views/layout/immersive
+ *                  - https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/map-not-null.html
  */
 @Composable
-fun ReadingScreen (chapters: List<Chapter>,
-                   contents: List<UiContent>,
-                   chapterIndexSelected: Int,
+fun ReadingScreen (bookId: Int,
+                   chapterId: Int,
                    onSearch: () -> Unit,
-                   onBack: () -> Unit){
-    var currentChapterIndex by remember {mutableStateOf(chapterIndexSelected)}
-    var isVisible by remember { mutableStateOf(false) }
-    val localView = LocalView.current
-    val window = (localView.context as Activity).window
-    val windowInsetsController = remember {
-        WindowCompat.getInsetsController(window, localView)
-    }
-    Box(modifier = Modifier.clickable(onClick = {
-        isVisible = !isVisible
-        if (isVisible) {
-            windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
-        } else {
-            windowInsetsController.show(WindowInsetsCompat.Type.systemBars())
+                   onBack: () -> Unit,
+                   viewModel: RetrieveDataViewModel = hiltViewModel()){
+    var chapters by remember { mutableStateOf<List<UiChapter>>(emptyList()) }
+    var contents by remember { mutableStateOf<List<UiContent>>(emptyList()) }
+    var selectedIndex by remember { mutableStateOf(0) }
+    val allChaps by viewModel.getChaptersForBook(bookId).collectAsState(initial = emptyList())
+    LaunchedEffect(allChaps) {
+        val allContents = allChaps.mapNotNull {
+            val content = viewModel.getContentForChapter(it.chapterId ?: 0).first()
+            content
         }
-    })){
-        ReadingPageContent(
-            chapters = chapters,
-            contents = contents,
-            chapterIndexSelected = currentChapterIndex,
-            onSearch = onSearch,
-            onBack = onBack
-        )
+        chapters = allChaps
+        contents = allContents
+        selectedIndex = allChaps.indexOfFirst { it.chapterId == chapterId }
+    }
+    if (chapters.isEmpty() || contents.isEmpty()) {
+        LoadingIndicator()
+    } else {
+        var isVisible by remember { mutableStateOf(false) }
+        val localView = LocalView.current
+        val window = (localView.context as Activity).window
+        val windowInsetsController = remember {
+            WindowCompat.getInsetsController(window, localView)
+        }
+        Box(modifier = Modifier.clickable(onClick = {
+            isVisible = !isVisible
+            if (isVisible) {
+                windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
+            } else {
+                windowInsetsController.show(WindowInsetsCompat.Type.systemBars())
+            }
+        })) {
+            ReadingPageContent(chapters = chapters, contents = contents, chapterIndexSelected = selectedIndex, onSearch = onSearch, onBack = onBack)
+        }
     }
 }
+
+/**
+ * Shows circle that indicates loading
+ * src: //https://developer.android.com/reference/com/google/android/material/progressindicator/CircularProgressIndicator
+ */
+@Composable
+private fun LoadingIndicator() {
+    Box(
+        Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator()
+    }
+}
+
 /**
  * Displays content of the book and handles horizontal/vertical scrolling.
  */
@@ -97,19 +129,21 @@ fun ReadingPageContent(
     LaunchedEffect(chapterIndexSelected) {
         listState.scrollToItem(chapterIndexSelected)
     }
-
     LazyRow(
         state = listState,
         horizontalArrangement = Arrangement.Center
     ) {
         itemsIndexed(chapters) { _, chapter ->
             val contentText = contents.find { it.chapterId == chapter.chapterId }?.content ?: ""
-            ChapterPage(
-                title = chapter.chapterTitle,
-                content = contentText,
-                onSearch = onSearch,
-                onBack = onBack
-            )
+            chapter.contentId?.let {
+                ChapterPage(
+                    title = chapter.chapterTitle,
+                    content = contentText,
+                    contentId = it,
+                    onSearch = onSearch,
+                    onBack = onBack,
+                    )
+            }
         }
     }
 }
@@ -118,6 +152,7 @@ fun ReadingPageContent(
 /**
  * Displays a single chapter of the book.
  * Display search and back button.
+ * scrolling: https://developer.android.com/reference/kotlin/androidx/compose/foundation/package-summary#rememberScrollState(kotlin.Int)
  */
 
 //for the floating action btn
@@ -126,22 +161,27 @@ fun ReadingPageContent(
 fun ChapterPage(
     title: String,
     content: String,
+    contentId: Int,
     onSearch: () -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    viewModel: PositionViewModel = hiltViewModel()
 ) {
+    val state = rememberScrollState()
+    LaunchedEffect(contentId) {
+        viewModel.getScrollPosition(contentId)?.let { saved ->
+            state.scrollTo(saved.toInt())
+        }
+    }
+    LaunchedEffect(state.value) {
+        viewModel.saveScrollPosition(contentId, state.value.toFloat())
+    }
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
-            modifier = Modifier.fillMaxSize().padding(horizontal = dimensionResource(R.dimen.padding_reg), vertical = dimensionResource(R.dimen.space_xxl)).verticalScroll(rememberScrollState())
+            modifier = Modifier.fillMaxSize().padding(horizontal = dimensionResource(R.dimen.padding_reg), vertical = dimensionResource(R.dimen.space_xxl)).verticalScroll(state)
         ) {
             SearchButton(onSearch)
             Spacer(Modifier.height(dimensionResource(R.dimen.padding_reg)))
-            Text(text = title,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                lineHeight = dimensionResource(R.dimen.line_height_reg).value.sp,
-                modifier = Modifier.padding(bottom = dimensionResource(R.dimen.padding_reg)).testTag("title"),
-                textAlign = TextAlign.Center
-            )
+            ChapterTitle(title)
             ChapterContent(content)
         }
         FloatingActionButton(onClick = onBack,
@@ -154,6 +194,16 @@ fun ChapterPage(
     }
 }
 
+@Composable
+fun ChapterTitle(title: String){
+    Text(text = title,
+        style = MaterialTheme.typography.titleLarge,
+        fontWeight = FontWeight.Bold,
+        lineHeight = dimensionResource(R.dimen.line_height_reg).value.sp,
+        modifier = Modifier.padding(bottom = dimensionResource(R.dimen.padding_reg)).testTag("title"),
+        textAlign = TextAlign.Center
+    )
+}
 /**
  * Displays the content of a chapter.
  */

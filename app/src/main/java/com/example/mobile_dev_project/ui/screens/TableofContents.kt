@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.mobile_dev_project.R
 import com.example.mobile_dev_project.data.mockChapters
 import com.example.mobile_dev_project.data.UiChapter as Chapter
@@ -25,7 +26,7 @@ import com.example.mobile_dev_project.data.UiChapter as Chapter
 @Composable
 fun TableOfContentsScreen(
     bookId: Int,
-    viewModel: RetrieveDataViewModel,
+    viewModel: RetrieveDataViewModel = hiltViewModel(),
     onChapterSelected: (Chapter) -> Unit = {},
     //Callback that is used to go back to the previous page
     onBack: () -> Unit,
