@@ -1,49 +1,77 @@
 package com.example.mobile_dev_project.ui.screens
 
-import androidx.activity.ComponentActivity
-import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertIsEnabled
-import androidx.compose.ui.test.assertIsNotEnabled
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.*
+import com.example.mobile_dev_project.ui.model.ImportPhase
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import com.example.mobile_dev_project.data.importer.BookImporterContract
+import kotlinx.coroutines.delay
 
-// instrumentation ui tests (Compose) - this verify actual screen behavior liike:
-// - Add button disabled on start
-// - Typing Ul enables Add
-// - Cancel/Back are clickable
-// This confirms the Ui wiring w/o involving navigation and this is fast and focused
-// Refer "compose testing cheatsheet - setContent, finders, assertions"
+/**
+ * Compose ui test for DownloadBookScreen
+ * test the DownloadBookScreen Composable directly, with local test ViewModel
+ */
 class DownloadBookScreenTest {
     @get:Rule
-    val rule = createAndroidComposeRule<ComponentActivity>()
+    val composeTestRule = createComposeRule()
 
-    @Test
-    fun add_disabled_initially_then_enabled_after_typing_url() {
+    private lateinit var testViewModel: DownloadBookViewModel
 
-        // render the screen in isolation - here, no NavHost needed for this test
-        rule.setContent { DownloadBookScreen(onBack = {}) }
-
-        //Initially disabled
-        rule.onNodeWithTag("AddButton").assertIsDisplayed().assertIsNotEnabled()
-
-        // Type a ural into the field
-        rule.onNodeWithTag("UrlField").performTextInput("https://ex.com/book.html")
-
-        // now enabled, so canEnableAdd(url) == true
-        rule.onNodeWithTag("AddButton").assertIsEnabled()
+    @Before
+    fun setup() {
+        // provide minimal fake Importer for the ViewModel
+        val fakeImporter = object : BookImporterContract {
+            override suspend fun importBooks(sources: List<Pair<String, String>>, onProgress: (com.example.mobile_dev_project.ui.model.ProgressState) -> Unit) {
+                onProgress(com.example.mobile_dev_project.ui.model.ProgressState(ImportPhase.DOWNLOADING, "Starting download..."))
+                delay(500)
+                onProgress(com.example.mobile_dev_project.ui.model.ProgressState(ImportPhase.DONE, "Done!"))
+            }
+        }
+        testViewModel = DownloadBookViewModel(fakeImporter, null)
+        //Set content before every test to get vm
+        composeTestRule.setContent {
+            DownloadBookScreen(
+                onBack = {},
+                vm = testViewModel
+            )
+        }
     }
 
     @Test
-    fun cancel_and_back_buttons_are_clickable() {
-        var backCalls = 0
-        rule.setContent { DownloadBookScreen(onBack = { backCalls++ }) }
+    fun urlField_acceptsInput_and_enablesAddButton() {
+        composeTestRule.onNodeWithTag("UrlField").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("AddButton").assertIsNotEnabled()
+        composeTestRule.onNodeWithTag("UrlField").performTextInput("https://www.gutenberg.org/cache/epub/25344/pg25344-h.zip")
+        composeTestRule.onNodeWithTag("AddButton").assertIsEnabled()
+    }
 
-        // Clicking both should not crash, just increments backCalls
-        rule.onNodeWithTag("BackButton").performClick()
-        rule.onNodeWithTag("CancelButton").performClick()
+    @Test
+    fun entering_invalidUrl_showsErrorText() {
+        composeTestRule.onNodeWithTag("UrlField").performTextInput("not_a_url")
+        composeTestRule.onNodeWithTag("AddButton").performClick()
+        composeTestRule.onNodeWithText("Please enter a valid URL (http/https)").assertIsDisplayed()
+    }
+
+    @Test
+    fun clickingCancelButton_isDisplayedAndClickable() {
+        composeTestRule.onNodeWithTag("CancelButton").assertExists()
+        composeTestRule.onNodeWithTag("CancelButton").assertIsEnabled()
+        composeTestRule.onNodeWithTag("CancelButton").performClick()
+    }
+
+    @Test
+    fun import_showsDoneButtonAppears() {
+        composeTestRule.onNodeWithTag("UrlField").performTextClearance()
+        composeTestRule.onNodeWithTag("UrlField").performTextInput("https://www.gutenberg.org/cache/epub/145/pg145-h.zip")
+        composeTestRule.onNodeWithTag("AddButton").performClick()
+        // wait for Done button to appear
+        composeTestRule.waitUntil(timeoutMillis = 3000) {
+            composeTestRule.onAllNodesWithTag("DoneButton").fetchSemanticsNodes().isNotEmpty()
+        }
+        composeTestRule.onNodeWithTag("DoneButton").assertIsDisplayed()
     }
 }
