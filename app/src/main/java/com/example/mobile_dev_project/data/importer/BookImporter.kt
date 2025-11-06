@@ -36,9 +36,9 @@ class BookImporter @Inject constructor(
     private val contentDao: ContentDao,
     // db here so i can do a single transaction for inserts
     private val db: BookRoomDatabase
-) {
+) : BookImporterContract {
     //display progress msg
-    suspend fun importBooks(
+    override suspend fun importBooks(
         sources: List<Pair<String, String>>,
         onProgress: (ProgressState) -> Unit
     ) = withContext(Dispatchers.IO) {
