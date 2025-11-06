@@ -103,7 +103,8 @@ fun AppNavHost(
                 bookId = bookId,
                 chapterId = chapId,
                 onSearch = { nav.navigate(Route.Search.route) },
-                onBack = { nav.popBackStack() }
+                onBack = { nav.popBackStack() },
+                onToggleNavBar = onToggleNavBar
             )
         }
     }
