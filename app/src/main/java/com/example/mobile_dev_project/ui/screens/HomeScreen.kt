@@ -32,6 +32,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mobile_dev_project.data.entity.Book
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -68,7 +69,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel(),
 
         }
         DownloadBookButton(onNavigateToDownload = onNavigateToDownload)
-        Bookshelf(books)
+        Bookshelf(books, viewModel)
     }
 }
 //This will display the Restaurant Logo on the top
@@ -91,7 +92,7 @@ fun RestaurantLogo(modifier: Modifier = Modifier) {
 //This Composable will display the books in Columns 1 by one once it is callled into Book Composable to get what each
 // book will be formated adn say and then will be added to the column
 @Composable
-fun Bookshelf(books: List<Book>) {
+fun Bookshelf(books: List<Book>, viewModel: HomeScreenViewModel) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -99,14 +100,14 @@ fun Bookshelf(books: List<Book>) {
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
         books.forEach { book ->
-            Book(book)
+            Book(book, viewModel)
         }
     }
 }
 //This Composable is how each Book will be visuallized so in a row, on the left will be the book image, not finished until we add each book,
 //On the Right is the last used text
 @Composable
-fun Book(book: Book){
+fun Book(book: Book, viewModel: HomeScreenViewModel){
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth().testTag("book")
@@ -123,26 +124,24 @@ fun Book(book: Book){
             contentScale = ContentScale.Crop
         )
         Spacer(modifier = Modifier.width(16.dp))
-
-        val displayDate = if (book.lastAccessed != null){
-            formatDate(parseDateStringToLong(book.lastAccessed))
-        } else {
-            formatDate(parseDateStringToLong(book.bookAdded))
+        Column {
+            Text(
+                text = book.bookTitle ?: "No title this is bad!"
+            )
+            val displayDate = if (book.lastAccessed != null) {
+                viewModel.formatDate(parseDateStringToLong(book.lastAccessed))
+            } else {
+                viewModel.formatDate(parseDateStringToLong(book.bookAdded))
+            }
+            Text(
+                text = stringResource(R.string.last_use_text) + " ${displayDate}",
+                color = MaterialTheme.colorScheme.onSecondary
+            )
         }
-
-        Text(text = stringResource(R.string.last_use_text) + " ${displayDate}",
-            color = MaterialTheme.colorScheme.onSecondary)
     }
 }
 
-//Function for Date that will format the date the way I want
-fun formatDate(timestamp: Long?): String {
-    if (timestamp == null) {
-        return "Nothing"
-    }
-    val formatter = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault())
-    return formatter.format(Date(timestamp))
-}
+
 fun parseDateStringToLong(str: String?): Long? {
     if (str.isNullOrBlank()) return null
     return try {
