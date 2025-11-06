@@ -25,7 +25,7 @@ import com.example.mobile_dev_project.data.importer.BookImporterContract
 @HiltViewModel
 class DownloadBookViewModel @Inject constructor(
     private val importer: BookImporterContract,
-    private val repo: BookRepository)
+    private val repo: BookRepository?)
     : ViewModel() {
 
     // TextField state
