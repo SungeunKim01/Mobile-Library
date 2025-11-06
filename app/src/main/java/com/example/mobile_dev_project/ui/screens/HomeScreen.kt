@@ -112,32 +112,41 @@ fun Book(book: Book, viewModel: HomeScreenViewModel){
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth().testTag("book")
     ) {
-        Image(
-            //This is wrong I know, but i dont have images yet for the books
-            painter = painterResource(R.drawable.mobile_library),
-            contentDescription = null,
-            modifier = Modifier
-                .size(70.dp)
-                .clip(RoundedCornerShape(16.dp))
-                .aspectRatio(1f),
-
-            contentScale = ContentScale.Crop
-        )
+        BookCover()
         Spacer(modifier = Modifier.width(16.dp))
-        Column {
-            Text(
-                text = book.bookTitle ?: "No title this is bad!"
-            )
-            val displayDate = if (book.lastAccessed != null) {
-                viewModel.formatDate(parseDateStringToLong(book.lastAccessed))
-            } else {
-                viewModel.formatDate(parseDateStringToLong(book.bookAdded))
-            }
-            Text(
-                text = stringResource(R.string.last_use_text) + " ${displayDate}",
-                color = MaterialTheme.colorScheme.onSecondary
-            )
+        BookInfo(book = book, viewModel = viewModel)
+    }
+}
+
+@Composable
+fun BookCover() {
+    Image(
+        //This is wrong I know, but i dont have images yet for the books
+        painter = painterResource(R.drawable.mobile_library),
+        contentDescription = null,
+        modifier = Modifier
+            .size(70.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .aspectRatio(1f),
+        contentScale = ContentScale.Crop
+    )
+}
+
+@Composable
+fun BookInfo(book: Book, viewModel: HomeScreenViewModel) {
+    Column {
+        Text(
+            text = book.bookTitle ?: "No title this is bad!"
+        )
+        val displayDate = if (book.lastAccessed != null) {
+            viewModel.formatDate(parseDateStringToLong(book.lastAccessed))
+        } else {
+            viewModel.formatDate(parseDateStringToLong(book.bookAdded))
         }
+        Text(
+            text = stringResource(R.string.last_use_text) + " ${displayDate}",
+            color = MaterialTheme.colorScheme.onSecondary
+        )
     }
 }
 
