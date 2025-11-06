@@ -44,7 +44,7 @@ class TableOfContentsScreenTest {
 
         // For each chapter, assert that its text exists on screen
         chapters.forEach { chapter ->
-            composeTestRule.onNodeWithText(chapter.title, useUnmergedTree = true)
+            composeTestRule.onNodeWithText(chapter.chapterTitle, useUnmergedTree = true)
                 .assertIsDisplayed()
         }
     }
@@ -59,7 +59,7 @@ class TableOfContentsScreenTest {
         composeTestRule.setContent {
             TableOfContentsScreen(
                 chapters = chapters,
-                onChapterSelected = { selectedChapter = it.title },
+                onChapterSelected = { selectedChapter = it.chapterTitle },
                 onBack = {}
             )
         }

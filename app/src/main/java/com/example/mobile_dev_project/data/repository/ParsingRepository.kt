@@ -29,7 +29,7 @@ class ParsingRepository @Inject constructor(
             if (html == null) {
                 Log.e("ParsingRepository", "HTML file not foudn for book: $bookId.")
                 return@withContext Pair(
-                    UiBook(bookId = bookId.toInt(), title = "Untitled Book", coverPath = "", chapters = emptyList()),
+                    UiBook(bookId = null, title = "Untitled Book", coverPath = "", chapters = emptyList()),
                     emptyList()
                 )
             }
@@ -39,9 +39,10 @@ class ParsingRepository @Inject constructor(
             val bookTitle = extractBookTitle(doc)
             val image = findCoverImage(bookId, paths)
             //get chapters & their content
-            val (chapters, contents) = extractChapterAndContent(bookId.toInt(), directory, doc)
+            val (chapters, contents) = extractChapterAndContent(-1, directory, doc)
+
             //create uibook using title
-            val uiBook = UiBook(bookId.toInt(), chapters, bookTitle,image ?: "")
+            val uiBook = UiBook(bookId = null, chapters = chapters, title = bookTitle, coverPath = "")
             Pair(uiBook, contents)
         } catch (e: Exception){
             Log.e("ParsingRepository", "Error occurred while parsing book with id $bookId: ${e.message}")
@@ -80,7 +81,7 @@ class ParsingRepository @Inject constructor(
      * 3)fallback -if neither pattern matches, put entire <body> as one chapter
      */
     private fun extractChapterAndContent(bookId: Int, directory: File, doc: Document)
-    :Pair<List<UiChapter>, List<UiContent>> {
+            :Pair<List<UiChapter>, List<UiContent>> {
         val pairs = mutableListOf<Pair<UiChapter, UiContent>>()
 
         // div.chapter layout
