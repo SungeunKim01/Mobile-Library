@@ -67,6 +67,12 @@ class BookImporter @Inject constructor(
             // /files/books/{id}/content
             val contentDir: File = paths.bookContentFolder(bookId)
 
+            // clean old content if present - this is for multi book
+            if (contentDir.exists()) {
+                contentDir.deleteRecursively()
+            }
+            contentDir.mkdirs()
+
             // Download if missing
             if (!zip.exists()) {
                 downloader.downloadTo(urlNorm, zip) { note ->

@@ -10,26 +10,35 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor (
     private val repository: BookRepository
 ) : ViewModel() {
-    private val _topThreeBooks = MutableStateFlow<List<Book>>(emptyList())
-    val topThreeBooks: StateFlow<List<Book>> = _topThreeBooks.asStateFlow()
-
+    private val _allBooks = MutableStateFlow<List<Book>>(emptyList())
+    val allBooks: StateFlow<List<Book>> = _allBooks.asStateFlow()
     init {
         viewModelScope.launch {
             repository.getBooksByLastAccessed().collect { books ->
                 val sortedBooks = books.sortedByDescending { book ->
-                    //This is actually fun which says if lastAccessed
-                    // is null then go to bookAdded
                     book.lastAccessed ?: book.bookAdded
                 }
-                _topThreeBooks.value = sortedBooks.take(3)
+                _allBooks.value = sortedBooks
             }
         }
+    }
+
+    //Function for Date that will format the date the way I want
+    fun formatDate(timestamp: Long?): String {
+        if (timestamp == null) {
+            return "Nothing"
+        }
+        val formatter = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault())
+        return formatter.format(Date(timestamp))
     }
 }
 
