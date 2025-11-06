@@ -1,8 +1,10 @@
 package com.example.mobile_dev_project.ui.screens
 
+import android.app.Activity
 import androidx.compose.material3.Button
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,8 +32,15 @@ import androidx.compose.runtime.getValue
 import com.example.mobile_dev_project.ui.theme.MobileDevProjectTheme
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import com.example.mobile_dev_project.data.entity.Book
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -40,13 +49,39 @@ import java.util.Locale
 //This will add everything together and add the title of the bookApp with the Logo on the top, in typography title size
 @Composable
 fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel(),
-               onNavigateToDownload: () -> Unit = {}
+               onNavigateToDownload: () -> Unit = {},
+               onToggleNavBar: (Boolean) -> Unit = {}
 ) {
+    val view = LocalView.current
+    val window = (view.context as Activity).window
+
+
+    // Create a controller to show/hide system bars
+    val windowInsetsController = remember {
+        WindowCompat.getInsetsController(window, view)
+    }
+
+    // Mutable state that tracks whether the screen is in immersive mode
+    var isImmersive by remember { mutableStateOf(false) }
+
+    fun toggleImmersiveMode() {
+        isImmersive = !isImmersive
+        if (isImmersive) {
+            // Hide system bars (enter fullscreen)
+            windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
+        } else {
+            // Show system bars (exit fullscreen)
+            windowInsetsController.show(WindowInsetsCompat.Type.systemBars())
+        }
+        onToggleNavBar(!isImmersive)
+    }
+
     val books by viewModel.allBooks.collectAsState()
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.secondary)
+            .clickable { toggleImmersiveMode() }
             .padding(16.dp)
             .testTag("home_screen")
     ) {
@@ -69,7 +104,18 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel(),
         }
         DownloadBookButton(onNavigateToDownload = onNavigateToDownload)
         Bookshelf(books)
+
+        if (isImmersive) {
+            Text(
+                text = stringResource(R.string.tap_anywhere_to_exit_fullscreen),
+                modifier = Modifier
+                    .padding(8.dp)
+                    .testTag("fullscreen_text")
+            )
+        }
     }
+
+
 }
 //This will display the Restaurant Logo on the top
 @Composable
