@@ -23,4 +23,8 @@ class BooksPaths(private val appContext: Context) {
     //unzipped html content - /files/books/{bookId}/content
     fun bookContentFolder(bookId: String): File =
         File(bookRoot(bookId), "content").apply { mkdirs() }
+
+    // folder containing images: /files/books/{bookId}/content/images
+    fun bookImagesFolder(bookId: String): File =
+        File(bookContentFolder(bookId), "images").apply { mkdirs() }
 }
