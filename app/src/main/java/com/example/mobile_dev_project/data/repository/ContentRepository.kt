@@ -5,7 +5,8 @@ import com.example.mobile_dev_project.data.entity.Content
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class ContentRepository @Inject constructor(
+//https://kotlinlang.org/docs/inheritance.html#open-keyword
+open class ContentRepository @Inject constructor(
     private val contentDao: ContentDao
 ) {
     val allContents: Flow<List<Content>> = contentDao.getAllContents()
@@ -14,11 +15,11 @@ class ContentRepository @Inject constructor(
         return contentDao.getContentById(contentId)
     }
 
-    fun getContentForChapter(chapterId: Int): Flow<Content?> {
+    open fun getContentForChapter(chapterId: Int): Flow<Content?> {
         return contentDao.getContentForChapter(chapterId)
     }
 
-    suspend fun insertContent(content: Content) {
+    open suspend fun insertContent(content: Content) {
         contentDao.insertContent(content)
     }
 
@@ -34,11 +35,11 @@ class ContentRepository @Inject constructor(
         contentDao.deleteContentForChapter(chapterId)
     }
 
-    suspend fun getScreenPosition(contentId: Int): Float? {
+    open suspend fun getScreenPosition(contentId: Int): Float? {
         return contentDao.getScrollPosition(contentId)
     }
 
-    suspend fun updateScreenPosition(contentId: Int, scrollPosition: Float) {
+    open suspend fun updateScreenPosition(contentId: Int, scrollPosition: Float) {
         contentDao.updateScrollPosition(contentId, scrollPosition)
     }
 }

@@ -21,7 +21,7 @@ class TableOfContentsScreenTest {
     fun title_isDisplayed() {
         // Set up the composable under test
         composeTestRule.setContent {
-            //TableOfContentsScreen(onBack = {})
+            TableOfContentsScreen(onBack = {})
         }
 
         // Locate the title Text by its test tag and verify it exists and is visible
@@ -39,13 +39,13 @@ class TableOfContentsScreenTest {
 
         // Display the composable with the provided chapter list
         composeTestRule.setContent {
-            //TableOfContentsScreen(chapters = chapters, onBack = {})
+            TableOfContentsScreen(chapters = chapters, onBack = {})
         }
 
         // For each chapter, assert that its text exists on screen
         chapters.forEach { chapter ->
-            //composeTestRule.onNodeWithText(chapter.title, useUnmergedTree = true)
-                //.assertIsDisplayed()
+            composeTestRule.onNodeWithText(chapter.title, useUnmergedTree = true)
+                .assertIsDisplayed()
         }
     }
 
@@ -57,11 +57,11 @@ class TableOfContentsScreenTest {
 
         // Render the composable with a callback that records the selected chapter
         composeTestRule.setContent {
-            //TableOfContentsScreen(
-                //chapters = chapters,
-                //onChapterSelected = { selectedChapter = it.title },
-                //onBack = {}
-            //)
+            TableOfContentsScreen(
+                chapters = chapters,
+                onChapterSelected = { selectedChapter = it.title },
+                onBack = {}
+            )
         }
 
         // Perform a click on the first chapter button
@@ -76,7 +76,7 @@ class TableOfContentsScreenTest {
     @Test
     fun clickingBackground_togglesFullscreenText() {
         composeTestRule.setContent {
-            //TableOfContentsScreen(onBack = {})
+            TableOfContentsScreen(onBack = {})
         }
 
         // Initially, fullscreen text should not be visible
@@ -103,7 +103,7 @@ class TableOfContentsScreenTest {
     @Test
     fun title_isInsideTopColumn() {
         composeTestRule.setContent {
-            //TableOfContentsScreen(onBack = {})
+            TableOfContentsScreen(onBack = {})
         }
 
         // The title should exist and not be a child of the LazyColumn
@@ -118,7 +118,7 @@ class TableOfContentsScreenTest {
         var chapters = mockChapters
 
         composeTestRule.setContent {
-            //TableOfContentsScreen(chapters = chapters, onBack = {})
+            TableOfContentsScreen(chapters = chapters, onBack = {})
         }
 
         // For each chapter, ensure the button is within the LazyColumn
@@ -133,7 +133,7 @@ class TableOfContentsScreenTest {
     @Test
     fun backButton_isInsideBoxAndVisible() {
         composeTestRule.setContent {
-            //TableOfContentsScreen(onBack = {})
+            TableOfContentsScreen(onBack = {})
         }
 
         composeTestRule.onNodeWithTag("back_button", useUnmergedTree = true)
@@ -147,7 +147,7 @@ class TableOfContentsScreenTest {
     @Test
     fun fullscreenText_isInsideBox_whenVisible() {
         composeTestRule.setContent {
-            //TableOfContentsScreen(onBack = {})
+            TableOfContentsScreen(onBack = {})
         }
 
         // Activate immersive mode
@@ -166,7 +166,7 @@ class TableOfContentsScreenTest {
     @Test
     fun noChapters_showsEmptyList() {
         composeTestRule.setContent {
-            //TableOfContentsScreen(chapters = emptyList(), onBack = {})
+            TableOfContentsScreen(chapters = emptyList(), onBack = {})
         }
 
         // LazyColumn container should still exist
@@ -182,7 +182,7 @@ class TableOfContentsScreenTest {
     @Test
     fun multipleClicks_toggleFullscreenRepeatedly() {
         composeTestRule.setContent {
-            //TableOfContentsScreen(onBack = {})
+            TableOfContentsScreen(onBack = {})
         }
 
         // Perform multiple clicks and verify alternating fullscreen visibility
