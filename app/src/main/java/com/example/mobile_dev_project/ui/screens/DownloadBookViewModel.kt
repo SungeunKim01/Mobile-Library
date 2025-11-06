@@ -12,6 +12,7 @@ import com.example.mobile_dev_project.ui.model.ProgressState
 import kotlinx.coroutines.launch
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
+import com.example.mobile_dev_project.data.importer.BookImporterContract
 
 /**
  * this is ViewModel fo download book screen
@@ -23,7 +24,7 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class DownloadBookViewModel @Inject constructor(
-    private val importer: BookImporter,
+    private val importer: BookImporterContract,
     private val repo: BookRepository)
     : ViewModel() {
 
