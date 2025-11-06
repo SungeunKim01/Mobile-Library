@@ -34,9 +34,12 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mobile_dev_project.data.entity.Book
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import android.graphics.BitmapFactory
+import androidx.compose.ui.graphics.asImageBitmap
 
 //This will add everything together and add the title of the bookApp with the Logo on the top, in typography title size
 @Composable
@@ -112,24 +115,42 @@ fun Book(book: Book, viewModel: HomeScreenViewModel){
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth().testTag("book")
     ) {
-        BookCover()
+        BookCover(coverPath = book.bookCoverPath)
         Spacer(modifier = Modifier.width(16.dp))
         BookInfo(book = book, viewModel = viewModel)
     }
 }
-
+//This was actually hard as this needed to figure out how to load an image from db.
+//Source used:https://developer.android.com/reference/android/graphics/Bitmap
+//https://developer.android.com/reference/android/graphics/BitmapFactory
+// Well what it does is that it gets the cover path and goes through the BitmapFactory and decodes the file
+// Then it converts it to a ImageBitmap for the Composable, so it can now then display the stored image
 @Composable
-fun BookCover() {
-    Image(
-        //This is wrong I know, but i dont have images yet for the books
-        painter = painterResource(R.drawable.mobile_library),
-        contentDescription = null,
-        modifier = Modifier
-            .size(70.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .aspectRatio(1f),
-        contentScale = ContentScale.Crop
-    )
+fun BookCover(coverPath: String?) {
+    val bitmap = coverPath?.let{
+        BitmapFactory.decodeFile(it)?.asImageBitmap()
+    }
+    if(bitmap != null) {
+        Image(
+            bitmap = bitmap,
+            contentDescription = null,
+            modifier = Modifier
+                .size(70.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .aspectRatio(1f),
+            contentScale = ContentScale.Crop
+        )
+    }else {
+        Image(
+            painter = painterResource(R.drawable.mobile_library),
+            contentDescription = null,
+            modifier = Modifier
+                .size(70.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .aspectRatio(1f),
+            contentScale = ContentScale.Crop
+        )
+    }
 }
 
 @Composable
