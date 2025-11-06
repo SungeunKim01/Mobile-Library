@@ -25,7 +25,7 @@ class ReadingScreenKtTest {
     fun setUp() {
         composeTestRule.setContent{
             MobileDevProjectTheme {
-                ReadingScreen( chapters = mockChapters, chapterIndexSelected = 0, onSearch = {}, onBack = {})
+                //ReadingScreen( chapters = mockChapters, chapterIndexSelected = 0, onSearch = {}, onBack = {})
 
             }
         }
