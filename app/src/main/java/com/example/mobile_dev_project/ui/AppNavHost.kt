@@ -41,7 +41,8 @@ private fun NavHostController.safePopOrNavigateHome() {
 fun AppNavHost(
     nav: NavHostController,
     startDestination: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onToggleNavBar: (Boolean) -> Unit = {}
 ) {
     NavHost(
         navController = nav,
@@ -85,7 +86,8 @@ fun AppNavHost(
                     if (index >= 0) {
                         nav.navigate(Route.Reading.createRoute(index))
                     }
-                }
+                },
+                onToggleNavBar = onToggleNavBar
             )
         }
 

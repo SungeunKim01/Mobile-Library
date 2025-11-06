@@ -28,7 +28,9 @@ fun TableOfContentsScreen(
     viewModel: RetrieveDataViewModel,
     onChapterSelected: (Chapter) -> Unit = {},
     //Callback that is used to go back to the previous page
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    //Callback for hiding
+    onToggleNavBar: (Boolean) -> Unit = {}
 )
 {
     // --- Context and window setup for immersive mode ---
@@ -54,6 +56,7 @@ fun TableOfContentsScreen(
             // Show system bars (exit fullscreen)
             windowInsetsController.show(WindowInsetsCompat.Type.systemBars())
         }
+        onToggleNavBar(!isImmersive)
     }
 
     val chapters by viewModel.getChaptersForBook(bookId).collectAsState(initial = emptyList())
