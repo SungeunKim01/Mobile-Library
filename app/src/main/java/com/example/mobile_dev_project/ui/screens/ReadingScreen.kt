@@ -55,6 +55,7 @@ import kotlinx.coroutines.flow.first
  * Get data from table of contents, fetch content from chapters from view model.
  * general sources: - Week 12: Room Database slide 63
  *                  - https://developer.android.com/develop/ui/views/layout/immersive
+ *                  - https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/map-not-null.html
  */
 @Composable
 fun ReadingScreen (bookId: Int,
@@ -66,9 +67,7 @@ fun ReadingScreen (bookId: Int,
     var contents by remember { mutableStateOf<List<UiContent>>(emptyList()) }
     var selectedIndex by remember { mutableStateOf(0) }
     val allChaps by viewModel.getChaptersForBook(bookId).collectAsState(initial = emptyList())
-
     LaunchedEffect(allChaps) {
-        //https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/map-not-null.html
         val allContents = allChaps.mapNotNull {
             val content = viewModel.getContentForChapter(it.chapterId ?: 0).first()
             content
@@ -94,8 +93,7 @@ fun ReadingScreen (bookId: Int,
                 windowInsetsController.show(WindowInsetsCompat.Type.systemBars())
             }
         })) {
-            ReadingPageContent(chapters = chapters, contents = contents, chapterIndexSelected = selectedIndex, onSearch = onSearch, onBack = onBack
-            )
+            ReadingPageContent(chapters = chapters, contents = contents, chapterIndexSelected = selectedIndex, onSearch = onSearch, onBack = onBack)
         }
     }
 }
