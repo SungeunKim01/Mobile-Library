@@ -17,6 +17,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.example.mobile_dev_project.data.mockContent
+import com.example.mobile_dev_project.ui.screens.RetrieveDataViewModel
 
 
 /**
@@ -84,7 +85,7 @@ fun AppNavHost(
             }, navArgument("chapterId") {type = NavType.IntType})
         ) { backStackEntry ->
             val bookId = backStackEntry.arguments?.getInt("bookId") ?:0
-            val chapId = backStackEntry.arguments?.getInt("chapId") ?:0
+            val chapId = backStackEntry.arguments?.getInt("chapterId") ?:0
             ReadingScreen(
                 bookId = bookId,
                 chapterId = chapId,
