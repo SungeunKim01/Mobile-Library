@@ -40,6 +40,16 @@ class HomeScreenViewModel @Inject constructor (
         val formatter = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault())
         return formatter.format(Date(timestamp))
     }
+
+    fun parseDateStringToLong(str: String?): Long? {
+        if (str.isNullOrBlank()) return null
+        return try {
+            val sdf = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault())
+            sdf.parse(str)?.time
+        } catch (e: Exception) {
+            null
+        }
+    }
 }
 
 
