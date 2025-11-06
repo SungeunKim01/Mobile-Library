@@ -60,7 +60,8 @@ fun AppNavHost(
         // Search Screen -UI only for now for m1
         composable(Route.Search.route) {
             SearchScreen(
-                onBack = { nav.safePopOrNavigateHome() }
+                onBack = { nav.safePopOrNavigateHome() },
+                onToggleNavBar = onToggleNavBar
             )
         }
 
