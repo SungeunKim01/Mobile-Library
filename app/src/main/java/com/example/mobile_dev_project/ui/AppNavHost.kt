@@ -12,9 +12,13 @@ import com.example.mobile_dev_project.ui.screens.HomeScreen
 import com.example.mobile_dev_project.ui.screens.TableOfContentsScreen
 import com.example.mobile_dev_project.ui.screens.ReadingScreen
 import com.example.mobile_dev_project.data.mockChapters
+import com.example.mobile_dev_project.data.mockContents
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.example.mobile_dev_project.data.mockContent
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.mobile_dev_project.ui.screens.RetrieveDataViewModel
 
 
 /**
@@ -37,7 +41,8 @@ private fun NavHostController.safePopOrNavigateHome() {
 fun AppNavHost(
     nav: NavHostController,
     startDestination: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onToggleNavBar: (Boolean) -> Unit = {}
 ) {
     NavHost(
         navController = nav,
@@ -47,46 +52,59 @@ fun AppNavHost(
         // Download Book Screen - UI only for now for m1
         composable(Route.Download.route) {
             DownloadBookScreen(
-                onBack = { nav.safePopOrNavigateHome() }
+                onBack = { nav.safePopOrNavigateHome() },
+                onToggleNavBar = onToggleNavBar
             )
         }
 
         // Search Screen -UI only for now for m1
         composable(Route.Search.route) {
             SearchScreen(
-                onBack = { nav.safePopOrNavigateHome() }
+                onBack = { nav.safePopOrNavigateHome() },
+                onToggleNavBar = onToggleNavBar
             )
         }
 
         // Add other screens like Home, we will merge this file after we finish all the screens
         composable(Route.Home.route) {
             HomeScreen(
-                onNavigateToDownload = { nav.navigate(Route.Download.route)  }
+                onNavigateToDownload = { nav.navigate(Route.Download.route)  },
+                onNavigateToContents = { bookId ->
+                    nav.navigate(Route.Content.createRoute(bookId))
+                },
+                onToggleNavBar = onToggleNavBar
             )
         }
 
-        composable(Route.Content.route){
+        composable(
+            route = Route.Content.route,
+            arguments = listOf(navArgument("bookId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val bookId = backStackEntry.arguments?.getInt("bookId") ?: 0
+
             TableOfContentsScreen(
+                bookId = bookId,
                 onBack = { nav.popBackStack() },
                 onChapterSelected = { chapter ->
-                    val index = mockChapters.indexOfFirst { it.title == chapter.title }
-                    if (index >= 0) {
-                        nav.navigate(Route.Reading.createRoute(index))
-                    }
-                }
+                    nav.navigate(Route.Reading.createRoute(bookId, chapter.chapterId ?:0))
+                },
+                onToggleNavBar = onToggleNavBar
             )
         }
+
         composable(Route.Reading.route,
-            arguments = listOf(navArgument("chapterIndex") {
+            arguments = listOf(navArgument("bookId") {
                 type = NavType.IntType
-            })
+            }, navArgument("chapterId") {type = NavType.IntType})
         ) { backStackEntry ->
-            val chapterIndex = backStackEntry.arguments?.getInt("chapterIndex")
+            val bookId = backStackEntry.arguments?.getInt("bookId") ?:0
+            val chapId = backStackEntry.arguments?.getInt("chapterId") ?:0
             ReadingScreen(
-                chapters = mockChapters,
-                chapterIndexSelected = chapterIndex ?: 0,
+                bookId = bookId,
+                chapterId = chapId,
                 onSearch = { nav.navigate(Route.Search.route) },
-                onBack = { nav.popBackStack() }
+                onBack = { nav.popBackStack() },
+                onToggleNavBar = onToggleNavBar
             )
         }
     }

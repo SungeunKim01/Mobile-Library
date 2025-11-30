@@ -2,13 +2,19 @@
 <project version="4">
   <component name="deploymentTargetSelector">
     <selectionStates>
-      <SelectionState runConfigName="DownloadNavigationTest">
+      <SelectionState runConfigName="Mobile-Dev-Project.app">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="app">
+      <SelectionState runConfigName="DownloadBookScreenTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="SearchNavTest">
+      <SelectionState runConfigName="urlField_acceptsInput_and_enablesAddButton()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="import_showsProgress_and_doneButtonAppears()">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
+      <SelectionState runConfigName="import_showsDoneButtonAppears()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

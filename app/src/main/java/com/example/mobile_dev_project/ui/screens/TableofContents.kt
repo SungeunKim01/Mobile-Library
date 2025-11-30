@@ -18,18 +18,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.mobile_dev_project.R
 import com.example.mobile_dev_project.data.mockChapters
-import com.example.mobile_dev_project.data.Chapter
+import com.example.mobile_dev_project.data.UiChapter as Chapter
 
 @Composable
 fun TableOfContentsScreen(
-    //mock chapters for display
-    chapters: List<Chapter> = mockChapters,
-    //Callback that is activated when a button is pressed
+    bookId: Int,
+    viewModel: RetrieveDataViewModel = hiltViewModel(),
     onChapterSelected: (Chapter) -> Unit = {},
     //Callback that is used to go back to the previous page
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    //Callback for hiding
+    onToggleNavBar: (Boolean) -> Unit = {}
 )
 {
     // --- Context and window setup for immersive mode ---
@@ -55,7 +57,10 @@ fun TableOfContentsScreen(
             // Show system bars (exit fullscreen)
             windowInsetsController.show(WindowInsetsCompat.Type.systemBars())
         }
+        onToggleNavBar(!isImmersive)
     }
+
+    val chapters by viewModel.getChaptersForBook(bookId).collectAsState(initial = emptyList())
 
     // --- Main screen layout ---
     Box(
@@ -78,6 +83,9 @@ fun TableOfContentsScreen(
             // --- Title text ---
             Text(
                 text = stringResource(R.string.table_of_contents),
+                style = MaterialTheme.typography.titleLarge.copy(
+                    color = MaterialTheme.colorScheme.onSecondary
+                ),
                 modifier = Modifier
                     .padding(bottom = 12.dp)
                     .testTag("toc_title")
@@ -94,9 +102,9 @@ fun TableOfContentsScreen(
                         onClick = { onChapterSelected(chapter) },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .testTag("chapter_button_$chapter")
+                            .testTag("chapter_button_$chapter.chapter_id")
                     ) {
-                        Text(text = chapter.title)
+                        Text(text = chapter.chapterTitle)
                     }
                 }
             }
