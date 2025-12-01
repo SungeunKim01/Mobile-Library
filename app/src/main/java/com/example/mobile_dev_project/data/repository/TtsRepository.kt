@@ -45,7 +45,7 @@ class TtsRepository @Inject constructor(
     // know if anything changes so it will update the ui state
     private val scope = CoroutineScope(Dispatchers.Main)
 
-    //This will set up the tag and alsot he chunk size
+    //This will set up the tag and also the chunk size
     // meaning the speak texts in chunk and 1200 characters
     companion object {
         private const val TAG = "TtsRepository"
