@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.util.Locale
-
+import android.speech.tts.UtteranceProgressListener
 //This uses android text to speech not readium
 // the inject is for hilt and the context is for
 // the actual context needed
@@ -89,5 +89,47 @@ class TtsRepository @Inject constructor(
             _state.value = TtsState.Paused(chapterId, 0)
         }
 
+    }
+
+
+    //This is the speakFromOffset helper this si the one where they
+    //this makes it so the at text speaks form the given area, and then it will go to the next chunk
+
+    private fun speakFromOffset(offset: Int) {
+        //Gets position and updates the state to be playing
+        currentOffset = offset
+        _state.value = TtsState.Playing(currentChapterId, offset)
+
+        //This will be used to calcuclate where the end fo the character is
+        //And it grabs the chunk needed from the endOffset
+        //then it sets a  unique id for this chunk
+        val endOffset = minOf(offset + CHUNK_SIZE, currentText.length)
+        val chunk = currentText.substring(offset, endOffset)
+        val utteranceId = "tts_$offset"
+
+        tts?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
+            //Must override it because it wants it not because i need it
+            override fun onStart(utteranceId: String?) {}
+
+
+            //This just checks when the chunk is finished so it just makes ssure if ther eis more text to read from or not
+            //If there is none then it will just stop and reset to the beginning
+            override fun onDone(utteranceId: String?) {
+                if(endOffset < currentText.length) {
+                    speakFromOffset(endOffset)
+                } else{
+                    scope.launch {
+                        _state.value = TtsState.Stopped
+                        currentOffset = 0
+                    }
+                }
+            }
+
+            override fun onError(utteranceId: String?){
+                scope.launch {
+                    _state.value = TtsState.Error("Error")
+                }
+            }
+        })
     }
 }
