@@ -107,6 +107,12 @@ class TtsRepository @Inject constructor(
         }
     }
 
+    // this will pause the playback ans save the position
+    fun pause() {
+        tts?.stop()
+        _state.value = TtsState.Paused(currentChapterId, currentOffset)
+    }
+
     //This is the speakFromOffset helper this si the one where they
     //this makes it so the at text speaks form the given area, and then it will go to the next chunk
     private fun speakFromOffset(offset: Int) {
