@@ -70,25 +70,7 @@ fun ReadingScreen (bookId: Int,
                    onBack: () -> Unit,
                    onToggleNavBar: (Boolean) -> Unit = {},
                    viewModel: RetrieveDataViewModel = hiltViewModel()){
-    val view = LocalView.current
-    val window = (view.context as Activity).window
-    // Create a controller to show/hide system bars
-    val windowInsetsController = remember {
-        WindowCompat.getInsetsController(window, view)
-    }
-    // Mutable state that tracks whether the screen is in immersive mode
-    var isImmersive by remember { mutableStateOf(false) }
-    fun toggleImmersiveMode() {
-        isImmersive = !isImmersive
-        if (isImmersive) {
-            // Hide system bars (enter fullscreen)
-            windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
-        } else {
-            // Show system bars (exit fullscreen)
-            windowInsetsController.show(WindowInsetsCompat.Type.systemBars())
-        }
-        onToggleNavBar(!isImmersive)
-    }
+    val (isImmersive, toggleImmersiveMode) = immersiveMode(onToggleNavBar)
     var chapters by remember { mutableStateOf<List<UiChapter>>(emptyList()) }
     var contents by remember { mutableStateOf<List<UiContent>>(emptyList()) }
     var selectedIndex by remember { mutableStateOf(0) }
@@ -105,21 +87,10 @@ fun ReadingScreen (bookId: Int,
     if (chapters.isEmpty() || contents.isEmpty()) {
         LoadingIndicator()
     } else {
-        var isVisible by remember { mutableStateOf(false) }
-        val localView = LocalView.current
-        val window = (localView.context as Activity).window
-        val windowInsetsController = remember {
-            WindowCompat.getInsetsController(window, localView)
-        }
         Box(modifier = Modifier.clickable { toggleImmersiveMode() }){
             ReadingPageContent(chapters = chapters, contents = contents, chapterIndexSelected = selectedIndex, onSearch = onSearch, onBack = onBack)
             if (isImmersive) {
-                Text(
-                    text = stringResource(R.string.tap_anywhere_to_exit_fullscreen),
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .testTag("fullscreen_text")
-                )
+                Text(text = stringResource(R.string.tap_anywhere_to_exit_fullscreen), modifier = Modifier.padding(8.dp).testTag("fullscreen_text"))
             }
         }
     }
@@ -273,45 +244,60 @@ fun SearchButton(onSearch: () -> Unit, modifier: Modifier = Modifier){
  */
 @Composable
 fun TTSControlBar(viewModel: StoreDataViewModel , chapterContent: UiContent, onToggleNavBar: (Boolean) -> Unit = {}) {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(16.dp)
-
-    ){
-        val view = LocalView.current
-        val window = (view.context as Activity).window
-        val windowInsetsController = remember {
-            WindowCompat.getInsetsController(window, view)
-        }
-        var isImmersive by remember { mutableStateOf(false) }
-        fun toggleImmersiveMode() {
-            isImmersive = !isImmersive
-            if (isImmersive) {
-                windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
-            } else {
-                // Show system bars (exit fullscreen)
-                windowInsetsController.show(WindowInsetsCompat.Type.systemBars())
+    val (isImmersive, toggleImmersiveMode) = immersiveMode(onToggleNavBar)
+    Box(modifier = Modifier.clickable { toggleImmersiveMode() }) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(16.dp)
+        ) {
+            Button(onClick = {}) { // when we get viewmodel, i edit this
+                Icon(Icons.Default.Stop, contentDescription = "Stop TTS.")
             }
-            onToggleNavBar(!isImmersive)
-        }
-        Button(onClick = {}){ // when we get viewmodel, i edit this
-            Icon(Icons.Default.Stop, contentDescription = "Stop TTS.")
-        }
-        Spacer(modifier = Modifier.width(16.dp))
-
-        var isTTSEnabled = true
-        Button(onClick = {
-            if(isTTSEnabled){
-                //stop the tts
-                isTTSEnabled = false
-            } else {
-                isTTSEnabled = true
+            Spacer(modifier = Modifier.width(16.dp))
+            var isTTSEnabled = true
+            Button(onClick = {
+                if (isTTSEnabled) {
+                    isTTSEnabled = false
+                } else {
+                    isTTSEnabled = true
+                }
+            }) {
+                val icon = if (isTTSEnabled) Icons.Default.Pause else Icons.Default.PlayArrow
+                Icon(icon, contentDescription = if (isTTSEnabled) "Pause TTS" else "Play TTS")
             }
-        }) {
-            val icon = if (isTTSEnabled) Icons.Default.Pause else Icons.Default.PlayArrow
-            Icon(icon, contentDescription = if(isTTSEnabled) "Pause TTS" else "Play TTS")
         }
     }
+    if (isImmersive) {
+        Text(
+            text = stringResource(R.string.tap_anywhere_to_exit_fullscreen),
+            modifier = Modifier
+                .padding(8.dp)
+                .testTag("fullscreen_text")
+        )
+    }
 }
+
+@Composable
+fun immersiveMode(
+    onToggleNavBar: (Boolean) -> Unit = {}
+): Pair<Boolean, () -> Unit> {
+    val view = LocalView.current
+    val window = (view.context as Activity).window
+    val windowInsetsController = remember {
+        WindowCompat.getInsetsController(window, view)
+    }
+    var isImmersive by remember { mutableStateOf(false) }
+    val toggleImmersiveMode = {
+        isImmersive = !isImmersive
+        if (isImmersive) {
+            windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
+        } else {
+            windowInsetsController.show(WindowInsetsCompat.Type.systemBars())
+        }
+        onToggleNavBar(!isImmersive)
+    }
+    return isImmersive to toggleImmersiveMode
+}
+
 /**
  * Composable used for testing
  */
