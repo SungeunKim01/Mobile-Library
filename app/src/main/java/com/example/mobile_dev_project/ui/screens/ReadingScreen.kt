@@ -250,7 +250,7 @@ fun TTSControlBar(viewModel: StoreDataViewModel , chapterContent: UiContent, onT
             modifier = Modifier.fillMaxWidth().padding(16.dp)
         ) {
             Button(onClick = {}) { // when we get viewmodel, i edit this
-                Icon(Icons.Default.Stop, contentDescription = "Stop TTS.")
+                Icon(Icons.Default.Stop, contentDescription = stringResource(R.string.stop))
             }
             Spacer(modifier = Modifier.width(16.dp))
             var isTTSEnabled = true
@@ -262,7 +262,7 @@ fun TTSControlBar(viewModel: StoreDataViewModel , chapterContent: UiContent, onT
                 }
             }) {
                 val icon = if (isTTSEnabled) Icons.Default.Pause else Icons.Default.PlayArrow
-                Icon(icon, contentDescription = if (isTTSEnabled) "Pause TTS" else "Play TTS")
+                Icon(icon, contentDescription = if (isTTSEnabled) stringResource(R.string.pause) else stringResource(R.string.play))
             }
         }
     }

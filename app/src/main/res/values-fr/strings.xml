@@ -24,6 +24,10 @@
     <string name="last_use_text">Dernière utilisation :</string>
     <string name="add_book">Ajouter un nouveau livre</string>
 
+    <string name="play">Jouer TTS</string>
+    <string name="stop">Arreter TTS</string>
+    <string name="pause">Pauser TTS</string>
+
     <!-- phase2 - book links -->
     <string-array name="book_urls">
         <!-- Moby Dick; Or, The Whale by Herman Melville -->
