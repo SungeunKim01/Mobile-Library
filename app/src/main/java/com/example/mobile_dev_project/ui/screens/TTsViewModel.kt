@@ -12,42 +12,42 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class TTsViewModel @Inject constructor(
-    private val TTsRepository: TtsRepository,
-    private val ChapterRepository: ChapterRepository,
-    private val ContentRepository: ContentRepository
+    private val ttsRepository: TtsRepository,
+    private val chapterRepository: ChapterRepository,
+    private val contentRepository: ContentRepository
 ): ViewModel(){
     var chapter: Flow<Chapter?>? = null
     var content: Flow<Content?>? = null
 
     fun setChapter(chapterId: Int){
-        var chapter: Flow<Chapter?> = ChapterRepository.getChapterById(chapterId)
+        var chapter: Flow<Chapter?> = chapterRepository.getChapterById(chapterId)
     }
     fun setContent(){
         if(chapter != null){
             var chapterId = chapter
-            content = ContentRepository.getContentForChapter(chapterId)
+            content = contentRepository.getContentForChapter(chapterId)
         }
     }
 
     fun prepareTTs(){
         if(chapter != null && content != null){
-            TTsRepository.prepare(chapter.Id, content.content)
+            ttsRepository.prepare(chapter.Id, content.content)
         }
     }
 
     fun playTTs(){
-        TTsRepository.play()
+        ttsRepository.play()
     }
 
     fun pauseTTs(){
-        TTsRepository.pause()
+        ttsRepository.pause()
     }
 
     fun stopTTs(){
-        TTsRepository.stop()
+        ttsRepository.stop()
     }
     fun releaseTTs(){
-        TTsRepository.release()
+        ttsRepository.release()
     }
-    
+
 }
