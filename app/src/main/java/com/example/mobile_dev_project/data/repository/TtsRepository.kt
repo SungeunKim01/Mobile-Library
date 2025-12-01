@@ -91,10 +91,24 @@ class TtsRepository @Inject constructor(
 
     }
 
+    fun play() {
+        val current = _state.value
+
+        //if paused it will resume at the saved position
+        if (current is TtsState.Paused){
+            speakFromOffset(current.currentOffset)
+            return
+        }
+
+        //So if stopped or idle it will just go back to the beginning
+        if(current is TtsState.Stopped || current is TtsState.Idle){
+            speakFromOffset(0)
+            return
+        }
+    }
 
     //This is the speakFromOffset helper this si the one where they
     //this makes it so the at text speaks form the given area, and then it will go to the next chunk
-
     private fun speakFromOffset(offset: Int) {
         //Gets position and updates the state to be playing
         currentOffset = offset
