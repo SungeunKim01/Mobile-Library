@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import java.util.Locale
 
 //This uses android text to speech not readium
@@ -76,5 +77,17 @@ class TtsRepository @Inject constructor(
                 _state.value = TtsState.Error("TTS initialization failed")
             }
         }
+    }
+
+    //sets up the chapter for the playback
+    suspend fun prepare(chapterId: Int, text: String) {
+        scope.launch {
+            _state.value = TtsState.Preparing
+            currentText = text
+            currentChapterId = chapterId
+            currentOffset = 0
+            _state.value = TtsState.Paused(chapterId, 0)
+        }
+
     }
 }
