@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -49,6 +50,11 @@ import com.example.mobile_dev_project.R
 import com.example.mobile_dev_project.data.UiContent
 import com.example.mobile_dev_project.data.UiChapter
 import kotlinx.coroutines.flow.first
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material3.Icon
 
 /**
  * Sets up the immersive mode and handles displaying the entire screen
@@ -259,6 +265,53 @@ fun SearchButton(onSearch: () -> Unit, modifier: Modifier = Modifier){
 
 }
 
+
+/**
+ * Display the control bar for TTS.
+ * Features: pause, play, stop.
+ * For now, since VM not implemented, i just put a random vm.
+ */
+@Composable
+fun TTSControlBar(viewModel: StoreDataViewModel , chapterContent: UiContent, onToggleNavBar: (Boolean) -> Unit = {}) {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(16.dp)
+
+    ){
+        val view = LocalView.current
+        val window = (view.context as Activity).window
+        val windowInsetsController = remember {
+            WindowCompat.getInsetsController(window, view)
+        }
+        var isImmersive by remember { mutableStateOf(false) }
+        fun toggleImmersiveMode() {
+            isImmersive = !isImmersive
+            if (isImmersive) {
+                windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
+            } else {
+                // Show system bars (exit fullscreen)
+                windowInsetsController.show(WindowInsetsCompat.Type.systemBars())
+            }
+            onToggleNavBar(!isImmersive)
+        }
+        Button(onClick = {}){ // when we get viewmodel, i edit this
+            Icon(Icons.Default.Stop, contentDescription = "Stop TTS.")
+        }
+        Spacer(modifier = Modifier.width(16.dp))
+
+        var isTTSEnabled = true
+        Button(onClick = {
+            if(isTTSEnabled){
+                //stop the tts
+                isTTSEnabled = false
+            } else {
+                isTTSEnabled = true
+            }
+        }) {
+            val icon = if (isTTSEnabled) Icons.Default.Pause else Icons.Default.PlayArrow
+            Icon(icon, contentDescription = if(isTTSEnabled) "Pause TTS" else "Play TTS")
+        }
+    }
+}
 /**
  * Composable used for testing
  */
@@ -278,4 +331,5 @@ fun ReadingScreenForTest(
         onBack = onBack
     )
 }
+
 
