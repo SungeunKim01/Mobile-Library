@@ -112,6 +112,12 @@ class TtsRepository @Inject constructor(
         tts?.stop()
         _state.value = TtsState.Paused(currentChapterId, currentOffset)
     }
+    // this stopes the playback and resets to the beginning
+    fun stop() {
+        tts?.stop()
+        currentOffset = 0
+        _state.value = TtsState.Stopped
+    }
 
     //This is the speakFromOffset helper this si the one where they
     //this makes it so the at text speaks form the given area, and then it will go to the next chunk
