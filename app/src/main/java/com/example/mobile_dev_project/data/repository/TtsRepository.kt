@@ -51,6 +51,7 @@ class TtsRepository @Inject constructor(
         private const val TAG = "TtsRepository"
         private const val CHUNK_SIZE = 1200
     }
+
     //this will run when ttsRepo is created
     init {
         initializeTts()
@@ -65,11 +66,11 @@ class TtsRepository @Inject constructor(
             // elseit will jsut fail and give error
             if (status == TextToSpeech.SUCCESS) {
                 tts?.let { engine ->
-                        engine.setLanguage(Locale.CANADA)
-                        engine.setSpeechRate(_rate.value)
-                        engine.setPitch(_pitch.value)
-                        isInitialized = true
-                        Log.d(TAG, "TTS initialized successfully")
+                    engine.setLanguage(Locale.CANADA)
+                    engine.setSpeechRate(_rate.value)
+                    engine.setPitch(_pitch.value)
+                    isInitialized = true
+                    Log.d(TAG, "TTS initialized successfully")
                 }
             } else {
 
@@ -95,13 +96,13 @@ class TtsRepository @Inject constructor(
         val current = _state.value
 
         //if paused it will resume at the saved position
-        if (current is TtsState.Paused){
+        if (current is TtsState.Paused) {
             speakFromOffset(current.currentOffset)
             return
         }
 
         //So if stopped or idle it will just go back to the beginning
-        if(current is TtsState.Stopped || current is TtsState.Idle){
+        if (current is TtsState.Stopped || current is TtsState.Idle) {
             speakFromOffset(0)
             return
         }
@@ -112,6 +113,7 @@ class TtsRepository @Inject constructor(
         tts?.stop()
         _state.value = TtsState.Paused(currentChapterId, currentOffset)
     }
+
     // this stopes the playback and resets to the beginning
     fun stop() {
         tts?.stop()
@@ -141,9 +143,9 @@ class TtsRepository @Inject constructor(
             //This just checks when the chunk is finished so it just makes ssure if ther eis more text to read from or not
             //If there is none then it will just stop and reset to the beginning
             override fun onDone(utteranceId: String?) {
-                if(endOffset < currentText.length) {
+                if (endOffset < currentText.length) {
                     speakFromOffset(endOffset)
-                } else{
+                } else {
                     scope.launch {
                         _state.value = TtsState.Stopped
                         currentOffset = 0
@@ -151,11 +153,18 @@ class TtsRepository @Inject constructor(
                 }
             }
 
-            override fun onError(utteranceId: String?){
+            override fun onError(utteranceId: String?) {
                 scope.launch {
                     _state.value = TtsState.Error("Error")
                 }
             }
         })
+        tts?.speak(chunk, TextToSpeech.QUEUE_FLUSH, null, utteranceId)
+    }
+    //This is for when you are done with the tts so it just removes it and shuts it down
+    fun release() {
+        tts?.stop()
+        tts?.shutdown()
+        tts = null
     }
 }
