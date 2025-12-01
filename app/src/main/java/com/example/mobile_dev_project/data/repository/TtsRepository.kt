@@ -2,12 +2,14 @@ package com.example.mobile_dev_project.data.repository
 
 import android.content.Context
 import android.speech.tts.TextToSpeech
+import android.util.Log
 import com.example.mobile_dev_project.data.TtsState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import java.util.Locale
 
 //This uses android text to speech not readium
 // the inject is for hilt and the context is for
@@ -42,7 +44,37 @@ class TtsRepository @Inject constructor(
     // know if anything changes so it will update the ui state
     private val scope = CoroutineScope(Dispatchers.Main)
 
+    //This will set up the tag and alsot he chunk size
+    // meaning the speak texts in chunk and 1200 characters
+    companion object {
+        private const val TAG = "TtsRepository"
+        private const val CHUNK_SIZE = 1200
+    }
+    //this will run when ttsRepo is created
+    init {
+        initializeTts()
+    }
 
+    private fun initializeTts() {
+        tts = TextToSpeech(context) { status ->
 
+            //This makes sures that if it status is good it will
+            // make the engine set language to canadian english
+            // set speechRate and Set pitch
+            // elseit will jsut fail and give error
+            if (status == TextToSpeech.SUCCESS) {
+                tts?.let { engine ->
+                        engine.setLanguage(Locale.CANADA)
+                        engine.setSpeechRate(_rate.value)
+                        engine.setPitch(_pitch.value)
+                        isInitialized = true
+                        Log.d(TAG, "TTS initialized successfully")
+                }
+            } else {
 
+                Log.e(TAG, "TTS initialization failed")
+                _state.value = TtsState.Error("TTS initialization failed")
+            }
+        }
+    }
 }
