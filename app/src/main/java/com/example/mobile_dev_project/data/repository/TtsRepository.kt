@@ -81,7 +81,7 @@ class TtsRepository @Inject constructor(
     }
 
     //sets up the chapter for the playback
-    suspend fun prepare(chapterId: Int, text: String) {
+    suspend fun prepare(chapterId: Int?, text: String?) {
         scope.launch {
             _state.value = TtsState.Preparing
             currentText = text

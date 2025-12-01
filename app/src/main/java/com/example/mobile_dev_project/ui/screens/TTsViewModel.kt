@@ -1,53 +1,76 @@
 package com.example.mobile_dev_project.ui.screens
 
 import androidx.lifecycle.ViewModel
-import com.example.mobile_dev_project.data.entity.Chapter
-import com.example.mobile_dev_project.data.entity.Content
-import com.example.mobile_dev_project.data.UiContent
+import androidx.lifecycle.viewModelScope
 import com.example.mobile_dev_project.data.UiChapter
+import com.example.mobile_dev_project.data.UiContent
 import com.example.mobile_dev_project.data.repository.ChapterRepository
 import com.example.mobile_dev_project.data.repository.ContentRepository
 import com.example.mobile_dev_project.data.repository.TtsRepository
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class TTsViewModel @Inject constructor(
     private val ttsRepository: TtsRepository,
     private val chapterRepository: ChapterRepository,
     private val contentRepository: ContentRepository
-): ViewModel(){
-    var chapter: Flow<Chapter?>? = null
-    var content: Flow<Content?>? = null
+) : ViewModel() {
 
-    fun setChapter(chapterId: Int){
-        var chapter: Flow<Chapter?> = chapterRepository.getChapterById(chapterId)
-    }
-    fun setContent(){
-        if(chapter != null){
-            var chapterId = chapter
-            content = contentRepository.getContentForChapter(chapterId)
+    private val _chapter = MutableStateFlow<UiChapter?>(null)
+    val chapter: StateFlow<UiChapter?> = _chapter
+
+    private val _content = MutableStateFlow<UiContent?>(null)
+    val content: StateFlow<UiContent?> = _content
+
+    fun setChapter(chapterId: Int) {
+        viewModelScope.launch {
+            val entity = chapterRepository.getChapterById(chapterId).firstOrNull()
+            if (entity != null) {
+                _chapter.value = UiChapter(
+                    chapterId = entity.chapterId,
+                    bookId = entity.bookId,
+                    chapterOrder = entity.chapterOrder,
+                    chapterTitle = entity.chapterName,
+                    contentId = entity.contentId
+                )
+            }
         }
     }
 
-    fun prepareTTs(){
-        if(chapter != null && content != null){
-            ttsRepository.prepare(chapter.Id, content.content)
+    fun setContent() {
+        viewModelScope.launch {
+            val ch = _chapter.value ?: return@launch
+            val entity = contentRepository.getContentForChapter(ch.chapterId).firstOrNull()
+
+            if (entity != null) {
+                _content.value = UiContent(
+                    contentId = entity.contentId,
+                    chapterId = entity.chapterId,
+                    content = entity.content
+                )
+            }
         }
     }
 
-    fun playTTs(){
-        ttsRepository.play()
+    fun prepareTTs() {
+        viewModelScope.launch {
+            val ch = _chapter.value
+            val ct = _content.value
+
+            if (ch != null && ct != null) {
+                ttsRepository.prepare(
+                    chapterId = ch.chapterId,
+                    text = ct.content
+                )
+            }
+        }
     }
 
-    fun pauseTTs(){
-        ttsRepository.pause()
-    }
-
-    fun stopTTs(){
-        ttsRepository.stop()
-    }
-    fun releaseTTs(){
-        ttsRepository.release()
-    }
-
+    fun playTTs() = ttsRepository.play()
+    fun pauseTTs() = ttsRepository.pause()
+    fun stopTTs() = ttsRepository.stop()
+    fun releaseTTs() = ttsRepository.release()
 }
