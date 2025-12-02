@@ -7,6 +7,7 @@ import com.example.mobile_dev_project.data.UiContent
 import com.example.mobile_dev_project.data.repository.ChapterRepository
 import com.example.mobile_dev_project.data.repository.ContentRepository
 import com.example.mobile_dev_project.data.repository.TtsRepository
+import com.example.mobile_dev_project.data.TtsState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.firstOrNull
@@ -18,7 +19,7 @@ class TTsViewModel @Inject constructor(
     private val chapterRepository: ChapterRepository,
     private val contentRepository: ContentRepository
 ) : ViewModel() {
-
+    val ttsState: StateFlow<TtsState> = ttsRepository.state
     private val _chapter = MutableStateFlow<UiChapter?>(null)
     val chapter: StateFlow<UiChapter?> = _chapter
 
