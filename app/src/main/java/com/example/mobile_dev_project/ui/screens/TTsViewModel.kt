@@ -41,6 +41,14 @@ class TTsViewModel @Inject constructor(
         }
     }
 
+    fun prepareChapterById(chapterId: Int) {
+        viewModelScope.launch {
+            setChapter(chapterId)
+            setContent()
+            prepareTTs()
+        }
+    }
+
     fun setContent() {
         viewModelScope.launch {
             val ch = _chapter.value ?: return@launch
