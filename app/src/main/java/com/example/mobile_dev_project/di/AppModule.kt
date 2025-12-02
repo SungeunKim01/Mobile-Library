@@ -40,4 +40,8 @@ object AppModule {
     //provide ParsingRepository that depends on BooksPaths - Hilt auto injects the provided BooksPaths
     @Provides @Singleton
     fun provideParsingRepository(paths: BooksPaths) = ParsingRepository(paths)
+
+    //This just adds hilt for the Tts
+    @Provides @Singleton
+    fun provideTtsRepository(@ApplicationContext context: Context): TtsRepository { return TtsRepository(context) }
 }
