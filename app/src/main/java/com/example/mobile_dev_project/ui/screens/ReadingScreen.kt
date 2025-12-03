@@ -55,6 +55,9 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.Icon
+import javax.inject.Inject
+import com.example.mobile_dev_project.data.TtsState
+import androidx.compose.runtime.DisposableEffect
 
 /**
  * Sets up the immersive mode and handles displaying the entire screen
@@ -69,7 +72,8 @@ fun ReadingScreen (bookId: Int,
                    onSearch: () -> Unit,
                    onBack: () -> Unit,
                    onToggleNavBar: (Boolean) -> Unit = {},
-                   viewModel: RetrieveDataViewModel = hiltViewModel()){
+                   viewModel: RetrieveDataViewModel = hiltViewModel(),
+                   ttsVM: TTsViewModel = hiltViewModel()){
     val (isImmersive, toggleImmersiveMode) = immersiveMode(onToggleNavBar)
     var chapters by remember { mutableStateOf<List<UiChapter>>(emptyList()) }
     var contents by remember { mutableStateOf<List<UiContent>>(emptyList()) }
@@ -83,12 +87,18 @@ fun ReadingScreen (bookId: Int,
         chapters = allChaps
         contents = allContents
         selectedIndex = allChaps.indexOfFirst { it.chapterId == chapterId }
+        if (selectedIndex >= 0 && chapters.isNotEmpty()) {
+            chapters[selectedIndex].chapterId?.let { ttsVM.prepareChapterById(it) }
+        }
+    }
+    DisposableEffect(Unit) {
+        onDispose { ttsVM.releaseTTs() }
     }
     if (chapters.isEmpty() || contents.isEmpty()) {
         LoadingIndicator()
     } else {
         Box(modifier = Modifier.clickable { toggleImmersiveMode() }){
-            ReadingPageContent(chapters = chapters, contents = contents, chapterIndexSelected = selectedIndex, onSearch = onSearch, onBack = onBack)
+            ReadingPageContent(chapters = chapters, contents = contents, chapterIndexSelected = selectedIndex, onSearch = onSearch, onBack = onBack, ttsVM = ttsVM)
             if (isImmersive) {
                 Text(text = stringResource(R.string.tap_anywhere_to_exit_fullscreen), modifier = Modifier.padding(8.dp).testTag("fullscreen_text"))
             }
@@ -121,7 +131,8 @@ fun ReadingPageContent(
     chapterIndexSelected: Int,
     onSearch: () -> Unit,
     onBack: () -> Unit,
-    modifier : Modifier = Modifier
+    modifier : Modifier = Modifier,
+    ttsVM: TTsViewModel
 ) {
     val listState = rememberLazyListState()
     LaunchedEffect(chapterIndexSelected) {
@@ -140,7 +151,8 @@ fun ReadingPageContent(
                     contentId = it,
                     onSearch = onSearch,
                     onBack = onBack,
-                    )
+                    ttsVM = ttsVM
+                )
             }
         }
     }
@@ -162,7 +174,8 @@ fun ChapterPage(
     contentId: Int,
     onSearch: () -> Unit,
     onBack: () -> Unit,
-    viewModel: PositionViewModel = hiltViewModel()
+    viewModel: PositionViewModel = hiltViewModel(),
+    ttsVM: TTsViewModel
 ) {
     val state = rememberScrollState()
     LaunchedEffect(contentId) {
@@ -182,6 +195,9 @@ fun ChapterPage(
             ChapterTitle(title)
             ChapterContent(content)
         }
+        TTSControlBar(
+            viewModel = ttsVM
+        )
         FloatingActionButton(onClick = onBack,
             modifier = Modifier
                 .padding(bottom= dimensionResource(R.dimen.space_xxl), end= dimensionResource(R.dimen.space_lg)).align(Alignment.BottomEnd).testTag("back_btn"),
@@ -243,22 +259,23 @@ fun SearchButton(onSearch: () -> Unit, modifier: Modifier = Modifier){
  * For now, since VM not implemented, i just put a random vm.
  */
 @Composable
-fun TTSControlBar(viewModel: StoreDataViewModel , chapterContent: UiContent, onToggleNavBar: (Boolean) -> Unit = {}) {
+fun TTSControlBar(viewModel:TTsViewModel, onToggleNavBar: (Boolean) -> Unit = {}) {
     val (isImmersive, toggleImmersiveMode) = immersiveMode(onToggleNavBar)
+    val state = viewModel.ttsState.collectAsState()
     Box(modifier = Modifier.clickable { toggleImmersiveMode() }) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(16.dp)
+            modifier = Modifier.fillMaxWidth().padding(16.dp).align(Alignment.BottomStart)
         ) {
-            Button(onClick = {}) { // when we get viewmodel, i edit this
+            Button(onClick = {viewModel.stopTTs()}) { // when we get viewmodel, i edit this
                 Icon(Icons.Default.Stop, contentDescription = stringResource(R.string.stop))
             }
             Spacer(modifier = Modifier.width(16.dp))
-            var isTTSEnabled = true
+            val isTTSEnabled = state.value.isPlaying
             Button(onClick = {
                 if (isTTSEnabled) {
-                    isTTSEnabled = false
+                    viewModel.pauseTTs()
                 } else {
-                    isTTSEnabled = true
+                    viewModel.playTTs()
                 }
             }) {
                 val icon = if (isTTSEnabled) Icons.Default.Pause else Icons.Default.PlayArrow
@@ -307,14 +324,16 @@ fun ReadingScreenForTest(
     contents: List<UiContent>,
     chapterIndexSelected: Int = 0,
     onSearch: () -> Unit = {},
-    onBack: () -> Unit = {}
+    onBack: () -> Unit = {},
+    ttsVM : TTsViewModel = hiltViewModel()
 ) {
     ReadingPageContent(
         chapters = chapters,
         contents = contents,
         chapterIndexSelected = chapterIndexSelected,
         onSearch = onSearch,
-        onBack = onBack
+        onBack = onBack,
+        ttsVM = ttsVM
     )
 }
 
