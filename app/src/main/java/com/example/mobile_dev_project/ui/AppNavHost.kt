@@ -96,8 +96,7 @@ fun AppNavHost(
                 bookId = bookId,
                 onBack = { nav.popBackStack() },
                 onChapterSelected = { chapter ->
-                    nav.navigate(Route.Reading.createRoute(bookId, chapter.chapterId ?:0)),
-                    scrollRatio = -1f
+                    nav.navigate(Route.Reading.createRoute(bookId, chapter.chapterId ?:0))
                 },
                 onToggleNavBar = onToggleNavBar
             )
