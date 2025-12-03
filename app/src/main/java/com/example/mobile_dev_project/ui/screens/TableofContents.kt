@@ -104,7 +104,7 @@ fun TableOfContentsScreen(
                             .fillMaxWidth()
                             .testTag("chapter_button_$chapter.chapter_id")
                     ) {
-                        Text(text = chapter.chapterTitle)
+                        Text(text = chapter.chapterTitle.toString())
                     }
                 }
             }

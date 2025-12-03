@@ -155,7 +155,7 @@ fun Bookshelf(books: List<Book>, viewModel: HomeScreenViewModel, onNavigateToCon
 //On the Right is the last used text
 @Composable
 fun Book(book: Book, viewModel: HomeScreenViewModel, onNavigateToContents: (Int) -> Unit){
-    Button(onClick = {onNavigateToContents(book.bookId)},
+    Button(onClick = {onNavigateToContents(book.bookId!!)},
         modifier = Modifier
             .fillMaxWidth()
             .testTag("download_button"),

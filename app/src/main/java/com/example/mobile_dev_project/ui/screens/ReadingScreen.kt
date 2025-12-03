@@ -158,7 +158,7 @@ fun ReadingPageContent(
             val contentText = contents.find { it.chapterId == chapter.chapterId }?.content ?: ""
             chapter.contentId?.let {
                 ChapterPage(
-                    title = chapter.chapterTitle,
+                    title = chapter.chapterTitle.toString(),
                     content = contentText,
                     contentId = it,
                     onSearch = onSearch,

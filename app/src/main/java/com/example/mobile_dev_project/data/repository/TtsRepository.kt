@@ -84,8 +84,8 @@ class TtsRepository @Inject constructor(
     suspend fun prepare(chapterId: Int?, text: String?) {
         scope.launch {
             _state.value = TtsState.Preparing
-            currentText = text
-            currentChapterId = chapterId
+            currentText = text.toString()
+            currentChapterId = chapterId!!
             currentOffset = 0
             _state.value = TtsState.Paused(chapterId, 0)
         }
