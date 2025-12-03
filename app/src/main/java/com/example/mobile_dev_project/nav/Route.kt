@@ -7,8 +7,10 @@ sealed class Route(val route: String) {
     data object Content: Route("content/{bookId}"){
         fun createRoute(bookId: Int): String = "content/$bookId"
     }
-    data object Reading: Route("reading/{bookId}/{chapterId}") {
-        fun createRoute(bookId: Int, chapterId: Int): String = "reading/$bookId/$chapterId"
-    }
 
+    // add scrollRatioarameter - use -1f as no special scroll, use saved position /top
+    data object Reading: Route("reading/{bookId}/{chapterId}/{scrollRatio}") {
+        fun createRoute(bookId: Int, chapterId: Int, scrollRatio: Float = -1f):
+            String = "reading/$bookId/$chapterId/$scrollRatio"
+    }
 }
