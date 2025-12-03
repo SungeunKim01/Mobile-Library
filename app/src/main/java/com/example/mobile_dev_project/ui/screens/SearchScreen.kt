@@ -23,8 +23,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.example.mobile_dev_project.data.SearchResult
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 /**
  * TextField to search within the current book
@@ -37,9 +36,7 @@ import com.example.mobile_dev_project.data.SearchResult
 fun SearchScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
-    // this is callback when user taps a search result
-    onNavigateToLocation: (SearchResult) -> Unit,
-    vm: SearchViewModel = hiltViewModel(),
+    vm: SearchViewModel = viewModel(),
     onToggleNavBar: (Boolean) -> Unit = {}
 ) {
     val view = LocalView.current
@@ -101,14 +98,14 @@ fun SearchScreen(
             )
             // result Count as separate composable
             ResultCount(
-                count = vm.results.size,
+                count = vm.matches.size,
                 queryNotBlank = vm.query.isNotBlank()
             )
             //results List Composable
             SearchResultsList(
-                matches = vm.results,
+                matches = vm.matches,
                 query = vm.query,
-                onResultClick = onNavigateToLocation
+                modifier = Modifier.weight(1f)
             )
             if (isImmersive) {
                 Text(
@@ -164,38 +161,30 @@ fun ResultCount(
 //Display highlighted search results
 @Composable
 fun SearchResultsList(
-    matches: List<SearchResult>,
+    matches: List<Pair<Int, String>>,
     query: String,
-    onResultClick: (SearchResult) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.space_sm)),
-        modifier = modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
-        // use contentId as key so Compose can reuse rows if list changes
-        itemsIndexed( matches, key = { _, hit -> hit.contentId } ) {
-            index, hit ->
-            val annotated: AnnotatedString = highlight(hit.snippet, query)
-
+        itemsIndexed(matches, key = { idx, _ -> idx }) { idx, (_, paragraph) ->
+            val annotated: AnnotatedString = highlight(paragraph, query)
             ElevatedCard(
                 elevation = CardDefaults.elevatedCardElevation(
-                    defaultElevation = dimensionResource(R.dimen.card_elevation) ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    //navigate when tapped
-                    .clickable { onResultClick(hit) }
-                    .testTag("ResultCard_$index")
+                    defaultElevation = dimensionResource(R.dimen.card_elevation)
+                ),
+                modifier = Modifier.testTag("ResultCard_$idx")
             ) {
-                Column(
-                    modifier = Modifier.padding(dimensionResource(R.dimen.space_md))
-                ) {
-                    //show chapter title on top
-                    Text( text = hit.chapterTitle, style = MaterialTheme.typography.titleMedium)
-                    Spacer(Modifier.height(dimensionResource(R.dimen.space_xs)))
-                    // show snippet w the query highlighted
-                    Text( text = annotated, style = MaterialTheme.typography.bodyMedium
+                Column(Modifier.padding(8.dp)) {
+                    Text(
+                        text = "Match ${idx + 1}",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+                    Spacer(Modifier.height(dimensionResource(R.dimen.space_xs)))
+                    Text(text = annotated, style = MaterialTheme.typography.bodyLarge)
                 }
             }
         }
@@ -216,7 +205,7 @@ fun highlight(text: String, query: String): AnnotatedString {
     return buildAnnotatedString {
         while (true) {
             val i = lower.indexOf(q, start)
-            if (i < 0) { 
+            if (i < 0) {
                 append(text.substring(start))
                 break
             }
@@ -232,5 +221,17 @@ fun highlight(text: String, query: String): AnnotatedString {
             }
             start = i + q.length
         }
+    }
+}
+
+//Finds matches for the query & returns (index, paragraph) pairs containing the text query
+internal fun findMatches(
+    paragraphs: List<String>,
+    query: String
+): List<Pair<Int, String>> {
+    if (query.isBlank()) return emptyList()
+    val q = query.lowercase()
+    return paragraphs.mapIndexedNotNull { idx, p ->
+        if (p.lowercase().contains(q)) idx to p else null
     }
 }
