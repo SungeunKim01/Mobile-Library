@@ -16,10 +16,11 @@ import android.speech.tts.UtteranceProgressListener
 // the inject is for hilt and the context is for
 // the actual context needed
 class TtsRepository @Inject constructor(
-    private val context: Context
+    private val context: Context,
+    private val ttsEngine: TextToSpeech? = null
 ) {
     //This will bve the TTS engine needed to actualy do the tts
-    private var tts: TextToSpeech? = null
+    private var tts: TextToSpeech? = ttsEngine
     private var isInitialized = false
 
     //This is for the UI to observe so meaning this is
@@ -54,7 +55,11 @@ class TtsRepository @Inject constructor(
 
     //this will run when ttsRepo is created
     init {
-        initializeTts()
+        if (tts == null){
+            initializeTts()
+        }else {
+            isInitialized = true
+        }
     }
 
     private fun initializeTts() {
