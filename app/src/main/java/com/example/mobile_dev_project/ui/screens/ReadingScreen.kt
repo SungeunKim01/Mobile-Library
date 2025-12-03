@@ -107,7 +107,7 @@ fun ReadingScreen (bookId: Int,
             WindowCompat.getInsetsController(window, localView)
         }
         Box(modifier = Modifier.clickable { toggleImmersiveMode() }){
-            ReadingPageContent(chapters = chapters, contents = contents, chapterIndexSelected = selectedIndex, onSearch = onSearch, onBack = onBack, initialScrollRatio = initialScrollRatio)
+            ReadingPageContent(chapters = chapters, contents = contents, chapterIndexSelected = selectedIndex, onSearch = onSearch, onBack = onBack)
             if (isImmersive) {
                 Text(
                     text = stringResource(R.string.tap_anywhere_to_exit_fullscreen),
@@ -145,8 +145,7 @@ fun ReadingPageContent(
     chapterIndexSelected: Int,
     onSearch: () -> Unit,
     onBack: () -> Unit,
-    modifier : Modifier = Modifier,
-    initialScrollRatio: Float = -1f
+    modifier : Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
     LaunchedEffect(chapterIndexSelected) {
@@ -164,14 +163,7 @@ fun ReadingPageContent(
                     content = contentText,
                     contentId = it,
                     onSearch = onSearch,
-                    onBack = onBack,
-                    // Only the selected chapter gets the search jump.
-                    // Other chapters use -1f (no special jump).
-                    initialScrollRatio = if (index == chapterIndexSelected) {
-                        initialScrollRatio
-                    } else {
-                        -1f
-                    }
+                    onBack = onBack
                 )
             }
         }
@@ -199,19 +191,11 @@ fun ChapterPage(
 ) {
     val state = rememberScrollState()
 
-    // where to scroll when the page first appears
-    LaunchedEffect(contentId, initialScrollRatio) {
-        if (initialScrollRatio >= 0f) {
-            // for search - go near the matched word
-            val target = (state.maxValue * initialScrollRatio).toInt()
-            state.scrollTo(target)
-        } else {
-            viewModel.getScrollPosition(contentId)?.let { saved ->
-                state.scrollTo(saved.toInt())
-            }
+    LaunchedEffect(contentId) {
+        viewModel.getScrollPosition(contentId)?.let { saved ->
+            state.scrollTo(saved.toInt())
         }
     }
-
     LaunchedEffect(state.value) {
         viewModel.saveScrollPosition(contentId, state.value.toFloat())
     }

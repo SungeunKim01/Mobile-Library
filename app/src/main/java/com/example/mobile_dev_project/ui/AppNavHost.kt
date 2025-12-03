@@ -66,8 +66,7 @@ fun AppNavHost(
                     nav.navigate(
                         Route.Reading.createRoute(
                             hit.bookId,
-                            hit.chapterId,
-                            hit.scrollRatio
+                            hit.chapterId
                         )
                     )
                 },
@@ -103,23 +102,17 @@ fun AppNavHost(
         }
 
         composable(Route.Reading.route,
-            arguments = listOf(
-                navArgument("bookId") {
+            arguments = listOf(navArgument("bookId") {
                 type = NavType.IntType
-            }, navArgument("chapterId") {type = NavType.IntType},
-                navArgument("scrollRatio") { type = NavType.FloatType }
-            )
+            }, navArgument("chapterId") {type = NavType.IntType})
         ) { backStackEntry ->
             val bookId = backStackEntry.arguments?.getInt("bookId") ?:0
             val chapId = backStackEntry.arguments?.getInt("chapterId") ?:0
-            val scrollRatio = backStackEntry.arguments?.getFloat("scrollRatio") ?: -1f
-
             ReadingScreen(
                 bookId = bookId,
                 chapterId = chapId,
                 onSearch = { nav.navigate(Route.Search.route) },
                 onBack = { nav.popBackStack() },
-                initialScrollRatio  = scrollRatio,
                 onToggleNavBar = onToggleNavBar
             )
         }
