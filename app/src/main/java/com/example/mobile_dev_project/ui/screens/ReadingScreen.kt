@@ -71,6 +71,7 @@ fun ReadingScreen (bookId: Int,
                    chapterId: Int,
                    onSearch: () -> Unit,
                    onBack: () -> Unit,
+                   initialScrollRatio: Float = -1f,
                    onToggleNavBar: (Boolean) -> Unit = {},
                    viewModel: RetrieveDataViewModel = hiltViewModel(),
                    ttsVM: TTsViewModel = hiltViewModel()){
@@ -97,8 +98,15 @@ fun ReadingScreen (bookId: Int,
     if (chapters.isEmpty() || contents.isEmpty()) {
         LoadingIndicator()
     } else {
-        Box(modifier = Modifier.clickable { toggleImmersiveMode() }){
-            ReadingPageContent(chapters = chapters, contents = contents, chapterIndexSelected = selectedIndex, onSearch = onSearch, onBack = onBack, ttsVM = ttsVM)
+        Box(modifier = Modifier.clickable { toggleImmersiveMode() }) {
+            ReadingPageContent(
+                chapters = chapters,
+                contents = contents,
+                chapterIndexSelected = selectedIndex,
+                onSearch = onSearch,
+                onBack = onBack,
+                ttsVM = ttsVM
+            )
             if (isImmersive) {
                 Text(text = stringResource(R.string.tap_anywhere_to_exit_fullscreen), modifier = Modifier.padding(8.dp).testTag("fullscreen_text"))
             }
@@ -142,7 +150,7 @@ fun ReadingPageContent(
         state = listState,
         horizontalArrangement = Arrangement.Center
     ) {
-        itemsIndexed(chapters) { _, chapter ->
+        itemsIndexed(chapters) { index, chapter ->
             val contentText = contents.find { it.chapterId == chapter.chapterId }?.content ?: ""
             chapter.contentId?.let {
                 ChapterPage(
@@ -174,10 +182,12 @@ fun ChapterPage(
     contentId: Int,
     onSearch: () -> Unit,
     onBack: () -> Unit,
-    viewModel: PositionViewModel = hiltViewModel(),
-    ttsVM: TTsViewModel
+    ttsVM: TTsViewModel,
+    initialScrollRatio: Float = -1f,
+    viewModel: PositionViewModel = hiltViewModel()
 ) {
     val state = rememberScrollState()
+
     LaunchedEffect(contentId) {
         viewModel.getScrollPosition(contentId)?.let { saved ->
             state.scrollTo(saved.toInt())

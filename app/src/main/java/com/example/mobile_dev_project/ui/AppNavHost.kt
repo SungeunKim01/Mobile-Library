@@ -61,6 +61,15 @@ fun AppNavHost(
         composable(Route.Search.route) {
             SearchScreen(
                 onBack = { nav.safePopOrNavigateHome() },
+                onNavigateToLocation = { hit ->
+                    // go to the proper chapter in ReadingScreen wen user taps a result
+                    nav.navigate(
+                        Route.Reading.createRoute(
+                            hit.bookId,
+                            hit.chapterId
+                        )
+                    )
+                },
                 onToggleNavBar = onToggleNavBar
             )
         }
