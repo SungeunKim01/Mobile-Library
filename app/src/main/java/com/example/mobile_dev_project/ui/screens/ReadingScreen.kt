@@ -100,14 +100,14 @@ fun ReadingScreen (bookId: Int,
     if (chapters.isEmpty() || contents.isEmpty()) {
         LoadingIndicator()
     } else {
-        var isVisible by remember { mutableStateOf(false) }
-        val localView = LocalView.current
-        val window = (localView.context as Activity).window
-        val windowInsetsController = remember {
-            WindowCompat.getInsetsController(window, localView)
-        }
-        Box(modifier = Modifier.clickable { toggleImmersiveMode() }){
-            ReadingPageContent(chapters = chapters, contents = contents, chapterIndexSelected = selectedIndex, onSearch = onSearch, onBack = onBack)
+        Box(modifier = Modifier.clickable { toggleImmersiveMode() }) {
+            ReadingPageContent(
+                chapters = chapters,
+                contents = contents,
+                chapterIndexSelected = selectedIndex,
+                onSearch = onSearch,
+                onBack = onBack
+            )
             if (isImmersive) {
                 Text(
                     text = stringResource(R.string.tap_anywhere_to_exit_fullscreen),
