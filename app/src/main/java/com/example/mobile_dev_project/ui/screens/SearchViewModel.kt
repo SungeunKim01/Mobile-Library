@@ -4,34 +4,71 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.mobile_dev_project.data.SearchResult
+import com.example.mobile_dev_project.data.repository.SearchRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+import kotlinx.coroutines.launch
 
 /**
  * viwemodel for the Search screen
- * - hold the search query text
- * -Expose computed matches from a static paragraph list, im using sample data that I created for milestone 1
+ * - hold the current search query text
+ * - expose the current list of search results
+ * -show loading and err state
+ * - call searchRepository on viewModelScope
  */
-class SearchViewModel : ViewModel() {
+@HiltViewModel
+class SearchViewModel @Inject constructor (
+    private val searchRepository: SearchRepository) : ViewModel() {
 
-    //entered query text
+    // text entered by user in the search field
     var query by mutableStateOf("")
         private set
 
-    //temp sample content so ui works
-    //so later I can replace with backed current book content
-    private val paragraphs = listOf(
-        "Chapter 1 : THE BOY WHO LIVED",
-        "Chapter 2 : THE VANISHING GLASS",
-        "Chapter 3 : THE LETTERS FROM NO ONE",
-        "Chapter 4 : THE KEEPER OF THE KEYS"
-    )
+    // current search results from the db
+    var results by mutableStateOf<List<SearchResult>>(emptyList())
+        private set
 
-    //Computed matches whenever quer changes
-    // here resues the same function as in the screen to keep behavior aligned and testable
-    val matches: List<Pair<Int, String>>
-        get() = findMatches(paragraphs, query)
+    // flags for ui feedback
+    var isSearching by mutableStateOf(false)
+        private set
 
-    //ui event when the user types in the search fiel
+    var errMsg by mutableStateOf<String?>(null)
+        private set
+
+    //this called from the ui whenever the user types in the search field
+    //so update the query state and trigger new search
     fun onQueryChanged(newQuery: String) {
         query = newQuery
+        performSearch()
+    }
+
+    //Run the search in coroutin
+    private fun performSearch() {
+        val trimmed = query.trim()
+
+        // clear the results if the query is blank otherwise do nothing
+        if (trimmed.isBlank()) {
+            results = emptyList()
+            errMsg = null
+            return
+        }
+
+        viewModelScope.launch {
+            isSearching = true
+            errMsg = null
+
+            try {
+                // ask repo to search db
+                val hits = searchRepository.search(trimmed)
+                results = hits
+            } catch (e: Exception) {
+                results = emptyList()
+                errMsg = e.message ?: "Search failed"
+            } finally {
+                isSearching = false
+            }
+        }
     }
 }

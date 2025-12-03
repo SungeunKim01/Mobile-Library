@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -18,37 +19,36 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import com.example.mobile_dev_project.R
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.mobile_dev_project.R
+import com.example.mobile_dev_project.data.SearchResult
 
 /**
- * TextField to search within the current book
- * hows count and vertically scrollable results list
- * Highlights query in results
+ * TextField to search within the current book.
+ * Shows count and vertically scrollable results list.
+ * Highlights query in results.
  */
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
-    vm: SearchViewModel = viewModel(),
+    // callback when user taps a search result
+    onNavigateToLocation: (SearchResult) -> Unit,
+    vm: SearchViewModel = hiltViewModel(),
     onToggleNavBar: (Boolean) -> Unit = {}
 ) {
     val view = LocalView.current
     val window = (view.context as Activity).window
 
-
-    // Create a controller to show/hide system bars
+    // controller to show/hide system bars
     val windowInsetsController = remember {
         WindowCompat.getInsetsController(window, view)
     }
 
-    // Mutable state that tracks whether the screen is in immersive mode
     var isImmersive by remember { mutableStateOf(false) }
 
     fun toggleImmersiveMode() {
@@ -91,21 +91,21 @@ fun SearchScreen(
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(pad)
         ) {
-            //input composable
+            // input field
             SearchField(
                 value = vm.query,
                 onValueChange = vm::onQueryChanged
             )
-            // result Count as separate composable
+            // result count
             ResultCount(
-                count = vm.matches.size,
+                count = vm.results.size,
                 queryNotBlank = vm.query.isNotBlank()
             )
-            //results List Composable
+            // results list
             SearchResultsList(
-                matches = vm.matches,
+                matches = vm.results,
                 query = vm.query,
-                modifier = Modifier.weight(1f)
+                onResultClick = onNavigateToLocation
             )
             if (isImmersive) {
                 Text(
@@ -119,7 +119,7 @@ fun SearchScreen(
     }
 }
 
-//Text field for entering the search query str
+// Text field for entering the search query string
 @Composable
 fun SearchField(
     value: String,
@@ -139,7 +139,7 @@ fun SearchField(
     )
 }
 
-//composable that show the # of results found or No matches
+// Composable that shows the # of results found or "No matches"
 @Composable
 fun ResultCount(
     count: Int,
@@ -158,44 +158,58 @@ fun ResultCount(
     )
 }
 
-//Display highlighted search results
+// Display highlighted search results
 @Composable
 fun SearchResultsList(
-    matches: List<Pair<Int, String>>,
+    matches: List<SearchResult>,
     query: String,
+    onResultClick: (SearchResult) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.space_sm)),
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
-        itemsIndexed(matches, key = { idx, _ -> idx }) { idx, (_, paragraph) ->
-            val annotated: AnnotatedString = highlight(paragraph, query)
+        // use contentId as key so Compose can reuse rows if list changes
+        itemsIndexed(matches) { index, hit ->
+            val annotated: AnnotatedString = highlight(hit.snippet, query)
+
             ElevatedCard(
                 elevation = CardDefaults.elevatedCardElevation(
                     defaultElevation = dimensionResource(R.dimen.card_elevation)
                 ),
-                modifier = Modifier.testTag("ResultCard_$idx")
+                modifier = Modifier
+                    .fillMaxWidth()
+                    // navigate when tapped
+                    .clickable { onResultClick(hit) }
+                    .testTag("ResultCard_$index")
             ) {
-                Column(Modifier.padding(8.dp)) {
+                Column(
+                    modifier = Modifier.padding(dimensionResource(R.dimen.space_md))
+                ) {
+                    // show chapter title on top
                     Text(
-                        text = "Match ${idx + 1}",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        text = hit.chapterTitle,
+                        style = MaterialTheme.typography.titleMedium
                     )
                     Spacer(Modifier.height(dimensionResource(R.dimen.space_xs)))
-                    Text(text = annotated, style = MaterialTheme.typography.bodyLarge)
+                    // show snippet with the query highlighted
+                    Text(
+                        text = annotated,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                 }
             }
         }
     }
 }
 
-//Highlights the query substring in the result
-//If query is blank, returns AnnotatedString w no highlights
+// Highlights the query substring in the result.
+// If query is blank, returns AnnotatedString with no highlights.
 @Composable
 fun highlight(text: String, query: String): AnnotatedString {
     if (query.isBlank()) return AnnotatedString(text)
+
     val lower = text.lowercase()
     val q = query.lowercase()
     var start = 0
@@ -224,14 +238,3 @@ fun highlight(text: String, query: String): AnnotatedString {
     }
 }
 
-//Finds matches for the query & returns (index, paragraph) pairs containing the text query
-internal fun findMatches(
-    paragraphs: List<String>,
-    query: String
-): List<Pair<Int, String>> {
-    if (query.isBlank()) return emptyList()
-    val q = query.lowercase()
-    return paragraphs.mapIndexedNotNull { idx, p ->
-        if (p.lowercase().contains(q)) idx to p else null
-    }
-}

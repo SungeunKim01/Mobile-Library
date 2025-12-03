@@ -62,6 +62,7 @@ fun ReadingScreen (bookId: Int,
                    chapterId: Int,
                    onSearch: () -> Unit,
                    onBack: () -> Unit,
+                   initialScrollRatio: Float = -1f,
                    onToggleNavBar: (Boolean) -> Unit = {},
                    viewModel: RetrieveDataViewModel = hiltViewModel()){
     val view = LocalView.current
@@ -99,14 +100,14 @@ fun ReadingScreen (bookId: Int,
     if (chapters.isEmpty() || contents.isEmpty()) {
         LoadingIndicator()
     } else {
-        var isVisible by remember { mutableStateOf(false) }
-        val localView = LocalView.current
-        val window = (localView.context as Activity).window
-        val windowInsetsController = remember {
-            WindowCompat.getInsetsController(window, localView)
-        }
-        Box(modifier = Modifier.clickable { toggleImmersiveMode() }){
-            ReadingPageContent(chapters = chapters, contents = contents, chapterIndexSelected = selectedIndex, onSearch = onSearch, onBack = onBack)
+        Box(modifier = Modifier.clickable { toggleImmersiveMode() }) {
+            ReadingPageContent(
+                chapters = chapters,
+                contents = contents,
+                chapterIndexSelected = selectedIndex,
+                onSearch = onSearch,
+                onBack = onBack
+            )
             if (isImmersive) {
                 Text(
                     text = stringResource(R.string.tap_anywhere_to_exit_fullscreen),
@@ -154,7 +155,7 @@ fun ReadingPageContent(
         state = listState,
         horizontalArrangement = Arrangement.Center
     ) {
-        itemsIndexed(chapters) { _, chapter ->
+        itemsIndexed(chapters) { index, chapter ->
             val contentText = contents.find { it.chapterId == chapter.chapterId }?.content ?: ""
             chapter.contentId?.let {
                 ChapterPage(
@@ -162,8 +163,8 @@ fun ReadingPageContent(
                     content = contentText,
                     contentId = it,
                     onSearch = onSearch,
-                    onBack = onBack,
-                    )
+                    onBack = onBack
+                )
             }
         }
     }
@@ -185,9 +186,11 @@ fun ChapterPage(
     contentId: Int,
     onSearch: () -> Unit,
     onBack: () -> Unit,
+    initialScrollRatio: Float = -1f,
     viewModel: PositionViewModel = hiltViewModel()
 ) {
     val state = rememberScrollState()
+
     LaunchedEffect(contentId) {
         viewModel.getScrollPosition(contentId)?.let { saved ->
             state.scrollTo(saved.toInt())
