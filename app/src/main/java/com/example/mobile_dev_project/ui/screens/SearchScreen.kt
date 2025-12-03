@@ -173,9 +173,7 @@ fun SearchResultsList(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.space_sm)),
         modifier = modifier.fillMaxSize()
     ) {
-        // use contentId as key so Compose can reuse rows if list changes
-        itemsIndexed( matches, key = { _, hit -> hit.contentId } ) {
-            index, hit ->
+        itemsIndexed(matches) { index, hit ->
             val annotated: AnnotatedString = highlight(hit.snippet, query)
 
             ElevatedCard(
