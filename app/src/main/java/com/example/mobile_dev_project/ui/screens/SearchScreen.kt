@@ -23,7 +23,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.mobile_dev_project.data.SearchResult
 
 /**
  * TextField to search within the current book
@@ -36,7 +37,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 fun SearchScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
-    vm: SearchViewModel = viewModel(),
+    // this is callback when user taps a search result
+    onNavigateToLocation: (SearchResult) -> Unit,
+    vm: SearchViewModel = hiltViewModel(),
     onToggleNavBar: (Boolean) -> Unit = {}
 ) {
     val view = LocalView.current
@@ -98,14 +101,14 @@ fun SearchScreen(
             )
             // result Count as separate composable
             ResultCount(
-                count = vm.matches.size,
+                count = vm.results.size,
                 queryNotBlank = vm.query.isNotBlank()
             )
             //results List Composable
             SearchResultsList(
-                matches = vm.matches,
+                matches = vm.results,
                 query = vm.query,
-                modifier = Modifier.weight(1f)
+                onResultClick = onNavigateToLocation
             )
             if (isImmersive) {
                 Text(
@@ -161,30 +164,38 @@ fun ResultCount(
 //Display highlighted search results
 @Composable
 fun SearchResultsList(
-    matches: List<Pair<Int, String>>,
+    matches: List<SearchResult>,
     query: String,
+    onResultClick: (SearchResult) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.space_sm)),
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize()
     ) {
-        itemsIndexed(matches, key = { idx, _ -> idx }) { idx, (_, paragraph) ->
-            val annotated: AnnotatedString = highlight(paragraph, query)
+        // use contentId as key so Compose can reuse rows if list changes
+        itemsIndexed( matches, key = { _, hit -> hit.contentId } ) {
+            index, hit ->
+            val annotated: AnnotatedString = highlight(hit.snippet, query)
+
             ElevatedCard(
                 elevation = CardDefaults.elevatedCardElevation(
-                    defaultElevation = dimensionResource(R.dimen.card_elevation)
-                ),
-                modifier = Modifier.testTag("ResultCard_$idx")
+                    defaultElevation = dimensionResource(R.dimen.card_elevation) ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    //navigate when tapped
+                    .clickable { onResultClick(hit) }
+                    .testTag("ResultCard_$index")
             ) {
-                Column(Modifier.padding(8.dp)) {
-                    Text(
-                        text = "Match ${idx + 1}",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                Column(
+                    modifier = Modifier.padding(dimensionResource(R.dimen.space_md))
+                ) {
+                    //show chapter title on top
+                    Text( text = hit.chapterTitle, style = MaterialTheme.typography.titleMedium)
                     Spacer(Modifier.height(dimensionResource(R.dimen.space_xs)))
-                    Text(text = annotated, style = MaterialTheme.typography.bodyLarge)
+                    // show snippet w the query highlighted
+                    Text( text = annotated, style = MaterialTheme.typography.bodyMedium
+                    )
                 }
             }
         }
@@ -205,7 +216,7 @@ fun highlight(text: String, query: String): AnnotatedString {
     return buildAnnotatedString {
         while (true) {
             val i = lower.indexOf(q, start)
-            if (i < 0) {
+            if (i < 0) { 
                 append(text.substring(start))
                 break
             }
@@ -221,17 +232,5 @@ fun highlight(text: String, query: String): AnnotatedString {
             }
             start = i + q.length
         }
-    }
-}
-
-//Finds matches for the query & returns (index, paragraph) pairs containing the text query
-internal fun findMatches(
-    paragraphs: List<String>,
-    query: String
-): List<Pair<Int, String>> {
-    if (query.isBlank()) return emptyList()
-    val q = query.lowercase()
-    return paragraphs.mapIndexedNotNull { idx, p ->
-        if (p.lowercase().contains(q)) idx to p else null
     }
 }
