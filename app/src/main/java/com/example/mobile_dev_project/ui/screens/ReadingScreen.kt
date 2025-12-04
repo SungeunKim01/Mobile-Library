@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
@@ -25,6 +27,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
@@ -55,6 +58,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import javax.inject.Inject
 //import com.example.mobile_dev_project.data.TtsState
@@ -66,6 +70,8 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
+
 /**
  * Sets up the immersive mode and handles displaying the entire screen
  * Get data from table of contents, fetch content from chapters from view model.
@@ -147,7 +153,7 @@ fun ReadingScreen (bookId: Int,
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.TopCenter
                 ) {
-                    TTSControlBar(modifier = Modifier.widthIn(max = LocalConfiguration.current.screenWidthDp.dp / 3))
+                    TTSControlBar()
                 }
             }
         }
@@ -375,37 +381,48 @@ fun SearchButton(onSearch: () -> Unit, modifier: Modifier = Modifier){
  */
 @Composable
 fun TTSControlBar(modifier: Modifier = Modifier) {
-    Surface(
-        modifier = modifier.padding(top = 12.dp).padding(horizontal = 24.dp),
-        shape = MaterialTheme.shapes.large,
-        tonalElevation = 4.dp,
-        shadowElevation = 8.dp,
-        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f)
-    )    {
-    //val state = viewModel.ttsState.collectAsState()
-        Row(
-            modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+    Row(
+        modifier = modifier.fillMaxWidth().padding(top=12.dp), horizontalArrangement = Arrangement.Center
+    ){
+        Surface(
+            shape = MaterialTheme.shapes.large,
+            tonalElevation = 4.dp,
+            shadowElevation = 8.dp,
+            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f)
         ) {
-            Button(onClick = {}) { // when we get viewmodel, i edit this: viewModel.stopTTs()
-                Icon(Icons.Default.Stop, contentDescription = stringResource(R.string.stop))
-            }
-            var isTTSEnabled = true //state.value.isPlaying
-            Button(onClick = {
-                if (isTTSEnabled) {
-                    isTTSEnabled = false //.pauseTTs()
-                } else {
-                    isTTSEnabled = true //.playTTs()
+            //val state = viewModel.ttsState.collectAsState()
+            Row(
+                modifier = modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Button(
+                    onClick = {}, colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.LightGray
+                    ), contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                    shape = CircleShape
+                ) { // when we get viewmodel, i edit this: viewModel.stopTTs()
+                    Icon(Icons.Default.Stop, contentDescription = stringResource(R.string.stop))
                 }
-            }) {
-                val icon = if (isTTSEnabled) Icons.Default.Pause else Icons.Default.PlayArrow
-                Icon(
-                    icon,
-                    contentDescription = if (isTTSEnabled) stringResource(R.string.pause) else stringResource(
-                        R.string.play
+                var isTTSEnabled = true //state.value.isPlaying
+                Button(
+                    onClick = {
+                        if (isTTSEnabled) {
+                            isTTSEnabled = false //.pauseTTs()
+                        }
+                    }, colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.LightGray
+                    ), contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                    shape = CircleShape
+                ) {
+                    val icon = if (isTTSEnabled) Icons.Default.Pause else Icons.Default.PlayArrow
+                    Icon(
+                        icon,
+                        contentDescription = if (isTTSEnabled) stringResource(R.string.pause) else stringResource(
+                            R.string.play
+                        )
                     )
-                )
+                }
             }
         }
     }
