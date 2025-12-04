@@ -49,6 +49,8 @@ import com.example.mobile_dev_project.R
 import com.example.mobile_dev_project.data.UiContent
 import com.example.mobile_dev_project.data.UiChapter
 import kotlinx.coroutines.flow.first
+import androidx.compose.runtime.snapshotFlow
+import kotlinx.coroutines.flow.filter
 
 /**
  * Sets up the immersive mode and handles displaying the entire screen
@@ -106,7 +108,8 @@ fun ReadingScreen (bookId: Int,
                 contents = contents,
                 chapterIndexSelected = selectedIndex,
                 onSearch = onSearch,
-                onBack = onBack
+                onBack = onBack,
+                initialScrollRatio = initialScrollRatio
             )
             if (isImmersive) {
                 Text(
@@ -174,7 +177,12 @@ fun ReadingPageContent(
                     contentId = it,
                     onSearch = onSearch,
                     onBack = onBack,
-                    initialScrollRatio = chapterScrollRatio
+                    initialScrollRatio =
+                        if (index == chapterIndexSelected) {
+                            initialScrollRatio
+                        } else {
+                            -1f
+                        }
                 )
             }
         }
@@ -202,22 +210,29 @@ fun ChapterPage(
 ) {
     val state = rememberScrollState()
 
-    LaunchedEffect(contentId, initialScrollRatio) {
-        if (initialScrollRatio >= 0f) {
-            // maxValue - how far can scroll in pixels
-            val max = state.maxValue
-            if (max > 0) {
-                val target = (max * initialScrollRatio).toInt()
-                state.scrollTo(target)
-                viewModel.saveScrollPosition(contentId, target.toFloat())
-            }
-        } else {
-            // normal - restore last saved scroll position.
+    // restore last saved scroll position
+    LaunchedEffect(contentId) {
+        if (initialScrollRatio < 0f) {
             viewModel.getScrollPosition(contentId)?.let { saved ->
                 state.scrollTo(saved.toInt())
             }
         }
     }
+
+    //go to ratio only after maxValue is ready
+    LaunchedEffect(contentId, initialScrollRatio) {
+        if (initialScrollRatio >= 0f) {
+            // wait until layout has measured the content & maxValue > 0
+            val max = snapshotFlow { state.maxValue }
+                .filter { it > 0 }
+                .first()
+
+            val target = (max * initialScrollRatio).toInt()
+            state.scrollTo(target)
+            viewModel.saveScrollPosition(contentId, target.toFloat())
+        }
+    }
+
     LaunchedEffect(contentId, state.value) {
         viewModel.saveScrollPosition(contentId, state.value.toFloat())
     }

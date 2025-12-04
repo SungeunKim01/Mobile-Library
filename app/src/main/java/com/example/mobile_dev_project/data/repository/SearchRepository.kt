@@ -71,7 +71,8 @@ class SearchRepository @Inject constructor(
                         contentId = content.contentId,
                         chapterTitle = chapterTitle,
                         snippet = snippet,
-                        scrollRatio = scrollRatio
+                        scrollRatio = scrollRatio,
+                        query = trimmed
                     )
                 }
 

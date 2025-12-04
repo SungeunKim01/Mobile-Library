@@ -13,7 +13,8 @@ data class SearchResult(
     val contentId: Int,
     val chapterTitle: String,
     val snippet: String,
-    val scrollRatio: Float
+    val scrollRatio: Float,
+    val query: String
 )
 
 
