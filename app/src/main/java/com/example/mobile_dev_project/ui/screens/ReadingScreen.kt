@@ -145,6 +145,7 @@ fun ReadingPageContent(
     chapterIndexSelected: Int,
     onSearch: () -> Unit,
     onBack: () -> Unit,
+    initialScrollRatio: Float = -1f,
     modifier : Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
@@ -157,13 +158,23 @@ fun ReadingPageContent(
     ) {
         itemsIndexed(chapters) { index, chapter ->
             val contentText = contents.find { it.chapterId == chapter.chapterId }?.content ?: ""
+
+            // only selected chapter use the ratio
+            val chapterScrollRatio =
+                if (index == chapterIndexSelected) {
+                    initialScrollRatio
+                } else {
+                    -1f
+                }
+
             chapter.contentId?.let {
                 ChapterPage(
                     title = chapter.chapterTitle,
                     content = contentText,
                     contentId = it,
                     onSearch = onSearch,
-                    onBack = onBack
+                    onBack = onBack,
+                    initialScrollRatio = chapterScrollRatio
                 )
             }
         }
@@ -186,17 +197,28 @@ fun ChapterPage(
     contentId: Int,
     onSearch: () -> Unit,
     onBack: () -> Unit,
-    initialScrollRatio: Float = -1f,
-    viewModel: PositionViewModel = hiltViewModel()
+    viewModel: PositionViewModel = hiltViewModel(),
+    initialScrollRatio: Float = -1f
 ) {
     val state = rememberScrollState()
 
-    LaunchedEffect(contentId) {
-        viewModel.getScrollPosition(contentId)?.let { saved ->
-            state.scrollTo(saved.toInt())
+    LaunchedEffect(contentId, initialScrollRatio) {
+        if (initialScrollRatio >= 0f) {
+            // maxValue - how far can scroll in pixels
+            val max = state.maxValue
+            if (max > 0) {
+                val target = (max * initialScrollRatio).toInt()
+                state.scrollTo(target)
+                viewModel.saveScrollPosition(contentId, target.toFloat())
+            }
+        } else {
+            // normal - restore last saved scroll position.
+            viewModel.getScrollPosition(contentId)?.let { saved ->
+                state.scrollTo(saved.toInt())
+            }
         }
     }
-    LaunchedEffect(state.value) {
+    LaunchedEffect(contentId, state.value) {
         viewModel.saveScrollPosition(contentId, state.value.toFloat())
     }
     Box(modifier = Modifier.fillMaxSize()) {
@@ -278,7 +300,8 @@ fun ReadingScreenForTest(
         contents = contents,
         chapterIndexSelected = chapterIndexSelected,
         onSearch = onSearch,
-        onBack = onBack
+        onBack = onBack,
+        initialScrollRatio = -1f
     )
 }
 
