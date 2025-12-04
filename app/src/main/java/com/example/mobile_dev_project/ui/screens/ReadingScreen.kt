@@ -49,6 +49,13 @@ import com.example.mobile_dev_project.R
 import com.example.mobile_dev_project.data.UiContent
 import com.example.mobile_dev_project.data.UiChapter
 import kotlinx.coroutines.flow.first
+import androidx.compose.runtime.snapshotFlow
+import kotlinx.coroutines.flow.filter
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
+import androidx.compose.runtime.remember
 
 /**
  * Sets up the immersive mode and handles displaying the entire screen
@@ -63,6 +70,7 @@ fun ReadingScreen (bookId: Int,
                    onSearch: () -> Unit,
                    onBack: () -> Unit,
                    initialScrollRatio: Float = -1f,
+                   searchQuery: String = "",
                    onToggleNavBar: (Boolean) -> Unit = {},
                    viewModel: RetrieveDataViewModel = hiltViewModel()){
     val view = LocalView.current
@@ -106,7 +114,9 @@ fun ReadingScreen (bookId: Int,
                 contents = contents,
                 chapterIndexSelected = selectedIndex,
                 onSearch = onSearch,
-                onBack = onBack
+                onBack = onBack,
+                initialScrollRatio = initialScrollRatio,
+                searchQuery = searchQuery
             )
             if (isImmersive) {
                 Text(
@@ -145,6 +155,8 @@ fun ReadingPageContent(
     chapterIndexSelected: Int,
     onSearch: () -> Unit,
     onBack: () -> Unit,
+    initialScrollRatio: Float = -1f,
+    searchQuery: String,
     modifier : Modifier = Modifier
 ) {
     val listState = rememberLazyListState()
@@ -157,13 +169,29 @@ fun ReadingPageContent(
     ) {
         itemsIndexed(chapters) { index, chapter ->
             val contentText = contents.find { it.chapterId == chapter.chapterId }?.content ?: ""
+
+            // only selected chapter use the ratio
+            val chapterScrollRatio =
+                if (index == chapterIndexSelected) {
+                    initialScrollRatio
+                } else {
+                    -1f
+                }
+
             chapter.contentId?.let {
                 ChapterPage(
                     title = chapter.chapterTitle,
                     content = contentText,
                     contentId = it,
                     onSearch = onSearch,
-                    onBack = onBack
+                    onBack = onBack,
+                    searchQuery = searchQuery,
+                    initialScrollRatio =
+                        if (index == chapterIndexSelected) {
+                            initialScrollRatio
+                        } else {
+                            -1f
+                        }
                 )
             }
         }
@@ -186,17 +214,36 @@ fun ChapterPage(
     contentId: Int,
     onSearch: () -> Unit,
     onBack: () -> Unit,
+    viewModel: PositionViewModel = hiltViewModel(),
     initialScrollRatio: Float = -1f,
-    viewModel: PositionViewModel = hiltViewModel()
+    searchQuery: String = ""
 ) {
     val state = rememberScrollState()
 
+    // restore last saved scroll position
     LaunchedEffect(contentId) {
-        viewModel.getScrollPosition(contentId)?.let { saved ->
-            state.scrollTo(saved.toInt())
+        if (initialScrollRatio < 0f) {
+            viewModel.getScrollPosition(contentId)?.let { saved ->
+                state.scrollTo(saved.toInt())
+            }
         }
     }
-    LaunchedEffect(state.value) {
+
+    //go to ratio only after maxValue is ready
+    LaunchedEffect(contentId, initialScrollRatio) {
+        if (initialScrollRatio >= 0f) {
+            // wait until layout has measured the content & maxValue > 0
+            val max = snapshotFlow { state.maxValue }
+                .filter { it > 0 }
+                .first()
+
+            val target = (max * initialScrollRatio).toInt()
+            state.scrollTo(target)
+            viewModel.saveScrollPosition(contentId, target.toFloat())
+        }
+    }
+
+    LaunchedEffect(contentId, state.value) {
         viewModel.saveScrollPosition(contentId, state.value.toFloat())
     }
     Box(modifier = Modifier.fillMaxSize()) {
@@ -206,7 +253,7 @@ fun ChapterPage(
             SearchButton(onSearch)
             Spacer(Modifier.height(dimensionResource(R.dimen.padding_reg)))
             ChapterTitle(title)
-            ChapterContent(content)
+            ChapterContent(content = content, highlightQuery = searchQuery)
         }
         FloatingActionButton(onClick = onBack,
             modifier = Modifier
@@ -231,10 +278,49 @@ fun ChapterTitle(title: String){
 /**
  * Displays the content of a chapter.
  */
+
+
 @Composable
-fun ChapterContent(content : String, modifier: Modifier = Modifier){
-    Column(modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp - dimensionResource(R.dimen.space_lg))){
-        Text(text = content,
+fun ChapterContent(content: String, highlightQuery: String, modifier: Modifier = Modifier) {
+    // build highlighted text every recomposition
+    val annotated: AnnotatedString =
+        if (highlightQuery.isBlank()) {
+            AnnotatedString(content)
+        } else {
+            val lower = content.lowercase()
+            val q = highlightQuery.lowercase()
+            var start = 0
+
+            buildAnnotatedString {
+                while (true) {
+                    val index = lower.indexOf(q, startIndex = start)
+                    if (index < 0) {
+                        append(content.substring(start))
+                        break
+                    }
+
+                    //text befo the match
+                    append(content.substring(start, index))
+
+                    //highlighted match
+                    withStyle(
+                        SpanStyle(
+                            background = MaterialTheme.colorScheme.secondaryContainer,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer,
+                            fontWeight = FontWeight.Bold
+                        )
+                    ) {
+                        append(content.substring(index, index + q.length))
+                    }
+
+                    start = index + q.length
+                }
+            }
+        }
+
+    Column(modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp -
+    dimensionResource(R.dimen.space_lg))) {
+        Text(text = annotated,
             modifier = Modifier.fillMaxWidth().testTag("content"),
             lineHeight = dimensionResource(R.dimen.line_height_reg).value.sp
         )
@@ -278,7 +364,9 @@ fun ReadingScreenForTest(
         contents = contents,
         chapterIndexSelected = chapterIndexSelected,
         onSearch = onSearch,
-        onBack = onBack
+        onBack = onBack,
+        initialScrollRatio = -1f,
+        searchQuery = ""
     )
 }
 
