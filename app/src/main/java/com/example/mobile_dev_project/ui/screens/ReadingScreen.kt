@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -142,7 +143,12 @@ fun ReadingScreen (bookId: Int,
                     modifier = Modifier.padding(8.dp).testTag("fullscreen_text")
                 )
             }else{
-                TTSControlBar()
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.TopCenter
+                ) {
+                    TTSControlBar(modifier = Modifier.widthIn(max = LocalConfiguration.current.screenWidthDp.dp / 3))
+                }
             }
         }
     }
@@ -368,16 +374,23 @@ fun SearchButton(onSearch: () -> Unit, modifier: Modifier = Modifier){
  * For now, since VM not implemented, i just put a random vm.
  */
 @Composable
-fun TTSControlBar() {
-        val state = true
-        //viewModel.ttsState.collectAsState()
+fun TTSControlBar(modifier: Modifier = Modifier) {
+    Surface(
+        modifier = modifier.padding(top = 12.dp).padding(horizontal = 24.dp),
+        shape = MaterialTheme.shapes.large,
+        tonalElevation = 4.dp,
+        shadowElevation = 8.dp,
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f)
+    )    {
+    //val state = viewModel.ttsState.collectAsState()
         Row(
-            modifier = Modifier.fillMaxWidth().padding(16.dp)
+            modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Button(onClick = {}) { // when we get viewmodel, i edit this: viewModel.stopTTs()
                 Icon(Icons.Default.Stop, contentDescription = stringResource(R.string.stop))
             }
-            Spacer(modifier = Modifier.width(16.dp))
             var isTTSEnabled = true //state.value.isPlaying
             Button(onClick = {
                 if (isTTSEnabled) {
@@ -395,6 +408,7 @@ fun TTSControlBar() {
                 )
             }
         }
+    }
 }
 
 /**
