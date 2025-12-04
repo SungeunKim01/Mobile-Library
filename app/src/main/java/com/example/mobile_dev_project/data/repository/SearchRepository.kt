@@ -52,6 +52,14 @@ class SearchRepository @Inject constructor(
                     matchLength = trimmed.length
                 )
 
+                // how far down the content this match is
+                val scrollRatio =
+                    if (fullText.isNotEmpty()) {
+                        currentIndex.toFloat() / fullText.length.toFloat()
+                    } else {
+                        0f
+                    }
+
                 //find chapter & book for this content
                 val chapter = chaptersById[content.chapterId]
                 if (chapter != null) {
@@ -62,7 +70,8 @@ class SearchRepository @Inject constructor(
                         chapterId = chapter.chapterId,
                         contentId = content.contentId,
                         chapterTitle = chapterTitle,
-                        snippet = snippet
+                        snippet = snippet,
+                        scrollRatio = scrollRatio
                     )
                 }
 
