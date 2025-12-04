@@ -67,7 +67,8 @@ fun AppNavHost(
                         Route.Reading.createRoute(
                             hit.bookId,
                             hit.chapterId,
-                            hit.scrollRatio
+                            hit.scrollRatio,
+                            hit.query
                         )
                     )
                 },
@@ -113,18 +114,25 @@ fun AppNavHost(
                 navArgument("scrollRatio") {
                     type = NavType.FloatType
                     defaultValue = -1f
+                },
+                navArgument("query") {
+                    type = NavType.StringType
+                    defaultValue = ""
                 }
             )
         ) { backStackEntry ->
             val bookId = backStackEntry.arguments?.getInt("bookId") ?:0
             val chapId = backStackEntry.arguments?.getInt("chapterId") ?:0
             val scrollRatio = backStackEntry.arguments?.getFloat("scrollRatio") ?:-1f
+            val query = backStackEntry.arguments?.getString("query") ?: ""
+
             ReadingScreen(
                 bookId = bookId,
                 chapterId = chapId,
                 onSearch = { nav.navigate(Route.Search.route) },
                 onBack = { nav.popBackStack() },
                 initialScrollRatio = scrollRatio,
+                searchQuery = query,
                 onToggleNavBar = onToggleNavBar
             )
         }
