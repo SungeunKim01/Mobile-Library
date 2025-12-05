@@ -4,6 +4,7 @@ import android.content.Context
 import com.example.mobile_dev_project.data.BooksPaths
 import com.example.mobile_dev_project.data.repository.OkHttpDownloader
 import com.example.mobile_dev_project.data.repository.ParsingRepository
+import com.example.mobile_dev_project.data.repository.TtsRepository
 import com.example.mobile_dev_project.data.util.UnzipUtils
 import dagger.Module
 import dagger.Provides
@@ -40,4 +41,8 @@ object AppModule {
     //provide ParsingRepository that depends on BooksPaths - Hilt auto injects the provided BooksPaths
     @Provides @Singleton
     fun provideParsingRepository(paths: BooksPaths) = ParsingRepository(paths)
+
+    //This just adds hilt for the Tts
+    @Provides @Singleton
+    fun provideTtsRepository(@ApplicationContext context: Context): TtsRepository { return TtsRepository(context) }
 }

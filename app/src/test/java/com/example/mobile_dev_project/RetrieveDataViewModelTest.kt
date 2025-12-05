@@ -7,9 +7,6 @@ import io.mockk.every
 import io.mockk.mockk
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import com.example.mobile_dev_project.data.UiBook
-import com.example.mobile_dev_project.data.UiChapter
-import com.example.mobile_dev_project.data.UiContent
 import com.example.mobile_dev_project.data.entity.Book
 import com.example.mobile_dev_project.data.entity.Chapter
 import com.example.mobile_dev_project.data.entity.Content

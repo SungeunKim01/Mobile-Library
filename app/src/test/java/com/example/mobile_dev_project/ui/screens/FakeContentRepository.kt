@@ -11,7 +11,7 @@ class FakeContentRepository(contentDao: ContentDao) : ContentRepository(contentD
     private val positions = mutableMapOf<Int, Float>()
     private val contents = mutableListOf<Content>()
 
-    override fun getContentForChapter(chapterId: Int): Flow<Content?> {
+    override fun getContentForChapter(chapterId: Int?): Flow<Content?> {
         val content = contents.find { it.chapterId == chapterId }
         return flowOf(content)
     }

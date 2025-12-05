@@ -1,12 +1,10 @@
 package com.example.mobile_dev_project.data
 
-import com.example.mobile_dev_project.data.UiContent
-
 data class UiChapter (
-    val chapterId: Int? = null,
-    val chapterTitle: String,
-    val chapterOrder: Int,
-    val bookId: Int,
+    val chapterId: Int?,
+    val chapterTitle: String?,
+    val chapterOrder: Int?,
+    val bookId: Int?,
     val contentId: Int? = null
 )
 var mockContents = listOf(
