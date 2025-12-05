@@ -15,7 +15,7 @@ open class ContentRepository @Inject constructor(
         return contentDao.getContentById(contentId)
     }
 
-    open fun getContentForChapter(chapterId: Int): Flow<Content?> {
+    open fun getContentForChapter(chapterId: Int?): Flow<Content?> {
         return contentDao.getContentForChapter(chapterId)
     }
 

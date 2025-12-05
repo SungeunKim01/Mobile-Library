@@ -19,17 +19,17 @@ class Chapter {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "chapterId")
-    var chapterId: Int = 0
+    var chapterId: Int? = 0
 
     //Foreign key for book
     @ColumnInfo(name = "bookId")
-    var bookId: Int = 0
+    var bookId: Int? = 0
 
     @ColumnInfo(name = "chapterName")
     var chapterName: String? = null
 
     @ColumnInfo(name = "chapterOrder")
-    var chapterOrder: Int = 0
+    var chapterOrder: Int? = 0
 
     //edit - nullable so can assign it after inserting content
     @ColumnInfo(name = "contentId")
