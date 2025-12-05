@@ -17,11 +17,13 @@
     <string name="search_btn">search</string>
 
     <string name="back_btn">←</string>
-    <string name ="home">Home</string>string>
-    <string name ="search">Search</string>string>
+    <string name ="home">Home</string>
+    <string name ="search">Search</string>
+    <string name ="toc">Content</string>
+    <string name ="download">Download</string>
 
     <string name="title">Welcome to Mobile Library</string>
-    <string name="last_use_text">Last Used:</string>string>
+    <string name="last_use_text">Last Used:</string>
     <string name="add_book">Add New Book</string>
 
     <string name="play">Play TTS</string>
