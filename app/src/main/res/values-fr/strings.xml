@@ -19,8 +19,8 @@
     <string name="back_btn">←</string>
     <string name="home">Accueil</string>
     <string name="search">Recherche</string>
-    <string name ="toc">Contenu</string>string>
-    <string name ="download">télécharge</string>string>
+    <string name ="toc">Contenu</string>
+    <string name ="download">télécharge</string>
 
     <string name="title">Bienvenue dans la bibliothèque mobile</string>
     <string name="last_use_text">Dernière utilisation :</string>
