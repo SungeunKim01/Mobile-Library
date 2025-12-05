@@ -60,6 +60,17 @@ fun AppNavHost(
         composable(Route.Search.route) {
             SearchScreen(
                 onBack = { nav.safePopOrNavigateHome() },
+                onNavigateToLocation = { hit ->
+                    // go to the proper chapter in ReadingScreen wen user taps a result
+                    nav.navigate(
+                        Route.Reading.createRoute(
+                            hit.bookId,
+                            hit.chapterId,
+                            hit.scrollRatio,
+                            hit.query
+                        )
+                    )
+                },
                 onToggleNavBar = onToggleNavBar
             )
         }
@@ -92,22 +103,42 @@ fun AppNavHost(
         }
 
         composable(Route.Reading.route,
-            arguments = listOf(navArgument("bookId") {
-                type = NavType.IntType
-            }, navArgument("chapterId") {type = NavType.IntType})
+            arguments = listOf(
+                navArgument("bookId") {
+                    type = NavType.IntType
+                },
+                navArgument("chapterId") {
+                    type = NavType.IntType
+                },
+                navArgument("scrollRatio") {
+                    type = NavType.FloatType
+                    defaultValue = -1f
+                },
+                navArgument("query") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                }
+            )
         ) { backStackEntry ->
             val bookId = backStackEntry.arguments?.getInt("bookId") ?:0
             val chapId = backStackEntry.arguments?.getInt("chapterId") ?:0
 
+
             val ttsViewModel = hiltViewModel<TTsViewModel>()
 
             ttsViewModel.prepareChapterById(chapId)
+
+            val scrollRatio = backStackEntry.arguments?.getFloat("scrollRatio") ?:-1f
+            val query = backStackEntry.arguments?.getString("query") ?: ""
+
 
             ReadingScreen(
                 bookId = bookId,
                 chapterId = chapId,
                 onSearch = { nav.navigate(Route.Search.route) },
                 onBack = { nav.popBackStack() },
+                initialScrollRatio = scrollRatio,
+                searchQuery = query,
                 onToggleNavBar = onToggleNavBar
             )
         }
