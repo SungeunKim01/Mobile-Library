@@ -19,7 +19,7 @@ class Chapter {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "chapterId")
-    var chapterId: Int? = 0
+    var chapterId: Int? = null
 
     //Foreign key for book
     @ColumnInfo(name = "bookId")
