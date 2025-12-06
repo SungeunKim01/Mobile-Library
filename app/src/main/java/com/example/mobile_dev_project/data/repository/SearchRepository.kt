@@ -32,7 +32,7 @@ class SearchRepository @Inject constructor(
 
         val chaptersById = mutableMapOf<Int, Chapter>()
         for (chapter in allChapters) {
-            chaptersById[chapter.chapterId] = chapter
+            chaptersById[chapter.chapterId ?: 0] = chapter
         }
 
         val lowerQuery = trimmed.lowercase()
@@ -66,8 +66,8 @@ class SearchRepository @Inject constructor(
                     val chapterTitle = chapter.chapterName ?: "Chapter ${chapter.chapterOrder}"
 
                     results += SearchResult(
-                        bookId = chapter.bookId,
-                        chapterId = chapter.chapterId,
+                        bookId = chapter.bookId ?: 0,
+                        chapterId = chapter.chapterId ?:0,
                         contentId = content.contentId,
                         chapterTitle = chapterTitle,
                         snippet = snippet,
