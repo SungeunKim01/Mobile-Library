@@ -8,12 +8,14 @@ import com.example.mobile_dev_project.data.repository.ChapterRepository
 import com.example.mobile_dev_project.data.repository.ContentRepository
 import com.example.mobile_dev_project.data.repository.TtsRepository
 import com.example.mobile_dev_project.data.TtsState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 class TTsViewModel @Inject constructor(
     private val ttsRepository: TtsRepository,
     private val chapterRepository: ChapterRepository,
