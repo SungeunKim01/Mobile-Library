@@ -6,7 +6,6 @@ import android.util.Log
 import com.example.mobile_dev_project.data.TtsState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -15,7 +14,7 @@ import android.speech.tts.UtteranceProgressListener
 //This uses android text to speech not readium
 // the inject is for hilt and the context is for
 // the actual context needed
-class TtsRepository @Inject constructor(
+class TtsRepository  constructor(
     private val context: Context,
     private val ttsEngine: TextToSpeech? = null
 ) {
