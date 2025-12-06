@@ -11,7 +11,7 @@ sealed class Route(val route: String) {
     }
 
     data object Reading : Route("reading/{bookId}/{chapterId}/{scrollRatio}?query={query}") {
-        fun createRoute(bookId: Int, chapterId: Int, scrollRatio: Float = -1f, query: String = ""):
+        fun createRoute(bookId: Int?, chapterId: Int?, scrollRatio: Float = -1f, query: String = ""):
         String {
             val encoded = Uri.encode(query)
             return "reading/$bookId/$chapterId/$scrollRatio?query=$encoded"
