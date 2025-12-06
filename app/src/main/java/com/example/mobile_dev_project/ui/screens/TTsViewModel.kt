@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import dagger.hilt.android.lifecycle.HiltViewModel
+@HiltViewModel
 
 class TTsViewModel @Inject constructor(
     private val ttsRepository: TtsRepository,

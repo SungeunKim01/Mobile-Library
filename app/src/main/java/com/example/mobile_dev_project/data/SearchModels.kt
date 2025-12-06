@@ -8,8 +8,8 @@ package com.example.mobile_dev_project.data
  * - snippet - short piece of text around the match
  */
 data class SearchResult(
-    val bookId: Int,
-    val chapterId: Int,
+    val bookId: Int?,
+    val chapterId: Int?,
     val contentId: Int,
     val chapterTitle: String,
     val snippet: String,
