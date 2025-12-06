@@ -61,32 +61,47 @@ fun BottomNavigationBar(navController: NavHostController) {
 
         val items = listOf(
             NavScreen(stringResource(R.string.home), null, Route.Home.route),
-            NavScreen(stringResource(R.string.search), null, Route.Search.route)
+            NavScreen(stringResource(R.string.search), null, Route.Search.route),
+            NavScreen(stringResource(R.string.toc), null, Route.Content.route),
+            NavScreen(stringResource(R.string.download), null, Route.Download.route)
         )
 
         items.forEach { navItem ->
+            if (!navItem.route.contains("{")) {
+                NavigationBarItem(
 
-            NavigationBarItem(
+                    selected = currentRoute == navItem.route,
+                    onClick = {
+                        if (navItem.route == Route.Home.route) {
+                            navController.navigate(navItem.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    inclusive = false
+                                    saveState = false
+                                }
+                                launchSingleTop = true
+                                restoreState = false
+                            }
+                        } else {
+                            navController.navigate(navItem.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
 
-                selected = currentRoute == 	navItem.route,
-                onClick = {
-                    navController.navigate(navItem.route) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-
-                            saveState = true
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
                         }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                },
-                icon = {
-                    //empty cause I dont want an icon for them
-                },
-                label = {
-                    //We are going to use instead of icons the second part so H, T, and S each meaning a different screen
-                    Text(text = navItem.title)
-                },
-            )
+                    },
+                    icon = {
+                        //empty cause I dont want an icon for them
+                    },
+                    label = {
+                        //We are going to use instead of icons the second part so H, T, and S each meaning a different screen
+                        Text(text = navItem.title)
+                    },
+
+                    )
+            }
         }
     }
 }
