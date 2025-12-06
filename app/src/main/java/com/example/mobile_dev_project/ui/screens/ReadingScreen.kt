@@ -61,7 +61,7 @@ import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import javax.inject.Inject
-//import com.example.mobile_dev_project.data.TtsState
+import com.example.mobile_dev_project.data.TtsState
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.snapshotFlow
 import kotlinx.coroutines.flow.filter
@@ -89,7 +89,7 @@ fun ReadingScreen (bookId: Int,
                    searchQuery: String = "",
                    onToggleNavBar: (Boolean) -> Unit = {},
                    viewModel: RetrieveDataViewModel = hiltViewModel(),
-                   //ttsVM: TTsViewModel = hiltViewModel()
+                   ttsVM: TTsViewModel = hiltViewModel()
     ){
     val view = LocalView.current
     val window = (view.context as Activity).window
@@ -122,13 +122,13 @@ fun ReadingScreen (bookId: Int,
         chapters = allChaps
         contents = allContents
         selectedIndex = allChaps.indexOfFirst { it.chapterId == chapterId }
-//        if (selectedIndex >= 0 && chapters.isNotEmpty()) {
-//            chapters[selectedIndex].chapterId?.let { ttsVM.prepareChapterById(it) }
-//        }
+        if (selectedIndex >= 0 && chapters.isNotEmpty()) {
+            chapters[selectedIndex].chapterId?.let { ttsVM.prepareChapterById(it) }
+        }
     }
-//    DisposableEffect(Unit) {
-//        onDispose { ttsVM.releaseTTs() }
-//    }
+    DisposableEffect(Unit) {
+        onDispose { ttsVM.releaseTTs() }
+    }
     if (chapters.isEmpty() || contents.isEmpty()) {
         LoadingIndicator()
     } else {
@@ -139,7 +139,7 @@ fun ReadingScreen (bookId: Int,
                 chapterIndexSelected = selectedIndex,
                 onSearch = onSearch,
                 onBack = onBack,
-                //ttsVM = ttsVM
+                ttsVM = ttsVM,
                 initialScrollRatio = initialScrollRatio,
                 searchQuery = searchQuery
             )
@@ -153,7 +153,7 @@ fun ReadingScreen (bookId: Int,
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.TopCenter
                 ) {
-                    TTSControlBar()
+                    TTSControlBar(ttsVM)
                 }
             }
         }
@@ -186,7 +186,7 @@ fun ReadingPageContent(
     onSearch: () -> Unit,
     onBack: () -> Unit,
     modifier : Modifier = Modifier,
-    //ttsVM: TTsViewModel
+    ttsVM: TTsViewModel,
     initialScrollRatio: Float = -1f,
     searchQuery: String,
 ) {
@@ -216,7 +216,7 @@ fun ReadingPageContent(
                     contentId = it,
                     onSearch = onSearch,
                     onBack = onBack,
-                    //ttsVM = ttsVM
+                    ttsVM = ttsVM,
                     searchQuery = searchQuery,
                     initialScrollRatio =
                         if (index == chapterIndexSelected) {
@@ -246,7 +246,7 @@ fun ChapterPage(
     contentId: Int,
     onSearch: () -> Unit,
     onBack: () -> Unit,
-    //ttsVM: TTsViewModel,
+    ttsVM: TTsViewModel,
     viewModel: PositionViewModel = hiltViewModel(),
     initialScrollRatio: Float = -1f,
     searchQuery: String = ""
@@ -380,7 +380,7 @@ fun SearchButton(onSearch: () -> Unit, modifier: Modifier = Modifier){
  * For now, since VM not implemented, i just put a random vm.
  */
 @Composable
-fun TTSControlBar(modifier: Modifier = Modifier) {
+fun TTSControlBar(viewModel: TTsViewModel, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier.fillMaxWidth().padding(top=12.dp), horizontalArrangement = Arrangement.Center
     ){
@@ -390,35 +390,34 @@ fun TTSControlBar(modifier: Modifier = Modifier) {
             shadowElevation = 8.dp,
             color = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f)
         ) {
-            //val state = viewModel.ttsState.collectAsState()
+            val state = viewModel.ttsState.collectAsState()
+            val isPlaying = state.value is TtsState.Playing
             Row(
                 modifier = modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Button(
-                    onClick = {}, colors = ButtonDefaults.buttonColors(
+                    onClick = {viewModel.stopTTs()}, colors = ButtonDefaults.buttonColors(
                         containerColor = Color.LightGray
                     ), contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
                     shape = CircleShape
                 ) { // when we get viewmodel, i edit this: viewModel.stopTTs()
                     Icon(Icons.Default.Stop, contentDescription = stringResource(R.string.stop))
                 }
-                var isTTSEnabled = true //state.value.isPlaying
                 Button(
                     onClick = {
-                        if (isTTSEnabled) {
-                            isTTSEnabled = false //.pauseTTs()
-                        }
+                        if (isPlaying) viewModel.pauseTTs()
+                        else viewModel.playTTs()
                     }, colors = ButtonDefaults.buttonColors(
                         containerColor = Color.LightGray
                     ), contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
                     shape = CircleShape
                 ) {
-                    val icon = if (isTTSEnabled) Icons.Default.Pause else Icons.Default.PlayArrow
+                    val icon = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow
                     Icon(
                         icon,
-                        contentDescription = if (isTTSEnabled) stringResource(R.string.pause) else stringResource(
+                        contentDescription = if (isPlaying) stringResource(R.string.pause) else stringResource(
                             R.string.play
                         )
                     )
@@ -438,7 +437,7 @@ fun ReadingScreenForTest(
     chapterIndexSelected: Int = 0,
     onSearch: () -> Unit = {},
     onBack: () -> Unit = {},
-    //ttsVM : TTsViewModel = hiltViewModel()
+    ttsVM : TTsViewModel = hiltViewModel()
 ) {
     ReadingPageContent(
         chapters = chapters,
@@ -446,7 +445,7 @@ fun ReadingScreenForTest(
         chapterIndexSelected = chapterIndexSelected,
         onSearch = onSearch,
         onBack = onBack,
-        //ttsVM = ttsVM
+        ttsVM = ttsVM,
         initialScrollRatio = -1f,
         searchQuery = ""
     )
