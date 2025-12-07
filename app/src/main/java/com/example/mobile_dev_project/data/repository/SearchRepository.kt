@@ -66,8 +66,8 @@ class SearchRepository @Inject constructor(
                     val chapterTitle = chapter.chapterName ?: "Chapter ${chapter.chapterOrder}"
 
                     results += SearchResult(
-                        bookId = chapter.bookId,
-                        chapterId = chapter.chapterId,
+                        bookId = chapter.bookId!!,
+                        chapterId = chapter.chapterId!!,
                         contentId = content.contentId,
                         chapterTitle = chapterTitle,
                         snippet = snippet,

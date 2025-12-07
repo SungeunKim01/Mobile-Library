@@ -4,12 +4,16 @@
 //import androidx.compose.ui.test.junit4.createAndroidComposeRule
 //import androidx.compose.ui.test.hasText
 //import androidx.compose.ui.test.onNodeWithText
+//import androidx.compose.ui.test.onNodeWithTag
 //import androidx.compose.ui.test.performClick
 //import androidx.compose.ui.test.filterToOne
 //import androidx.compose.ui.test.hasTestTag
 //import androidx.compose.ui.test.onAllNodesWithText
 //import androidx.test.ext.junit.runners.AndroidJUnit4
 //import com.example.mobile_dev_project.MainActivity
+//import com.example.mobile_dev_project.data.mockChapters
+//import com.example.mobile_dev_project.data.mockContents
+//import com.example.mobile_dev_project.data.mockBook
 //import dagger.hilt.android.testing.HiltAndroidRule
 //import dagger.hilt.android.testing.HiltAndroidTest
 //import org.junit.Before
@@ -34,45 +38,20 @@
 //    fun setup() {
 //        // Inject Hilt dependencies
 //        hiltRule.inject()
-//    }
-//
-//
-//    @Test
-//    fun bottomBar_TNavigatesToTableOfContentsToReadingScreen() {
-//        // in bottom bar "T" represents the Table of Contents screen
-//        // click on T => table of contents screen
-//        composeTestRule.onNodeWithText("T").assertIsDisplayed()
-//        composeTestRule.onNodeWithText("T").performClick()
-//
-//        // in table of contents screen, the following text is displayed:
-//        composeTestRule.onNodeWithText("Table of Contents").assertIsDisplayed()
-//
-//        // in table of contents, clicking on chapter leads to reading screen
-//        composeTestRule.onNodeWithText("progris riport 1").assertIsDisplayed()
-//        composeTestRule.onNodeWithText("progris riport 1").performClick()
-//
-//        // the title of the reading screen is displayed
-//        composeTestRule.onNodeWithText("progris riport 1").assertIsDisplayed()
-//    }
+//    }j
 //
 //    @Test
 //    fun searchBtn_NavigatesToSearch() {
-//
-//        //SAME THING AS LAST TEST. JUST ONE MORE STEP.
-//        // in bottom bar "T" represents the Table of Contents screen
-//        // click on T => table of contents screen
-//        composeTestRule.onNodeWithText("T").assertIsDisplayed()
-//        composeTestRule.onNodeWithText("T").performClick()
-//
-//        // in table of contents screen, the following text is displayed:
-//        composeTestRule.onNodeWithText("Table of Contents").assertIsDisplayed()
-//
-//        // in table of contents, clicking on chapter leads to reading screen
-//        composeTestRule.onNodeWithText("progris riport 1").assertIsDisplayed()
-//        composeTestRule.onNodeWithText("progris riport 1").performClick()
-//
+//        val book = mockBook
+//        val chapters = mockChapters
+//        val contents = mockContents
+//        composeTestRule.setContent {
+//            ReadingScreenForTest(
+//                mockChapters, mockContents,1,{},{}
+//            )
+//        }
 //        // the title of the reading screen is displayed
-//        composeTestRule.onNodeWithText("progris riport 1").assertIsDisplayed()
+//        composeTestRule.onNodeWithTag("title").assertIsDisplayed()
 //
 //
 //        //going to search
@@ -81,24 +60,17 @@
 //
 //    }
 //    @Test
-//    fun backBtn_NavigatesToSearch() {
-//
-//        //SAME THING AS LAST TEST. JUST ONE MORE STEP.
-//        // in bottom bar "T" represents the Table of Contents screen
-//        // click on T => table of contents screen
-//        composeTestRule.onNodeWithText("T").assertIsDisplayed()
-//        composeTestRule.onNodeWithText("T").performClick()
-//
-//        // in table of contents screen, the following text is displayed:
-//        composeTestRule.onNodeWithText("Table of Contents").assertIsDisplayed()
-//
-//        // in table of contents, clicking on chapter leads to reading screen
-//        composeTestRule.onNodeWithText("progris riport 1").assertIsDisplayed()
-//        composeTestRule.onNodeWithText("progris riport 1").performClick()
-//
+//    fun backBtn_NavigatesToToc() {
+//        val book = mockBook
+//        val chapters = mockChapters
+//        val contents = mockContents
+//        composeTestRule.setContent {
+//            ReadingScreenForTest(
+//                mockChapters, mockContents,1,{},{}
+//            )
+//        }
 //        // the title of the reading screen is displayed
-//        composeTestRule.onNodeWithText("progris riport 1").assertIsDisplayed()
-//
+//        composeTestRule.onNodeWithTag("title").assertIsDisplayed()
 //
 //        //going BACK to table of contents
 //        composeTestRule.onNodeWithText("←").assertIsDisplayed().performClick()

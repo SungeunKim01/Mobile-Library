@@ -27,7 +27,7 @@ class ParsingRepository @Inject constructor(
                     extension == "html" || extension == "htm"
                 }
             if (html == null) {
-                Log.e("ParsingRepository", "HTML file not foudn for book: $bookId.")
+                Log.e("ParsingRepository", "HTML file not found for book: $bookId.")
                 return@withContext Pair(
                     UiBook(bookId = null, title = "Untitled Book", coverPath = "", chapters = emptyList()),
                     emptyList()
@@ -42,7 +42,7 @@ class ParsingRepository @Inject constructor(
             val (chapters, contents) = extractChapterAndContent(-1, directory, doc)
 
             //create uibook using title
-            val uiBook = UiBook(bookId = null, chapters = chapters, title = bookTitle, coverPath = "")
+            val uiBook = UiBook(bookId = null, chapters = chapters, title = bookTitle, coverPath = image)
             Pair(uiBook, contents)
         } catch (e: Exception){
             Log.e("ParsingRepository", "Error occurred while parsing book with id $bookId: ${e.message}")
@@ -170,7 +170,6 @@ class ParsingRepository @Inject constructor(
                 // if nothing accumulated, fallback to the nxt immediate block or empty paragraph
                 val chapterHtml = if (chunk.isEmpty()) h.nextElementSibling()?.outerHtml() ?: "<p></p>" else chunk.toString()
                 saveChaptersInHtml(directory, order, chapTitle, chapterHtml)
-
                 val uiChapter = UiChapter(null, chapTitle, order, bookId, null)
                 val uiContent = UiContent(null, 0, chapterHtml)
                 pairs += (uiChapter to uiContent)
