@@ -15,6 +15,8 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.mobile_dev_project.ui.screens.PositionViewModel
+import com.example.mobile_dev_project.ui.screens.RetrieveDataViewModel
 
 import com.example.mobile_dev_project.ui.screens.TTsViewModel
 
@@ -124,7 +126,9 @@ fun AppNavHost(
 
             val ttsViewModel = hiltViewModel<TTsViewModel>()
 
-            ttsViewModel.prepareChapterById(chapId)
+            //ttsViewModel.prepareChapterById(chapId)
+            val posVM = hiltViewModel<PositionViewModel>()
+            val retrieveVM = hiltViewModel<RetrieveDataViewModel>()
 
             val scrollRatio = backStackEntry.arguments?.getFloat("scrollRatio") ?:-1f
             val query = backStackEntry.arguments?.getString("query") ?: ""
@@ -137,7 +141,10 @@ fun AppNavHost(
                 onBack = { nav.popBackStack() },
                 initialScrollRatio = scrollRatio,
                 searchQuery = query,
-                onToggleNavBar = onToggleNavBar
+                onToggleNavBar = onToggleNavBar,
+                ttsVM = ttsViewModel,
+                positionVM = posVM,
+                retrieveVM = retrieveVM
             )
         }
     }

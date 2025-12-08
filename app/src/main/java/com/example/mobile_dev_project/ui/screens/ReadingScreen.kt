@@ -71,6 +71,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
+import com.example.mobile_dev_project.ui.fake.TTsViewModelContract
 
 /**
  * Sets up the immersive mode and handles displaying the entire screen
@@ -88,8 +89,9 @@ fun ReadingScreen (bookId: Int,
                    initialScrollRatio: Float = -1f,
                    searchQuery: String = "",
                    onToggleNavBar: (Boolean) -> Unit = {},
-                   viewModel: RetrieveDataViewModel = hiltViewModel(),
-                   ttsVM: TTsViewModel = hiltViewModel()
+                   positionVM: PositionViewModel,
+                   retrieveVM: RetrieveDataViewModel,
+                   ttsVM: TTsViewModel
     ){
     val view = LocalView.current
     val window = (view.context as Activity).window
@@ -113,10 +115,10 @@ fun ReadingScreen (bookId: Int,
     var chapters by remember { mutableStateOf<List<UiChapter>>(emptyList()) }
     var contents by remember { mutableStateOf<List<UiContent>>(emptyList()) }
     var selectedIndex by remember { mutableStateOf(0) }
-    val allChaps by viewModel.getChaptersForBook(bookId).collectAsState(initial = emptyList())
+    val allChaps by retrieveVM.getChaptersForBook(bookId).collectAsState(initial = emptyList())
     LaunchedEffect(allChaps) {
         val allContents = allChaps.mapNotNull {
-            val content = viewModel.getContentForChapter(it.chapterId ?: 0).first()
+            val content = retrieveVM.getContentForChapter(it.chapterId ?: 0).first()
             content
         }
         chapters = allChaps
@@ -140,6 +142,7 @@ fun ReadingScreen (bookId: Int,
                 onSearch = onSearch,
                 onBack = onBack,
                 ttsVM = ttsVM,
+                posVM = positionVM,
                 initialScrollRatio = initialScrollRatio,
                 searchQuery = searchQuery
             )
@@ -186,7 +189,8 @@ fun ReadingPageContent(
     onSearch: () -> Unit,
     onBack: () -> Unit,
     modifier : Modifier = Modifier,
-    ttsVM: TTsViewModel,
+    ttsVM: TTsViewModelContract,
+    posVM: PositionViewModel,
     initialScrollRatio: Float = -1f,
     searchQuery: String,
 ) {
@@ -200,7 +204,6 @@ fun ReadingPageContent(
     ) {
         itemsIndexed(chapters) { index, chapter ->
             val contentText = contents.find { it.chapterId == chapter.chapterId }?.content ?: ""
-
             // only selected chapter use the ratio
             val chapterScrollRatio =
                 if (index == chapterIndexSelected) {
@@ -208,7 +211,6 @@ fun ReadingPageContent(
                 } else {
                     -1f
                 }
-
             chapter.contentId?.let {
                 ChapterPage(
                     title = chapter.chapterTitle.toString(),
@@ -217,6 +219,7 @@ fun ReadingPageContent(
                     onSearch = onSearch,
                     onBack = onBack,
                     ttsVM = ttsVM,
+                    posVM = posVM,
                     searchQuery = searchQuery,
                     initialScrollRatio =
                         if (index == chapterIndexSelected) {
@@ -246,8 +249,8 @@ fun ChapterPage(
     contentId: Int,
     onSearch: () -> Unit,
     onBack: () -> Unit,
-    ttsVM: TTsViewModel,
-    viewModel: PositionViewModel = hiltViewModel(),
+    ttsVM: TTsViewModelContract,
+    posVM: PositionViewModel,
     initialScrollRatio: Float = -1f,
     searchQuery: String = ""
 ) {
@@ -255,7 +258,7 @@ fun ChapterPage(
     // restore last saved scroll position
     LaunchedEffect(contentId) {
         if (initialScrollRatio < 0f) {
-            viewModel.getScrollPosition(contentId)?.let { saved ->
+            posVM.getScrollPosition(contentId)?.let { saved ->
                 state.scrollTo(saved.toInt())
             }
         }
@@ -270,11 +273,11 @@ fun ChapterPage(
 
             val target = (max * initialScrollRatio).toInt()
             state.scrollTo(target)
-            viewModel.saveScrollPosition(contentId, target.toFloat())
+            posVM.saveScrollPosition(contentId, target.toFloat())
         }
     }
     LaunchedEffect(contentId, state.value) {
-        viewModel.saveScrollPosition(contentId, state.value.toFloat())
+        posVM.saveScrollPosition(contentId, state.value.toFloat())
     }
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -380,8 +383,8 @@ fun SearchButton(onSearch: () -> Unit, modifier: Modifier = Modifier){
  * For now, since VM not implemented, i just put a random vm.
  */
 @Composable
-fun TTSControlBar(viewModel: TTsViewModel, modifier: Modifier = Modifier) {
-    Row(modifier = modifier.fillMaxWidth().padding(top=12.dp), horizontalArrangement = Arrangement.Center
+fun TTSControlBar(viewModel: TTsViewModelContract, modifier: Modifier = Modifier) {
+    Row(modifier = modifier.fillMaxWidth().padding(top=12.dp).testTag("tts_bar"), horizontalArrangement = Arrangement.Center
     ){
         Surface(shape = MaterialTheme.shapes.large, tonalElevation = 4.dp, shadowElevation = 8.dp, color = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f)
         ) {
@@ -416,7 +419,8 @@ fun ReadingScreenForTest(
     chapterIndexSelected: Int = 0,
     onSearch: () -> Unit = {},
     onBack: () -> Unit = {},
-    ttsVM : TTsViewModel = hiltViewModel()
+    ttsVM : TTsViewModelContract,
+    posVM: PositionViewModel
 ) {
     ReadingPageContent(
         chapters = chapters,
@@ -425,6 +429,7 @@ fun ReadingScreenForTest(
         onSearch = onSearch,
         onBack = onBack,
         ttsVM = ttsVM,
+        posVM = posVM,
         initialScrollRatio = -1f,
         searchQuery = ""
     )
