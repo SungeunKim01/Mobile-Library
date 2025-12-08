@@ -51,7 +51,7 @@ class SearchRepositoryTest {
         val chapter = Chapter(bookId = 1, chapterName = "Chapter 1", chapterOrder = 1, contentId = null
         ).apply { chapterId = 1 }
 
-        val content = Content(chapterId = chapter.chapterId, content = "This text has no keyword."
+        val content = Content(chapterId = chapter.chapterId!!, content = "This text has no keyword."
         ).apply { contentId = 1 }
 
         every { chapterDao.getAllChapters() } returns flowOf(listOf(chapter))
@@ -74,7 +74,7 @@ class SearchRepositoryTest {
         val chapter = Chapter(bookId = 2, chapterName = "ARTIFICIAL LIGHTNING MADE AND HARNESSED TO MAN'S USE", chapterOrder = 1, contentId = null
         ).apply { chapterId = 10 }
 
-        val content = Content(chapterId = chapter.chapterId, content = text
+        val content = Content(chapterId = chapter.chapterId!!, content = text
         ).apply { contentId = 20 }
 
         every { chapterDao.getAllChapters() } returns flowOf(listOf(chapter))
@@ -89,7 +89,7 @@ class SearchRepositoryTest {
 
         val result = results[0]
         assertEquals(2, result.bookId)
-        assertEquals(10, result.chapterId)
+        assertEquals(10, result.chapterId!!)
         assertEquals(20, result.contentId)
 
         assertEquals("ARTIFICIAL LIGHTNING MADE AND HARNESSED TO MAN'S USE", result.chapterTitle)
@@ -118,7 +118,7 @@ class SearchRepositoryTest {
         ).apply { chapterId = 3 }
 
         val text = "The boy was delighted with the prospect of seeing the great scientist Tesla, about whom he had read so much, and began to ask his older friend a thousand questions about the man, his work and life."
-        val content = Content(chapterId = chapter.chapterId, content = text
+        val content = Content(chapterId = chapter.chapterId!!, content = text
         ).apply {
             contentId = 30
         }
@@ -149,12 +149,12 @@ class SearchRepositoryTest {
         ).apply { chapterId = 2 }
 
         // 3matches for boy in case insensitive search
-        val content1 = Content(chapterId = chapter1.chapterId, content = "Boy boy BOY."
+        val content1 = Content(chapterId = chapter1.chapterId!!, content = "Boy boy BOY."
         ).apply { contentId = 1 }
 
         // 1match for boy
         val content2 = Content(
-            chapterId = chapter2.chapterId,
+            chapterId = chapter2.chapterId!!,
             content = "The boy was delighted with the prospect of seeing the great scientist Tesla, about whom he had read so much, and began to ask his older friend a thousand questions about the man, his work and life."
             ).apply { contentId = 2 }
 
@@ -164,8 +164,8 @@ class SearchRepositoryTest {
         val lowerResults = repository.search("boy")
         val upperResults = repository.search("BOY")
 
-        // should give 4 totla matches
-        assertEquals(4, lowerResults.size)
+        // final expected results is 2 bc search() groups by (bookId, snippet, query) & keep only the SearchResult w largest chapterId in each group
+        assertEquals(2, lowerResults.size)
         assertEquals(lowerResults.size, upperResults.size)
     }
 }
