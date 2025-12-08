@@ -2,10 +2,14 @@
 <project version="4">
   <component name="deploymentTargetSelector">
     <selectionStates>
+<<<<<<< HEAD
       <SelectionState runConfigName="DownloadBookScreenTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
       <SelectionState runConfigName="SearchScreenTest">
+=======
+      <SelectionState runConfigName="app">
+>>>>>>> 72fbcda (Pull code from project-m3 branch)
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
