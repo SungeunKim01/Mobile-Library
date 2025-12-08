@@ -1,24 +1,29 @@
 # Mobile Library
 
 ## Overview
-A Android studio developped mobile reading applications that allows readers to read three pre-downloaded books:
+- A Android studio developped mobile reading applications that allows readers to read three pre-downloaded books:
 1. Moby Dick
 2. Pride and Prejudice
 3. The Odyssey
 
-![Home Page](./m3_screenshots/HomeScreen)
-Users have the choice of adding their own book to the reading list that will then be parsed and ready to read with the same
+![Home Page](./m3_screenshots/HomeScreen.png)
+
+- Users have the choice of adding their own book to the reading list that will then be parsed and ready to read with the same
 features as the pre-downloaded books
 
+![Download Page](./m3_screenshots/DownloadBook.png)
 
+- When a books is selected, redirects the user to the table of content screen for the user to select a chapter from the book and begin reading from that chapter
 
-When a books is selected, redirects the user to the table of content screen for the user to select a chapter from the book and begin
-reading from that chapter
+![Table of Content Page](./m3_screenshots/TableOfContent.png)
 
-When reading a book, the user has the ability to allow Text-To-Speech functionality to read the book for them.
-Users then have the ability to pause, unpause and stop TTS from reading the book
+- When reading a book, the user has the ability to allow Text-To-Speech functionality to read the book for them. Users then have the ability to pause, unpause and stop TTS from reading the book
 
-Search functionality is also implemented to allow the user to search for keywords within all the books and then redirects to that search area
+![Book Page](./m3_screenshots/BookPage.png)
+
+- Search functionality is also implemented to allow the user to search for keywords within all the books and then redirects to that search area
+
+![Search Page](./m3_screenshots/SearchScreen.png)
 
 ---
 
@@ -93,7 +98,7 @@ When the user insert a URL that points to a .zip of a HTML book, the app:
 ## Know Bugs
 
 Sometimes TTS wont work when you press play, seems to be a laptop to laptop issue rather than a code issue
-However it is functional and works
+However it is functional and works 
 
 ---
 
