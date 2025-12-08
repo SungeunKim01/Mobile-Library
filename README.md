@@ -2,11 +2,14 @@
 
 ## Overview
 A Android studio developped mobile reading applications that allows readers to read three pre-downloaded books:
-1. Moby Dick
-2. Pride and Prejudice
-3. The Odyssey
+    1. Moby Dick
+    2. Pride and Prejudice
+    3. The Odyssey
+
 Users have the choice of adding their own book to the reading list that will then be parsed and ready to read with the same
 features as the pre-downloaded books
+
+
 
 When a books is selected, redirects the user to the table of content screen for the user to select a chapter from the book and begin
 reading from that chapter
@@ -71,6 +74,9 @@ When the user insert a URL that points to a .zip of a HTML book, the app:
 
 ## Know Bugs
 
+Sometimes TTS wont work when you press play, seems to be a laptop to laptop issue rather than a code issue
+However it is functional and works 
+
 ---
 
 ## How to run the app
@@ -90,3 +96,4 @@ Clone the repo in bash: git clone https://gitlab.com/dawson-cst-cohort-2026/511/
 
 ## Project status
 Need to fix few issues that professor mentioned during demo
+
