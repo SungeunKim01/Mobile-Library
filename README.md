@@ -6,7 +6,7 @@ A Android studio developped mobile reading applications that allows readers to r
 2. Pride and Prejudice
 3. The Odyssey
 
-![Home Page](./m3_screenshots/HomeScreen)
+![Home Page](./m3_screenshots/HomeScreen.png)
 Users have the choice of adding their own book to the reading list that will then be parsed and ready to read with the same
 features as the pre-downloaded books
 
