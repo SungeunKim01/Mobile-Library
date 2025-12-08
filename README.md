@@ -2,10 +2,11 @@
 
 ## Overview
 A Android studio developped mobile reading applications that allows readers to read three pre-downloaded books:
-    1. Moby Dick
-    2. Pride and Prejudice
-    3. The Odyssey
+1. Moby Dick
+2. Pride and Prejudice
+3. The Odyssey
 
+![Home Page](./m3_screenshots/HomeScreen)
 Users have the choice of adding their own book to the reading list that will then be parsed and ready to read with the same
 features as the pre-downloaded books
 
