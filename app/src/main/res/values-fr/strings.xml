@@ -19,10 +19,16 @@
     <string name="back_btn">←</string>
     <string name="home">Accueil</string>
     <string name="search">Recherche</string>
+    <string name ="toc">Contenu</string>
+    <string name ="download">télécharge</string>
 
     <string name="title">Bienvenue dans la bibliothèque mobile</string>
     <string name="last_use_text">Dernière utilisation :</string>
     <string name="add_book">Ajouter un nouveau livre</string>
+
+    <string name="play">Jouer TTS</string>
+    <string name="stop">Arreter TTS</string>
+    <string name="pause">Pauser TTS</string>
 
     <!-- phase2 - book links -->
     <string-array name="book_urls">

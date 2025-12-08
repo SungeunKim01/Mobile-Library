@@ -14,7 +14,6 @@ import com.example.mobile_dev_project.data.repository.BookRepository
 import com.example.mobile_dev_project.data.repository.ChapterRepository
 import com.example.mobile_dev_project.data.repository.ContentRepository
 import com.example.mobile_dev_project.data.repository.ParsingRepository
-import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class StoreDataViewModelTest {

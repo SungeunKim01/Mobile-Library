@@ -11,15 +11,12 @@ import com.example.mobile_dev_project.ui.screens.SearchScreen
 import com.example.mobile_dev_project.ui.screens.HomeScreen
 import com.example.mobile_dev_project.ui.screens.TableOfContentsScreen
 import com.example.mobile_dev_project.ui.screens.ReadingScreen
-import com.example.mobile_dev_project.data.mockChapters
-import com.example.mobile_dev_project.data.mockContents
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import com.example.mobile_dev_project.data.mockContent
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.mobile_dev_project.ui.screens.RetrieveDataViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
+import com.example.mobile_dev_project.ui.screens.TTsViewModel
 
 /**
  * this is centralized NavHost for the app
@@ -123,8 +120,15 @@ fun AppNavHost(
         ) { backStackEntry ->
             val bookId = backStackEntry.arguments?.getInt("bookId") ?:0
             val chapId = backStackEntry.arguments?.getInt("chapterId") ?:0
+
+
+            val ttsViewModel = hiltViewModel<TTsViewModel>()
+
+            ttsViewModel.prepareChapterById(chapId)
+
             val scrollRatio = backStackEntry.arguments?.getFloat("scrollRatio") ?:-1f
             val query = backStackEntry.arguments?.getString("query") ?: ""
+
 
             ReadingScreen(
                 bookId = bookId,

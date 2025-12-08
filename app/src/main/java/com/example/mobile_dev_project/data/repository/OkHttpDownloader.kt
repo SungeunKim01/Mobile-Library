@@ -19,8 +19,14 @@ class OkHttpDownloader(private val client: OkHttpClient = OkHttpClient()) {
         val request = Request.Builder().url(cleanUrl).build()
 
         client.newCall(request).execute().use { resp ->
-            if (!resp.isSuccessful) error("HTTP ${resp.code}")
-            val body = resp.body ?: error("Empty response body")
+            if (!resp.isSuccessful) {
+                onStatus("Download failed: HTTP ${resp.code}")
+            }
+            val body = resp.body
+            if (body == null) {
+                onStatus("Download failed: empty response body")
+                return
+            }
 
             dest.parentFile?.mkdirs()
 

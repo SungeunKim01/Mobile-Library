@@ -12,7 +12,7 @@ class Book {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "bookId")
-    var bookId: Int = 0
+    var bookId: Int? = null
 //the date should update every 1 minute
     @ColumnInfo(name="bookTitle")
     var bookTitle: String? = null

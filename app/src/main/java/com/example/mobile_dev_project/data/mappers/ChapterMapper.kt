@@ -6,9 +6,9 @@ import com.example.mobile_dev_project.data.entity.Chapter as ChapterEntity
 
 fun UiChapter.toEntity(): ChapterEntity {
     val entity = ChapterEntity(
-        bookId = this.bookId,
+        bookId = this.bookId!!,
         chapterName = this.chapterTitle,
-        chapterOrder = this.chapterOrder,
+        chapterOrder = this.chapterOrder!!,
         contentId = this.contentId ?: 0
     )
     entity.chapterId = this.chapterId ?: 0

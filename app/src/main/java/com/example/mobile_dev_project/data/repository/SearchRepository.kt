@@ -32,7 +32,7 @@ class SearchRepository @Inject constructor(
 
         val chaptersById = mutableMapOf<Int, Chapter>()
         for (chapter in allChapters) {
-            chaptersById[chapter.chapterId] = chapter
+            chaptersById[chapter.chapterId as Int] = chapter
         }
 
         val lowerQuery = trimmed.lowercase()
@@ -66,8 +66,8 @@ class SearchRepository @Inject constructor(
                     val chapterTitle = chapter.chapterName ?: "Chapter ${chapter.chapterOrder}"
 
                     results += SearchResult(
-                        bookId = chapter.bookId,
-                        chapterId = chapter.chapterId,
+                        bookId = chapter.bookId!!,
+                        chapterId = chapter.chapterId!!,
                         contentId = content.contentId,
                         chapterTitle = chapterTitle,
                         snippet = snippet,
@@ -82,7 +82,16 @@ class SearchRepository @Inject constructor(
             }
         }
 
-        return results
+        // keep the result that belong to the latest chapter for identical snippets in the same book/query
+        val grouped: Map<Triple<Int, String, String>, List<SearchResult>> =
+            results.groupBy { Triple(it.bookId, it.snippet, it.query) as Triple<Int, String, String> }
+
+        //for each group, keep SearchResult whose chapterId is largest
+        val unique: List<SearchResult> = grouped.values.map { group: List<SearchResult> ->
+            group.maxByOrNull { it.chapterId ?: Int.MIN_VALUE }!!
+        }
+
+        return unique
     }
 
     /**
