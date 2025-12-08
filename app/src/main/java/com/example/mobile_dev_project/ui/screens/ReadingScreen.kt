@@ -381,47 +381,26 @@ fun SearchButton(onSearch: () -> Unit, modifier: Modifier = Modifier){
  */
 @Composable
 fun TTSControlBar(viewModel: TTsViewModel, modifier: Modifier = Modifier) {
-    Row(
-        modifier = modifier.fillMaxWidth().padding(top=12.dp), horizontalArrangement = Arrangement.Center
+    Row(modifier = modifier.fillMaxWidth().padding(top=12.dp), horizontalArrangement = Arrangement.Center
     ){
-        Surface(
-            shape = MaterialTheme.shapes.large,
-            tonalElevation = 4.dp,
-            shadowElevation = 8.dp,
-            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f)
+        Surface(shape = MaterialTheme.shapes.large, tonalElevation = 4.dp, shadowElevation = 8.dp, color = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f)
         ) {
             val state = viewModel.ttsState.collectAsState()
             val isPlaying = state.value is TtsState.Playing
-            Row(
-                modifier = modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Button(
-                    onClick = {viewModel.stopTTs()}, colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.LightGray
-                    ), contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-                    shape = CircleShape
-                ) { // when we get viewmodel, i edit this: viewModel.stopTTs()
-                    Icon(Icons.Default.Stop, contentDescription = stringResource(R.string.stop))
-                }
-                Button(
-                    onClick = {
-                        if (isPlaying) viewModel.pauseTTs()
-                        else viewModel.playTTs()
-                    }, colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.LightGray
-                    ), contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-                    shape = CircleShape
+            Column() {
+                Row(modifier = modifier.padding(horizontal = 12.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.CenterVertically
                 ) {
-                    val icon = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow
-                    Icon(
-                        icon,
-                        contentDescription = if (isPlaying) stringResource(R.string.pause) else stringResource(
-                            R.string.play
-                        )
-                    )
+                    Button(onClick = { viewModel.stopTTs() }, colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray), contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp), shape = CircleShape
+                    ) { // when we get viewmodel, i edit this: viewModel.stopTTs()
+                        Icon(Icons.Default.Stop, contentDescription = stringResource(R.string.stop))
+                    }
+                    Button(onClick = { if (isPlaying) viewModel.pauseTTs() else viewModel.playTTs() }, colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray), contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp), shape = CircleShape
+                    ) {
+                        val icon = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow
+                        Icon(icon, contentDescription = if (isPlaying) stringResource(R.string.pause) else stringResource(R.string.play))
+                    }
                 }
+                if(isPlaying) Text("State: Playing") else Text("State:Paused")
             }
         }
     }
