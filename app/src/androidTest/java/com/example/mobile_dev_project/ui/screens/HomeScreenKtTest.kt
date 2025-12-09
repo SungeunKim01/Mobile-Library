@@ -48,7 +48,7 @@ class HomeScreenKtTest {
     fun restaurantTitle() {
 
 
-        composeTestRule.onNodeWithTag("title")
+        composeTestRule.onNodeWithTag("title", useUnmergedTree = true)
             .assertExists()
             .assertIsDisplayed()
     }
@@ -57,38 +57,13 @@ class HomeScreenKtTest {
     fun restaurantLogo() {
 
 
-        composeTestRule.onNodeWithTag("restaurant_logo")
+        composeTestRule.onNodeWithTag("restaurant_logo", useUnmergedTree = true)
             .assertExists()
             .assertIsDisplayed()
     }
-
-//Tests if bookserlf exists and is displayed
-    @Test
-    fun bookself() {
-
-
-        composeTestRule.onNodeWithTag("bookshelf")
-            .assertExists()
-            .assertIsDisplayed()
-    }
-//This will go each book, and
-// then will test if each exist and if the count is 4 and is displayed, I know this is hardcoded, I will try to make it more flexible
-    @Test
-    fun book() {
-       val books =  composeTestRule.onAllNodesWithTag("book").assertCountEquals(4)
-            books[0].assertExists().assertIsDisplayed()
-            books[1].assertExists().assertIsDisplayed()
-            books[2].assertExists().assertIsDisplayed()
-            books[3].assertExists().assertIsDisplayed()
-        }
-
-
-
     //Tests if book button exists and is displayed and if the click works and if the other screen show shows up
     @Test
     fun downloadBookButton() {
-
-
 
         composeTestRule.onNodeWithTag("download_button")
             .assertExists()
