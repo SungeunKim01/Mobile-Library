@@ -16,14 +16,14 @@ import java.util.Locale
 
 
 @HiltViewModel
-class HomeScreenViewModel @Inject constructor (
-    private val repository: BookRepository
+open class HomeScreenViewModel @Inject constructor (
+    private val repository: BookRepository?
 ) : ViewModel() {
     private val _allBooks = MutableStateFlow<List<Book>>(emptyList())
-    val allBooks: StateFlow<List<Book>> = _allBooks.asStateFlow()
+    open val allBooks: StateFlow<List<Book>> = _allBooks.asStateFlow()
     init {
         viewModelScope.launch {
-            repository.getBooksByLastAccessed().collect { books ->
+            repository?.getBooksByLastAccessed()?.collect { books ->
                 val sortedBooks = books.sortedByDescending { book ->
                     book.lastAccessed ?: book.bookAdded
                 }
@@ -56,7 +56,7 @@ class HomeScreenViewModel @Inject constructor (
             val timestamp = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault())
                 .format(Date())
 
-            repository.updateLastAccessed(bookId, timestamp)
+            repository?.updateLastAccessed(bookId, timestamp)
         }
     }
 
