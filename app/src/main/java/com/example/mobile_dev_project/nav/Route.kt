@@ -9,6 +9,7 @@ sealed class Route(val route: String) {
     data object Content: Route("content/{bookId}"){
         fun createRoute(bookId: Int): String = "content/$bookId"
     }
+    data object Toc : Route("toc")
 
     data object Reading : Route("reading/{bookId}/{chapterId}/{scrollRatio}?query={query}") {
         fun createRoute(bookId: Int?, chapterId: Int?, scrollRatio: Float = -1f, query: String = ""):
