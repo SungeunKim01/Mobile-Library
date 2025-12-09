@@ -3,10 +3,11 @@ package com.example.mobile_dev_project.ui.screens
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.mobile_dev_project.data.mockChapters
+import com.example.mobile_dev_project.data.UiChapter
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+
 
 @RunWith(AndroidJUnit4::class)
 class TableOfContentsScreenTest {
@@ -14,17 +15,27 @@ class TableOfContentsScreenTest {
     @get:Rule
     val composeTestRule = createComposeRule()
 
+    private val fakeChapters = listOf(
+        UiChapter(1, "Chapter 1", 1, 1, 1),
+        UiChapter(2, "Chapter 2", 2, 1, 1),
+        UiChapter(3, "Chapter 3", 3, 1, 1)
+    )
+
     // BASIC UI TESTS
 
     // Test 1: Verify that the title "Table of Contents" is visible on the screen
     @Test
     fun title_isDisplayed() {
-        // Set up the composable under test
+        val fakeViewModel = FakeRetrieveDataViewModel(chapters = fakeChapters)
+
         composeTestRule.setContent {
-            //TableOfContentsScreen(onBack = {})
+            TableOfContentsScreen(
+                bookId = 1,
+                viewModel = fakeViewModel,
+                onBack = {}
+            )
         }
 
-        // Locate the title Text by its test tag and verify it exists and is visible
         composeTestRule.onNodeWithTag("toc_title", useUnmergedTree = true)
             .assertExists()
             .assertIsDisplayed()
@@ -34,18 +45,19 @@ class TableOfContentsScreenTest {
     // Test 2: Ensure that all chapter titles appear on screen
     @Test
     fun chapters_areDisplayed() {
-        // Create a list of test chapters
-        var chapters = mockChapters
+        val fakeViewModel = FakeRetrieveDataViewModel(chapters = fakeChapters)
 
-        // Display the composable with the provided chapter list
         composeTestRule.setContent {
-            //TableOfContentsScreen(chapters = chapters, onBack = {})
+            TableOfContentsScreen(
+                bookId = 1,
+                viewModel = fakeViewModel,
+                onBack = {}
+            )
         }
 
-        // For each chapter, assert that its text exists on screen
-        chapters.forEach { chapter ->
-            //composeTestRule.onNodeWithText(chapter.title, useUnmergedTree = true)
-                //.assertIsDisplayed()
+        fakeChapters.forEach { chapter ->
+            composeTestRule.onNodeWithText(chapter.chapterTitle!!, useUnmergedTree = true)
+                .assertIsDisplayed()
         }
     }
 
@@ -53,60 +65,58 @@ class TableOfContentsScreenTest {
     @Test
     fun clickingChapter_callsCallback() {
         var selectedChapter: String? = null
-        var chapters = mockChapters
+        val fakeViewModel = FakeRetrieveDataViewModel(chapters = fakeChapters)
 
-        // Render the composable with a callback that records the selected chapter
         composeTestRule.setContent {
-            //TableOfContentsScreen(
-                //chapters = chapters,
-                //onChapterSelected = { selectedChapter = it.title },
-                //onBack = {}
-            //)
+            TableOfContentsScreen(
+                bookId = 1,
+                viewModel = fakeViewModel,
+                onChapterSelected = { selectedChapter = it.chapterTitle },
+                onBack = {}
+            )
         }
 
-        // Perform a click on the first chapter button
-        composeTestRule.onNodeWithText("progris riport 1", useUnmergedTree = true)
+        composeTestRule.onNodeWithText("Chapter 1", useUnmergedTree = true)
             .performClick()
 
-        // Verify that the callback was triggered with the correct value
-        assert(selectedChapter == "progris riport 1")
+        assert(selectedChapter == "Chapter 1")
     }
 
     // Test 4: Check that clicking the background toggles fullscreen text
     @Test
     fun clickingBackground_togglesFullscreenText() {
+        val fakeViewModel = FakeRetrieveDataViewModel(chapters = fakeChapters)
+
         composeTestRule.setContent {
-            //TableOfContentsScreen(onBack = {})
+            TableOfContentsScreen(
+                bookId = 1,
+                viewModel = fakeViewModel,
+                onBack = {}
+            )
         }
 
-        // Initially, fullscreen text should not be visible
         composeTestRule.onNodeWithTag("fullscreen_text").assertDoesNotExist()
-
-        // Click anywhere on the Box to enter immersive (fullscreen) mode
-        composeTestRule.onNodeWithTag("toc_box").performClick()
-        composeTestRule.waitForIdle() // Wait for recomposition to finish
-
-        // The fullscreen message should now be visible
-        composeTestRule.onNodeWithTag("fullscreen_text", useUnmergedTree = true).assertIsDisplayed()
-
-        // Click again to exit fullscreen mode
         composeTestRule.onNodeWithTag("toc_box").performClick()
         composeTestRule.waitForIdle()
-
-        // Verify that the fullscreen message disappears
+        composeTestRule.onNodeWithTag("fullscreen_text", useUnmergedTree = true).assertIsDisplayed()
+        composeTestRule.onNodeWithTag("toc_box").performClick()
+        composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag("fullscreen_text").assertDoesNotExist()
     }
-
-    // STRUCTURE AND HIERARCHY TESTS
 
     // Test 5: Check that the title is not inside the LazyColumn list
     @Test
     fun title_isInsideTopColumn() {
+        val fakeViewModel = FakeRetrieveDataViewModel(chapters = fakeChapters)
+
         composeTestRule.setContent {
-            //TableOfContentsScreen(onBack = {})
+            TableOfContentsScreen(
+                bookId = 1,
+                viewModel = fakeViewModel,
+                onBack = {}
+            )
         }
 
-        // The title should exist and not be a child of the LazyColumn
         composeTestRule.onNodeWithTag("toc_title", useUnmergedTree = true)
             .assertExists()
             .assert(hasParent(hasTestTag("toc_list").not()))
@@ -115,15 +125,18 @@ class TableOfContentsScreenTest {
     // Test 6: Verify that each chapter button is a child of the LazyColumn
     @Test
     fun chapterButtons_areInsideLazyColumn() {
-        var chapters = mockChapters
+        val fakeViewModel = FakeRetrieveDataViewModel(chapters = fakeChapters)
 
         composeTestRule.setContent {
-            //TableOfContentsScreen(chapters = chapters, onBack = {})
+            TableOfContentsScreen(
+                bookId = 1,
+                viewModel = fakeViewModel,
+                onBack = {}
+            )
         }
 
-        // For each chapter, ensure the button is within the LazyColumn
-        chapters.forEach { chapter ->
-            composeTestRule.onNodeWithTag("chapter_button_$chapter", useUnmergedTree = true)
+        fakeChapters.forEach { chapter ->
+            composeTestRule.onNodeWithTag("chapter_button_${chapter.chapterId}", useUnmergedTree = true)
                 .assertExists()
                 .assert(hasParent(hasTestTag("toc_list")))
         }
@@ -132,8 +145,14 @@ class TableOfContentsScreenTest {
     // Test 7: Check that the floating back button exists and is inside the main Box
     @Test
     fun backButton_isInsideBoxAndVisible() {
+        val fakeViewModel = FakeRetrieveDataViewModel(chapters = fakeChapters)
+
         composeTestRule.setContent {
-            //TableOfContentsScreen(onBack = {})
+            TableOfContentsScreen(
+                bookId = 1,
+                viewModel = fakeViewModel,
+                onBack = {}
+            )
         }
 
         composeTestRule.onNodeWithTag("back_button", useUnmergedTree = true)
@@ -142,38 +161,41 @@ class TableOfContentsScreenTest {
             .assert(hasParent(hasTestTag("toc_box")))
     }
 
-
     // Test 8: Confirm that the fullscreen text is inside the Box when active
     @Test
     fun fullscreenText_isInsideBox_whenVisible() {
+        val fakeViewModel = FakeRetrieveDataViewModel(chapters = fakeChapters)
+
         composeTestRule.setContent {
-            //TableOfContentsScreen(onBack = {})
+            TableOfContentsScreen(
+                bookId = 1,
+                viewModel = fakeViewModel,
+                onBack = {}
+            )
         }
 
-        // Activate immersive mode
         composeTestRule.onNodeWithTag("toc_box").performClick()
         composeTestRule.waitForIdle()
-
-        // Verify that the fullscreen text appears as a child of the Box
         composeTestRule.onNodeWithTag("fullscreen_text", useUnmergedTree = true)
             .assertExists()
             .assert(hasParent(hasTestTag("toc_box")))
     }
 
-    // EDGE CASE TESTS
-
     // Test 9: If no chapters are passed, the LazyColumn should exist but be empty
     @Test
     fun noChapters_showsEmptyList() {
+        val fakeViewModel = FakeRetrieveDataViewModel(chapters = emptyList())
+
         composeTestRule.setContent {
-            //TableOfContentsScreen(chapters = emptyList(), onBack = {})
+            TableOfContentsScreen(
+                bookId = 1,
+                viewModel = fakeViewModel,
+                onBack = {}
+            )
         }
 
-        // LazyColumn container should still exist
         composeTestRule.onNodeWithTag("toc_list", useUnmergedTree = true)
             .assertExists()
-
-        // There should be zero visible chapter nodes
         composeTestRule.onAllNodesWithText("Chapter", useUnmergedTree = true)
             .assertCountEquals(0)
     }
@@ -181,11 +203,16 @@ class TableOfContentsScreenTest {
     // Test 10: Verify that clicking multiple times toggles fullscreen correctly
     @Test
     fun multipleClicks_toggleFullscreenRepeatedly() {
+        val fakeViewModel = FakeRetrieveDataViewModel(chapters = fakeChapters)
+
         composeTestRule.setContent {
-            //TableOfContentsScreen(onBack = {})
+            TableOfContentsScreen(
+                bookId = 1,
+                viewModel = fakeViewModel,
+                onBack = {}
+            )
         }
 
-        // Perform multiple clicks and verify alternating fullscreen visibility
         repeat(3) { i ->
             composeTestRule.onNodeWithTag("toc_box").performClick()
             composeTestRule.waitForIdle()
@@ -195,5 +222,4 @@ class TableOfContentsScreenTest {
                 composeTestRule.onNodeWithTag("fullscreen_text").assertDoesNotExist()
         }
     }
-
 }
