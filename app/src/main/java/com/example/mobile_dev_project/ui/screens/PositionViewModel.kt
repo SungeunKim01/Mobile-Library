@@ -8,17 +8,17 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class PositionViewModel @Inject constructor(
-    private val contentRepository: ContentRepository
+open class PositionViewModel @Inject constructor(
+    private val contentRepository: ContentRepository?
 ) : ViewModel() {
 
-    suspend fun getScrollPosition(contentId: Int): Float? {
-        return contentRepository.getScreenPosition(contentId)
+    open suspend fun getScrollPosition(contentId: Int): Float? {
+        return contentRepository?.getScreenPosition(contentId)
     }
 
-    fun saveScrollPosition(contentId: Int, scrollPosition: Float) {
+    open fun saveScrollPosition(contentId: Int, scrollPosition: Float) {
         viewModelScope.launch {
-            contentRepository.updateScreenPosition(contentId, scrollPosition)
+            contentRepository?.updateScreenPosition(contentId, scrollPosition)
         }
     }
 }

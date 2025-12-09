@@ -30,6 +30,9 @@
     <string name="stop">Arreter TTS</string>
     <string name="pause">Pauser TTS</string>
 
+    <string name="playing">état : jouer</string>
+    <string name="paused">état : pauser</string>
+
     <!-- phase2 - book links -->
     <string-array name="book_urls">
         <!-- Moby Dick; Or, The Whale by Herman Melville -->
