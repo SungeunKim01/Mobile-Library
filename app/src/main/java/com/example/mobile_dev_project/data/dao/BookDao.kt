@@ -42,4 +42,8 @@ interface BookDao {
 
     @Query("select exists(select 1 from Book where sourceUrl = :url)")
     suspend fun existsByUrl(url: String): Boolean
+
+    @Query("UPDATE Book SET lastAccessed = :time WHERE bookId = :id")
+    suspend fun updateLastAccessed(id: Int, time: String)
+
 }

@@ -50,6 +50,16 @@ class HomeScreenViewModel @Inject constructor (
             null
         }
     }
+
+    fun updateLastAccessed(bookId: Int) {
+        viewModelScope.launch {
+            val timestamp = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault())
+                .format(Date())
+
+            repository.updateLastAccessed(bookId, timestamp)
+        }
+    }
+
 }
 
 

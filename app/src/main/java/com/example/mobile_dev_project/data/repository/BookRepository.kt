@@ -51,5 +51,9 @@ class BookRepository @Inject constructor(
     suspend fun urlExists(url: String): Boolean{
         return bookDao.existsByUrl(url)
     }
+
+    suspend fun updateLastAccessed(bookId: Int, time: String) {
+        bookDao.updateLastAccessed(bookId, time)
+    }
 }
 
