@@ -62,7 +62,7 @@ fun BottomNavigationBar(navController: NavHostController) {
         val items = listOf(
             NavScreen(stringResource(R.string.home), null, Route.Home.route),
             NavScreen(stringResource(R.string.search), null, Route.Search.route),
-            NavScreen(stringResource(R.string.toc), null, Route.Content.route),
+            NavScreen(stringResource(R.string.toc), null, Route.Toc.route),
             NavScreen(stringResource(R.string.download), null, Route.Download.route)
         )
 
