@@ -71,7 +71,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
-import com.example.mobile_dev_project.ui.fake.TTsViewModelContract
+import com.example.mobile_dev_project.ui.fake.TTsViewModelInterface
 
 /**
  * Sets up the immersive mode and handles displaying the entire screen
@@ -189,7 +189,7 @@ fun ReadingPageContent(
     onSearch: () -> Unit,
     onBack: () -> Unit,
     modifier : Modifier = Modifier,
-    ttsVM: TTsViewModelContract,
+    ttsVM: TTsViewModelInterface,
     posVM: PositionViewModel,
     initialScrollRatio: Float = -1f,
     searchQuery: String,
@@ -249,7 +249,7 @@ fun ChapterPage(
     contentId: Int,
     onSearch: () -> Unit,
     onBack: () -> Unit,
-    ttsVM: TTsViewModelContract,
+    ttsVM: TTsViewModelInterface,
     posVM: PositionViewModel,
     initialScrollRatio: Float = -1f,
     searchQuery: String = ""
@@ -383,7 +383,7 @@ fun SearchButton(onSearch: () -> Unit, modifier: Modifier = Modifier){
  * For now, since VM not implemented, i just put a random vm.
  */
 @Composable
-fun TTSControlBar(viewModel: TTsViewModelContract, modifier: Modifier = Modifier) {
+fun TTSControlBar(viewModel: TTsViewModelInterface, modifier: Modifier = Modifier) {
     Row(modifier = modifier.fillMaxWidth().padding(top=12.dp).testTag("tts_bar"), horizontalArrangement = Arrangement.Center
     ){
         Surface(shape = MaterialTheme.shapes.large, tonalElevation = 4.dp, shadowElevation = 8.dp, color = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f)
@@ -419,7 +419,7 @@ fun ReadingScreenForTest(
     chapterIndexSelected: Int = 0,
     onSearch: () -> Unit = {},
     onBack: () -> Unit = {},
-    ttsVM : TTsViewModelContract,
+    ttsVM : TTsViewModelInterface,
     posVM: PositionViewModel
 ) {
     ReadingPageContent(
@@ -433,6 +433,7 @@ fun ReadingScreenForTest(
         initialScrollRatio = -1f,
         searchQuery = ""
     )
+    TTSControlBar(ttsVM)
 }
 
 
