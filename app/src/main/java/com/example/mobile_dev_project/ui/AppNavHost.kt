@@ -126,7 +126,7 @@ fun AppNavHost(
 
             val ttsViewModel = hiltViewModel<TTsViewModel>()
 
-            //ttsViewModel.prepareChapterById(chapId)
+            ttsViewModel.prepareChapterById(chapId)
             val posVM = hiltViewModel<PositionViewModel>()
             val retrieveVM = hiltViewModel<RetrieveDataViewModel>()
 

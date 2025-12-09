@@ -8,21 +8,20 @@ import com.example.mobile_dev_project.data.repository.ChapterRepository
 import com.example.mobile_dev_project.data.repository.ContentRepository
 import com.example.mobile_dev_project.data.repository.TtsRepository
 import com.example.mobile_dev_project.data.TtsState
-import com.example.mobile_dev_project.ui.fake.TTsViewModelInterface
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
- import javax.inject.Inject
-
+import javax.inject.Inject
 @HiltViewModel
-class TTsViewModel @Inject constructor(
+
+open class TTsViewModel @Inject constructor(
     private val ttsRepository: TtsRepository,
-    private val chapterRepository: ChapterRepository,
-    private val contentRepository: ContentRepository
-) : ViewModel(), TTsViewModelInterface {
-    override val ttsState: StateFlow<TtsState> = ttsRepository.state
+    private val chapterRepository: ChapterRepository?,
+    private val contentRepository: ContentRepository?
+) : ViewModel() {
+    val ttsState: StateFlow<TtsState> = ttsRepository.state
     private val _chapter = MutableStateFlow<UiChapter?>(null)
     val chapter: StateFlow<UiChapter?> = _chapter
 
@@ -31,7 +30,7 @@ class TTsViewModel @Inject constructor(
 
     fun setChapter(chapterId: Int) {
         viewModelScope.launch {
-            val entity = chapterRepository.getChapterById(chapterId).firstOrNull()
+            val entity = chapterRepository?.getChapterById(chapterId)?.firstOrNull()
             if (entity != null) {
                 _chapter.value = UiChapter(
                     chapterId = entity.chapterId,
@@ -44,7 +43,7 @@ class TTsViewModel @Inject constructor(
         }
     }
 
-    override fun prepareChapterById(chapterId: Int) {
+    fun prepareChapterById(chapterId: Int) {
         viewModelScope.launch {
             setChapter(chapterId)
             setContent()
@@ -55,7 +54,7 @@ class TTsViewModel @Inject constructor(
     fun setContent() {
         viewModelScope.launch {
             val ch = _chapter.value ?: return@launch
-            val entity = contentRepository.getContentForChapter(ch.chapterId).firstOrNull()
+            val entity = contentRepository?.getContentForChapter(ch.chapterId)?.firstOrNull()
 
             if (entity != null) {
                 _content.value = UiContent(
@@ -81,8 +80,8 @@ class TTsViewModel @Inject constructor(
         }
     }
 
-    override fun playTTs() = ttsRepository.play()
-    override fun pauseTTs() = ttsRepository.pause()
-    override fun stopTTs() = ttsRepository.stop()
-    override fun releaseTTs() = ttsRepository.release()
+    fun playTTs() = ttsRepository.play()
+    fun pauseTTs() = ttsRepository.pause()
+    fun stopTTs() = ttsRepository.stop()
+    fun releaseTTs() = ttsRepository.release()
 }
