@@ -91,7 +91,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel(),
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            RestaurantLogo(modifier = Modifier.testTag("restaurant_logo"))
+            BookLogo(modifier = Modifier.testTag("restaurant_logo"))
 
             Text(
                 text = stringResource(R.string.title),
@@ -121,7 +121,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel(),
 }
 //This will display the Restaurant Logo on the top
 @Composable
-fun RestaurantLogo(modifier: Modifier = Modifier) {
+fun BookLogo(modifier: Modifier = Modifier) {
     val image = painterResource(R.drawable.mobile_library)
     Column {
         Image(
