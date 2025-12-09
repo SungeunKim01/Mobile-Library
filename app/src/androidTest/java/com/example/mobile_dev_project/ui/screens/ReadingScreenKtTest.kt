@@ -22,7 +22,7 @@ import org.junit.runner.RunWith
 class ReadingScreenKtTest {
     @get: Rule
     val composeTestRule = createComposeRule()
-    private lateinit var fakeTTsVM: FakeTTsViewModel
+    private lateinit var fakeTTsVM: FakeTtsViewModel
     private lateinit var fakePosVM: FakePositionViewModel
 
     /**
@@ -30,7 +30,7 @@ class ReadingScreenKtTest {
      */
     @Before
     fun setUp() {
-        fakeTTsVM = FakeTTsViewModel()
+        fakeTTsVM = FakeTtsViewModel()
         fakePosVM = FakePositionViewModel()
 
     }
@@ -71,7 +71,7 @@ class ReadingScreenKtTest {
                 chapters = mockChapters,
                 contents = mockContents,
                 chapterIndexSelected = 0,
-                ttsVM = FakeTTsViewModel(),
+                ttsVM = FakeTtsViewModel(),
                 posVM = FakePositionViewModel(),
                 onBack = { clickedBack = true }
             )

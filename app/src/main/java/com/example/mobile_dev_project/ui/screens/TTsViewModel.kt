@@ -17,11 +17,14 @@ import javax.inject.Inject
 @HiltViewModel
 
 open class TTsViewModel @Inject constructor(
-    private val ttsRepository: TtsRepository,
+    private val ttsRepository: TtsRepository?,
     private val chapterRepository: ChapterRepository?,
     private val contentRepository: ContentRepository?
 ) : ViewModel() {
-    val ttsState: StateFlow<TtsState> = ttsRepository.state
+    private val _fallbackTtsState = MutableStateFlow<TtsState>(TtsState.Idle)
+    open val ttsState: StateFlow<TtsState> =
+        ttsRepository?.state ?: _fallbackTtsState
+
     private val _chapter = MutableStateFlow<UiChapter?>(null)
     val chapter: StateFlow<UiChapter?> = _chapter
 
@@ -72,7 +75,7 @@ open class TTsViewModel @Inject constructor(
             val ct = _content.value
 
             if (ch != null && ct != null) {
-                ttsRepository.prepare(
+                ttsRepository?.prepare(
                     chapterId = ch.chapterId,
                     text = ct.content
                 )
@@ -80,8 +83,8 @@ open class TTsViewModel @Inject constructor(
         }
     }
 
-    fun playTTs() = ttsRepository.play()
-    fun pauseTTs() = ttsRepository.pause()
-    fun stopTTs() = ttsRepository.stop()
-    fun releaseTTs() = ttsRepository.release()
+    open fun playTTs() = ttsRepository?.play()
+    open fun pauseTTs() = ttsRepository?.pause()
+    open fun stopTTs() = ttsRepository?.stop()
+    fun releaseTTs() = ttsRepository?.release()
 }
