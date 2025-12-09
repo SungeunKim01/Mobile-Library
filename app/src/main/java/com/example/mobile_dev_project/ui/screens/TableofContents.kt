@@ -102,9 +102,9 @@ fun TableOfContentsScreen(
                         onClick = { onChapterSelected(chapter) },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .testTag("chapter_button_$chapter.chapter_id")
+                            .testTag("chapter_button_${chapter.chapterId}")
                     ) {
-                        Text(text = chapter.chapterTitle.toString())
+                        Text(text = chapter.chapterTitle ?: "")
                     }
                 }
             }
