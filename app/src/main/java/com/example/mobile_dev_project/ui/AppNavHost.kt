@@ -48,7 +48,7 @@ fun AppNavHost(
         startDestination = startDestination,
         modifier = modifier
     ) {
-        // Download Book Screen - UI only for now for m1
+        // Download Book Screen
         composable(Route.Download.route) {
             DownloadBookScreen(
                 onBack = { nav.safePopOrNavigateHome() },
@@ -56,7 +56,7 @@ fun AppNavHost(
             )
         }
 
-        // Search Screen -UI only for now for m1
+        // Search Screen
         composable(Route.Search.route) {
             SearchScreen(
                 onBack = { nav.safePopOrNavigateHome() },
@@ -82,6 +82,15 @@ fun AppNavHost(
                 onNavigateToContents = { bookId ->
                     nav.navigate(Route.Content.createRoute(bookId))
                 },
+                onToggleNavBar = onToggleNavBar
+            )
+        }
+
+        // TOC (table of content
+        composable(Route.Toc.route) {
+            TableOfContentsScreen(
+                bookId = 1,
+                onBack = { nav.safePopOrNavigateHome() },
                 onToggleNavBar = onToggleNavBar
             )
         }
