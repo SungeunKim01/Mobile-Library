@@ -41,14 +41,15 @@ fun AppNavHost(
     nav: NavHostController,
     startDestination: String,
     modifier: Modifier = Modifier,
-    onToggleNavBar: (Boolean) -> Unit = {}
+    onToggleNavBar: (Boolean) -> Unit = {},
+    onBookSelectedForToc: (Int?) -> Unit = {}
 ) {
     NavHost(
         navController = nav,
         startDestination = startDestination,
         modifier = modifier
     ) {
-        // Download Book Screen - UI only for now for m1
+        // Download Book Screen
         composable(Route.Download.route) {
             DownloadBookScreen(
                 onBack = { nav.safePopOrNavigateHome() },
@@ -56,12 +57,15 @@ fun AppNavHost(
             )
         }
 
-        // Search Screen -UI only for now for m1
+        // Search Screen
         composable(Route.Search.route) {
             SearchScreen(
                 onBack = { nav.safePopOrNavigateHome() },
                 onNavigateToLocation = { hit ->
-                    // go to the proper chapter in ReadingScreen wen user taps a result
+                    // remember which book the user is looking at
+                    onBookSelectedForToc(hit.bookId)
+
+                    // go to the proper chapter in ReadingScreen when user taps a result
                     nav.navigate(
                         Route.Reading.createRoute(
                             hit.bookId,
@@ -80,6 +84,7 @@ fun AppNavHost(
             HomeScreen(
                 onNavigateToDownload = { nav.navigate(Route.Download.route)  },
                 onNavigateToContents = { bookId ->
+                    onBookSelectedForToc(bookId)
                     nav.navigate(Route.Content.createRoute(bookId))
                 },
                 onToggleNavBar = onToggleNavBar
