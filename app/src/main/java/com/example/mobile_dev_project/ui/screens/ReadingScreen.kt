@@ -403,7 +403,7 @@ fun TTSControlBar(viewModel: TTsViewModelInterface, modifier: Modifier = Modifie
                         Icon(icon, contentDescription = if (isPlaying) stringResource(R.string.pause) else stringResource(R.string.play))
                     }
                 }
-                if(isPlaying) Text("State: Playing") else Text("State:Paused")
+                if(isPlaying) Text(stringResource(R.string.playing)) else Text(stringResource(R.string.paused))
             }
         }
     }

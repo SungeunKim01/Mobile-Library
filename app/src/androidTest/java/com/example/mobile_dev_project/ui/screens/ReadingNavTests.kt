@@ -38,18 +38,13 @@
 //    fun setup() {
 //        // Inject Hilt dependencies
 //        hiltRule.inject()
-//    }j
+//    }
 //
 //    @Test
 //    fun searchBtn_NavigatesToSearch() {
 //        val book = mockBook
 //        val chapters = mockChapters
 //        val contents = mockContents
-//        composeTestRule.setContent {
-//            ReadingScreenForTest(
-//                mockChapters, mockContents,1,{},{}
-//            )
-//        }
 //        // the title of the reading screen is displayed
 //        composeTestRule.onNodeWithTag("title").assertIsDisplayed()
 //
@@ -64,9 +59,10 @@
 //        val book = mockBook
 //        val chapters = mockChapters
 //        val contents = mockContents
+//        val
 //        composeTestRule.setContent {
 //            ReadingScreenForTest(
-//                mockChapters, mockContents,1,{},{}
+//                mockChapters, mockContents,1,
 //            )
 //        }
 //        // the title of the reading screen is displayed
