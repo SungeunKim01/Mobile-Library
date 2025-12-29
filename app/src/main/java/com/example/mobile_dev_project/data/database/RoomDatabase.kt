@@ -13,7 +13,7 @@ import com.example.mobile_dev_project.data.entity.Content
 
 @Database(
     entities = [Book::class, Chapter::class, Content::class],
-    version = 2,
+    version = 6,
     )
 abstract class BookRoomDatabase : RoomDatabase(){
 

@@ -91,7 +91,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel(),
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
-            RestaurantLogo(modifier = Modifier.testTag("restaurant_logo"))
+            BookLogo(modifier = Modifier.testTag("restaurant_logo"))
 
             Text(
                 text = stringResource(R.string.title),
@@ -121,7 +121,7 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel(),
 }
 //This will display the Restaurant Logo on the top
 @Composable
-fun RestaurantLogo(modifier: Modifier = Modifier) {
+fun BookLogo(modifier: Modifier = Modifier) {
     val image = painterResource(R.drawable.mobile_library)
     Column {
         Image(
@@ -155,7 +155,9 @@ fun Bookshelf(books: List<Book>, viewModel: HomeScreenViewModel, onNavigateToCon
 //On the Right is the last used text
 @Composable
 fun Book(book: Book, viewModel: HomeScreenViewModel, onNavigateToContents: (Int) -> Unit){
-    Button(onClick = {onNavigateToContents(book.bookId)},
+    Button(onClick = {
+        viewModel.updateLastAccessed(book.bookId!!)
+        onNavigateToContents(book.bookId!!) },
         modifier = Modifier
             .fillMaxWidth()
             .testTag("download_button"),

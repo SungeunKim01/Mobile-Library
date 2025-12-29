@@ -43,7 +43,7 @@ class SearchNavTest {
     @Test
     fun bottomBar_S_navigatesToSearch_and_back_returnsHome() {
         //Bottom bar shows "S"
-        compose.onNodeWithText("S").assertIsDisplayed().performClick()
+        compose.onNodeWithText("Search").assertIsDisplayed().performClick()
 
         // onSearch screen, the Query TextField has this tag
         compose.onNodeWithTag("QueryField").assertIsDisplayed()

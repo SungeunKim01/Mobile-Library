@@ -31,11 +31,14 @@ fun AppScaffold(
     nav: NavHostController,
 ) {
     var showBottomBar by remember { mutableStateOf(true) }
+
+    var currentBookId by remember { mutableStateOf<Int?>(null) }
+
     Scaffold(
         // bottomBar = {},
         bottomBar = {
             if (showBottomBar) {
-                BottomNavigationBar(navController = nav)
+                BottomNavigationBar(navController = nav, currentBookId = currentBookId)
             }
         }
         // topBar = {}
@@ -45,13 +48,14 @@ fun AppScaffold(
             // here, change Route.Search.route or Route.Home.route or Route.Download.route more
             startDestination = Route.Home.route,
             modifier = Modifier.padding(innerPadding),
-            onToggleNavBar = { show -> showBottomBar = show }
+            onToggleNavBar = { show -> showBottomBar = show },
+            onBookSelectedForToc = { bookId -> currentBookId = bookId }
         )
     }
 }
 //This code is taken from my previous lab BarCodeExample, I just tweaked it so its able to not take in icons but instead title and Route
 @Composable
-fun BottomNavigationBar(navController: NavHostController) {
+fun BottomNavigationBar(navController: NavHostController, currentBookId: Int?) {
 
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.tertiary
@@ -59,34 +63,77 @@ fun BottomNavigationBar(navController: NavHostController) {
         val backStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = backStackEntry?.destination?.route
 
+        val homeLabel = stringResource(R.string.home)
+        val searchLabel = stringResource(R.string.search)
+        val tocLabel = stringResource(R.string.toc)
+        val downloadLabel = stringResource(R.string.download)
+
         val items = listOf(
             NavScreen(stringResource(R.string.home), null, Route.Home.route),
-            NavScreen(stringResource(R.string.search), null, Route.Search.route)
+            NavScreen(stringResource(R.string.search), null, Route.Search.route),
+            NavScreen(tocLabel, null, "toc_tab"),
+            NavScreen(stringResource(R.string.download), null, Route.Download.route)
         )
 
         items.forEach { navItem ->
+            if (!navItem.route.contains("{")) {
 
-            NavigationBarItem(
-
-                selected = currentRoute == 	navItem.route,
-                onClick = {
-                    navController.navigate(navItem.route) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-
-                            saveState = true
-                        }
-                        launchSingleTop = true
-                        restoreState = true
+                val isTocTab = navItem.title == tocLabel
+                val isSelected =
+                    if (isTocTab) {
+                        currentRoute?.startsWith("content") == true
+                    } else {
+                        currentRoute == navItem.route
                     }
-                },
-                icon = {
-                    //empty cause I dont want an icon for them
-                },
-                label = {
-                    //We are going to use instead of icons the second part so H, T, and S each meaning a different screen
-                    Text(text = navItem.title)
-                },
-            )
+
+                NavigationBarItem(
+                    selected = isSelected,
+                    onClick = {
+                        // Home
+                        if (navItem.title == homeLabel) {
+                            navController.navigate(Route.Home.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    inclusive = false
+                                    saveState = false
+                                }
+                                launchSingleTop = true
+                                restoreState = false
+                            }
+                        }
+                        // TOC, only if a book is opened
+                        else if (navItem.title == tocLabel) {
+                            val bookId = currentBookId
+                            if (bookId != null) {
+                                navController.navigate(
+                                    Route.Content.createRoute(bookId)
+                                ) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            }
+                            //do nothing  if bookId is null
+                        }
+                        // Search and Download
+                        else {
+                            navController.navigate(navItem.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
+                    },
+                    // no icon
+                    icon = { },
+                    label = {
+                        Text(text = navItem.title)
+                    },
+                )
+            }
         }
     }
 }

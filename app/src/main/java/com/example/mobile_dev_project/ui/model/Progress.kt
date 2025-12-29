@@ -1,7 +1,7 @@
 package com.example.mobile_dev_project.ui.model
 
 // 4 phases need to show
-enum class ImportPhase { DOWNLOADING, UNZIPPING, PARSING, POPULATING, DONE}
+enum class ImportPhase { DOWNLOADING, UNZIPPING, PARSING, POPULATING, DONE, ERROR}
 
 // state for the screen
 data class ProgressState(

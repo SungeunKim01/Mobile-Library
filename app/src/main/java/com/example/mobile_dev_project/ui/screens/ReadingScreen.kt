@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
@@ -19,10 +21,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
@@ -49,6 +54,23 @@ import com.example.mobile_dev_project.R
 import com.example.mobile_dev_project.data.UiContent
 import com.example.mobile_dev_project.data.UiChapter
 import kotlinx.coroutines.flow.first
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import javax.inject.Inject
+import com.example.mobile_dev_project.data.TtsState
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.snapshotFlow
+import kotlinx.coroutines.flow.filter
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
+import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
 
 /**
  * Sets up the immersive mode and handles displaying the entire screen
@@ -56,14 +78,20 @@ import kotlinx.coroutines.flow.first
  * general sources: - Week 12: Room Database slide 63
  *                  - https://developer.android.com/develop/ui/views/layout/immersive
  *                  - https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.collections/map-not-null.html
+ *                  - https://developer.android.com/develop/ui/compose/side-effects
  */
 @Composable
 fun ReadingScreen (bookId: Int,
                    chapterId: Int,
                    onSearch: () -> Unit,
                    onBack: () -> Unit,
+                   initialScrollRatio: Float = -1f,
+                   searchQuery: String = "",
                    onToggleNavBar: (Boolean) -> Unit = {},
-                   viewModel: RetrieveDataViewModel = hiltViewModel()){
+                   positionVM: PositionViewModel,
+                   retrieveVM: RetrieveDataViewModel,
+                   ttsVM: TTsViewModel
+    ){
     val view = LocalView.current
     val window = (view.context as Activity).window
     // Create a controller to show/hide system bars
@@ -86,34 +114,49 @@ fun ReadingScreen (bookId: Int,
     var chapters by remember { mutableStateOf<List<UiChapter>>(emptyList()) }
     var contents by remember { mutableStateOf<List<UiContent>>(emptyList()) }
     var selectedIndex by remember { mutableStateOf(0) }
-    val allChaps by viewModel.getChaptersForBook(bookId).collectAsState(initial = emptyList())
+    val allChaps by retrieveVM.getChaptersForBook(bookId).collectAsState(initial = emptyList())
     LaunchedEffect(allChaps) {
         val allContents = allChaps.mapNotNull {
-            val content = viewModel.getContentForChapter(it.chapterId ?: 0).first()
+            val content = retrieveVM.getContentForChapter(it.chapterId ?: 0).first()
             content
         }
         chapters = allChaps
         contents = allContents
         selectedIndex = allChaps.indexOfFirst { it.chapterId == chapterId }
+        if (selectedIndex >= 0 && chapters.isNotEmpty()) {
+            chapters[selectedIndex].chapterId?.let { ttsVM.prepareChapterById(it) }
+        }
+    }
+    DisposableEffect(Unit) {
+        onDispose { ttsVM.releaseTTs() }
     }
     if (chapters.isEmpty() || contents.isEmpty()) {
         LoadingIndicator()
     } else {
-        var isVisible by remember { mutableStateOf(false) }
-        val localView = LocalView.current
-        val window = (localView.context as Activity).window
-        val windowInsetsController = remember {
-            WindowCompat.getInsetsController(window, localView)
-        }
-        Box(modifier = Modifier.clickable { toggleImmersiveMode() }){
-            ReadingPageContent(chapters = chapters, contents = contents, chapterIndexSelected = selectedIndex, onSearch = onSearch, onBack = onBack)
+        Box(modifier = Modifier.clickable { toggleImmersiveMode() }) {
+            ReadingPageContent(
+                chapters = chapters,
+                contents = contents,
+                chapterIndexSelected = selectedIndex,
+                onSearch = onSearch,
+                onBack = onBack,
+                ttsVM = ttsVM,
+                posVM = positionVM,
+                initialScrollRatio = initialScrollRatio,
+                searchQuery = searchQuery
+            )
             if (isImmersive) {
                 Text(
                     text = stringResource(R.string.tap_anywhere_to_exit_fullscreen),
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .testTag("fullscreen_text")
+                    modifier = Modifier.padding(8.dp).testTag("fullscreen_text")
                 )
+            }else{
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.TopCenter
+                ) {
+                    TTSControlBar(ttsVM)
+                }
             }
         }
     }
@@ -144,7 +187,11 @@ fun ReadingPageContent(
     chapterIndexSelected: Int,
     onSearch: () -> Unit,
     onBack: () -> Unit,
-    modifier : Modifier = Modifier
+    modifier : Modifier = Modifier,
+    ttsVM: TTsViewModel,
+    posVM: PositionViewModel,
+    initialScrollRatio: Float = -1f,
+    searchQuery: String,
 ) {
     val listState = rememberLazyListState()
     LaunchedEffect(chapterIndexSelected) {
@@ -154,16 +201,32 @@ fun ReadingPageContent(
         state = listState,
         horizontalArrangement = Arrangement.Center
     ) {
-        itemsIndexed(chapters) { _, chapter ->
+        itemsIndexed(chapters) { index, chapter ->
             val contentText = contents.find { it.chapterId == chapter.chapterId }?.content ?: ""
+            // only selected chapter use the ratio
+            val chapterScrollRatio =
+                if (index == chapterIndexSelected) {
+                    initialScrollRatio
+                } else {
+                    -1f
+                }
             chapter.contentId?.let {
                 ChapterPage(
-                    title = chapter.chapterTitle,
+                    title = chapter.chapterTitle.toString(),
                     content = contentText,
                     contentId = it,
                     onSearch = onSearch,
                     onBack = onBack,
-                    )
+                    ttsVM = ttsVM,
+                    posVM = posVM,
+                    searchQuery = searchQuery,
+                    initialScrollRatio =
+                        if (index == chapterIndexSelected) {
+                            initialScrollRatio
+                        } else {
+                            -1f
+                        }
+                )
             }
         }
     }
@@ -185,16 +248,35 @@ fun ChapterPage(
     contentId: Int,
     onSearch: () -> Unit,
     onBack: () -> Unit,
-    viewModel: PositionViewModel = hiltViewModel()
+    ttsVM: TTsViewModel,
+    posVM: PositionViewModel,
+    initialScrollRatio: Float = -1f,
+    searchQuery: String = ""
 ) {
     val state = rememberScrollState()
+    // restore last saved scroll position
     LaunchedEffect(contentId) {
-        viewModel.getScrollPosition(contentId)?.let { saved ->
-            state.scrollTo(saved.toInt())
+        if (initialScrollRatio < 0f) {
+            posVM.getScrollPosition(contentId)?.let { saved ->
+                state.scrollTo(saved.toInt())
+            }
         }
     }
-    LaunchedEffect(state.value) {
-        viewModel.saveScrollPosition(contentId, state.value.toFloat())
+    //go to ratio only after maxValue is ready
+    LaunchedEffect(contentId, initialScrollRatio) {
+        if (initialScrollRatio >= 0f) {
+            // wait until layout has measured the content & maxValue > 0
+            val max = snapshotFlow { state.maxValue }
+                .filter { it > 0 }
+                .first()
+
+            val target = (max * initialScrollRatio).toInt()
+            state.scrollTo(target)
+            posVM.saveScrollPosition(contentId, target.toFloat())
+        }
+    }
+    LaunchedEffect(contentId, state.value) {
+        posVM.saveScrollPosition(contentId, state.value.toFloat())
     }
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -203,7 +285,7 @@ fun ChapterPage(
             SearchButton(onSearch)
             Spacer(Modifier.height(dimensionResource(R.dimen.padding_reg)))
             ChapterTitle(title)
-            ChapterContent(content)
+            ChapterContent(content = content, highlightQuery = searchQuery)
         }
         FloatingActionButton(onClick = onBack,
             modifier = Modifier
@@ -228,10 +310,44 @@ fun ChapterTitle(title: String){
 /**
  * Displays the content of a chapter.
  */
+
+
 @Composable
-fun ChapterContent(content : String, modifier: Modifier = Modifier){
-    Column(modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp - dimensionResource(R.dimen.space_lg))){
-        Text(text = content,
+fun ChapterContent(content: String, highlightQuery: String, modifier: Modifier = Modifier) {
+    // build highlighted text every recomposition
+    val annotated: AnnotatedString =
+        if (highlightQuery.isBlank()) {
+            AnnotatedString(content)
+        } else {
+            val lower = content.lowercase()
+            val q = highlightQuery.lowercase()
+            var start = 0
+            buildAnnotatedString {
+                while (true) {
+                    val index = lower.indexOf(q, startIndex = start)
+                    if (index < 0) {
+                        append(content.substring(start))
+                        break
+                    }
+                    //text befo the match
+                    append(content.substring(start, index))
+                    //highlighted match
+                    withStyle(
+                        SpanStyle(
+                            background = MaterialTheme.colorScheme.secondaryContainer,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer,
+                            fontWeight = FontWeight.Bold
+                        )
+                    ) {
+                        append(content.substring(index, index + q.length))
+                    }
+                    start = index + q.length
+                }
+            }
+        }
+    Column(modifier = Modifier.width(LocalConfiguration.current.screenWidthDp.dp -
+    dimensionResource(R.dimen.space_lg))) {
+        Text(text = annotated,
             modifier = Modifier.fillMaxWidth().testTag("content"),
             lineHeight = dimensionResource(R.dimen.line_height_reg).value.sp
         )
@@ -259,6 +375,39 @@ fun SearchButton(onSearch: () -> Unit, modifier: Modifier = Modifier){
 
 }
 
+
+/**
+ * Display the control bar for TTS.
+ * Features: pause, play, stop.
+ * For now, since VM not implemented, i just put a random vm.
+ */
+@Composable
+fun TTSControlBar(viewModel: TTsViewModel, modifier: Modifier = Modifier) {
+    Row(modifier = modifier.fillMaxWidth().padding(top=12.dp).testTag("tts_bar"), horizontalArrangement = Arrangement.Center
+    ){
+        Surface(shape = MaterialTheme.shapes.large, tonalElevation = 4.dp, shadowElevation = 8.dp, color = MaterialTheme.colorScheme.surface.copy(alpha = 0.92f)
+        ) {
+            val state = viewModel.ttsState.collectAsState()
+            val isPlaying = state.value is TtsState.Playing
+            Column() {
+                Row(modifier = modifier.padding(horizontal = 12.dp, vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(16.dp), verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Button(onClick = { viewModel.stopTTs() }, colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray), contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp), shape = CircleShape
+                    ) { // when we get viewmodel, i edit this: viewModel.stopTTs()
+                        Icon(Icons.Default.Stop, contentDescription = stringResource(R.string.stop))
+                    }
+                    Button(onClick = { if (isPlaying) viewModel.pauseTTs() else viewModel.playTTs() }, colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray), contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp), shape = CircleShape
+                    ) {
+                        val icon = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow
+                        Icon(icon, contentDescription = if (isPlaying) stringResource(R.string.pause) else stringResource(R.string.play))
+                    }
+                }
+                if(isPlaying) Text(stringResource(R.string.playing)) else Text(stringResource(R.string.paused))
+            }
+        }
+    }
+}
+
 /**
  * Composable used for testing
  */
@@ -268,14 +417,24 @@ fun ReadingScreenForTest(
     contents: List<UiContent>,
     chapterIndexSelected: Int = 0,
     onSearch: () -> Unit = {},
-    onBack: () -> Unit = {}
+    onBack: () -> Unit = {},
+    ttsVM : TTsViewModel,
+    posVM: PositionViewModel
 ) {
     ReadingPageContent(
         chapters = chapters,
         contents = contents,
         chapterIndexSelected = chapterIndexSelected,
         onSearch = onSearch,
-        onBack = onBack
+        onBack = onBack,
+        ttsVM = ttsVM,
+        posVM = posVM,
+        initialScrollRatio = -1f,
+        searchQuery = ""
     )
+    TTSControlBar(ttsVM)
 }
+
+
+
 
