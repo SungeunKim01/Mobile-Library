@@ -1,47 +1,44 @@
 package com.example.mobile_dev_project
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.activity.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.compose.rememberNavController
+import com.example.mobile_dev_project.ui.AppScaffold
 import com.example.mobile_dev_project.ui.theme.MobileDevProjectTheme
+import dagger.hilt.android.AndroidEntryPoint
+import com.example.mobile_dev_project.ui.screens.ImportViewModel
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private val importViewModel: ImportViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContent {
-            MobileDevProjectTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+        lifecycleScope.launch {
+            // Call importInitialBooks() so this will
+            // load urls from strings.xml then
+            // Check database for duplicates then
+            // download, unzip, parse, and save each book if not alr present
+            importViewModel.importInitialBooks { progressState ->
+                Log.d("MainActivity", "Import Progress: ${progressState.phase} - ${progressState.message}")
+                progressState.detail?.let {
+                    Log.d("MainActivity", "  Detail: $it")
                 }
             }
         }
-    }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MobileDevProjectTheme {
-        Greeting("Android")
+        setContent {
+            MobileDevProjectTheme {
+                val nav = rememberNavController()
+                AppScaffold(nav = nav)
+            }
+        }
     }
 }

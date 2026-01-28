@@ -1,93 +1,141 @@
-# 511-Project-Kim-Castillo-Mignacca-Graceffa
+# Mobile Library
+
+## Overview
+**Mobile Library** is an Android mobile reading application built with Android Studio that allows users to read, search, and listen to books using Text-to-Speech. The app comes with three preloaded public-domain books and also allows users to download and parse their own books from external sources.
+
+**Preloaded books:**
+1. Moby Dick
+2. Pride and Prejudice
+3. The Odyssey
+
+![Home Page](./m3_screenshots/HomeScreen.png)
+
+- Users have the choice of adding their own book to the reading list that will then be parsed and ready to read with the same
+features as the pre-downloaded books
+
+![Download Page](./m3_screenshots/DownloadBook.png)
+
+- When a books is selected, redirects the user to the table of content screen for the user to select a chapter from the book and begin reading from that chapter
+
+![Table of Content Page](./m3_screenshots/TableOfContent.png)
+
+- When reading a book, the user has the ability to allow Text-To-Speech functionality to read the book for them. Users then have the ability to pause, unpause and stop TTS from reading the book
+
+![Book Page](./m3_screenshots/BookPage.png)
+
+- Search functionality is also implemented to allow the user to search for keywords within all the books and then redirects to that search area
+
+![Search Page](./m3_screenshots/SearchScreen.png)
+
+---
+
+## Main Features
+
+### Home Screen
+
+- Show the list of downloaded books (book cover page, book title, book author)
+- Click a book to open it
+
+### Download Screen to Add a Book by URL
+
+When the user insert a URL that points to a .zip of a HTML book, the app:
+
+1) Download the zip file using OkHttp
+2) Unzip
+3) Parse HTML using Ksoup and extracts:
+    - book metadata
+    - chapter titles
+    - chapter bodies, and contents
+4) Store into room database:
+    - Insert a Book row
+    - Insert multiple chapter rows
+    - Insert a content row, the actual text that belongs to a chapter
+
+### Book Contents Screen
+
+- Shows the table of contents for the selected book (list of chapters)
+- Clicking a chapter opens the reader screen at that chapter
+- There is a back button to go back to the previous screen
 
 
+### Book Reader Screen
 
-## Getting started
+- Shows the text of the current chapter using Jetpack Compose
+- Supports vertical and horizontal scrolling
+- Uses ViewModel state so the UI survives configuration changes
+- TTS bar is included at the top
+- Search button is included at the top left
+    - When coming from Search screen, it goes to the correct chapter
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+### Search
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+- Search bar lets useer type a word or phrase
+- The app searches across all saved contents in the Room database
+- For each match it shows a search result with:
+    - Book and chapter info
+    - A short snippet of text around the match
+- Clicking a result navigates to the corresponding position in the reader screen for that chapter and highlight the matched word or phrase
 
-## Add your files
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+### TTS
 
-```
-cd existing_repo
-git remote add origin https://gitlab.com/dawson-cst-cohort-2026/511/section2/Dorian-Sungeun-Francis/511-project-kim-castillo-mignacca.git
-git branch -M main
-git push -uf origin main
-```
+- Uses Android’s TTS engine to read the book out loud
+- There is a small TTS bar on the reader screen (play and pause)
+- TTS works on the current chapter text.
 
-## Integrate with your tools
 
-- [ ] [Set up project integrations](https://gitlab.com/dawson-cst-cohort-2026/511/section2/Dorian-Sungeun-Francis/511-project-kim-castillo-mignacca/-/settings/integrations)
+### Navigation bar at the bottom
 
-## Collaborate with your team
+- Click the "Download" button to go to download screen to download a new book by parsing its URL
+- Click the "Search" button to go to search screen to search word/words
+- Click the "Home" button to go to home screen to see the list of downloaded books
+- Click the "Table of Content" button to go to content screen to see all the contents (chapters) of a selected book
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+---
 
-## Test and Deploy
+## Tech Stack
+- **Language:** Kotlin 
+- **UI:** Jetpack Compose
+- **Architecture:** MVVM
+- **Networking:** OkHttp
+- **Parsing:** Ksoup
+- **Database:** Room
+- **State Management:** ViewModel
 
-Use the built-in continuous integration in GitLab.
+---
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+## Team Project
+This project was developed as a team project* for a Mobile Development course.
 
-***
+### My Contributions
+- Implemented book download workflow using OkHttp
+- Parsed HTML book content and metadata using Ksoup
+- Designed and implemented search functionality across all stored book contents
+- Contributed to UI development using Jetpack Compose
+- Worked with Room database schema and data persistence
 
-# Editing this README
+---
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+## Know Bugs
 
-## Suggestions for a good README
+Sometimes TTS wont work when you press play, seems to be a laptop to laptop issue rather than a code issue
+However it is functional and works 
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+---
 
-## Name
-Choose a self-explaining name for your project.
+## How to run the app
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+1. Clone the repository
+2. Open the project in Android Studio
+3. Build and run on an Android emulator or physical device
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+---
 
 ## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
 
-## License
-For open source projects, say how it is licensed.
+- Sungeun Kim
+- Christian Graceffa
+- Dorian Castillo
+- Francis Mignacca
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+---
