@@ -1,7 +1,9 @@
 # Mobile Library
 
 ## Overview
-- A Android studio developped mobile reading applications that allows readers to read three pre-downloaded books:
+**Mobile Library** is an Android mobile reading application built with Android Studio that allows users to read, search, and listen to books using Text-to-Speech. The app comes with three preloaded public-domain books and also allows users to download and parse their own books from external sources.
+
+**Preloaded books:**
 1. Moby Dick
 2. Pride and Prejudice
 3. The Odyssey
@@ -91,7 +93,26 @@ When the user insert a URL that points to a .zip of a HTML book, the app:
 
 ---
 
-## Setup Instructions
+## Tech Stack
+- **Language:** Kotlin 
+- **UI:** Jetpack Compose
+- **Architecture:** MVVM
+- **Networking:** OkHttp
+- **Parsing:** Ksoup
+- **Database:** Room
+- **State Management:** ViewModel
+
+---
+
+## Team Project
+This project was developed as a team project* for a Mobile Development course.
+
+### My Contributions
+- Implemented book download workflow using OkHttp
+- Parsed HTML book content and metadata using Ksoup
+- Designed and implemented search functionality across all stored book contents
+- Contributed to UI development using Jetpack Compose
+- Worked with Room database schema and data persistence
 
 ---
 
@@ -104,7 +125,9 @@ However it is functional and works
 
 ## How to run the app
 
-Clone the repo in bash: git clone https://gitlab.com/dawson-cst-cohort-2026/511/section2/Dorian-Sungeun-Francis-Christian/mobiledev_project.git
+1. Clone the repository
+2. Open the project in Android Studio
+3. Build and run on an Android emulator or physical device
 
 ---
 
@@ -116,6 +139,3 @@ Clone the repo in bash: git clone https://gitlab.com/dawson-cst-cohort-2026/511/
 - Francis Mignacca
 
 ---
-
-## Project status
-Need to fix few issues that professor mentioned during demo
